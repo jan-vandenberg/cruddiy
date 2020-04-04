@@ -1,7 +1,6 @@
 <?php
 
 $indexfile = <<<'EOT'
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,8 +41,22 @@ $indexfile = <<<'EOT'
                     // Include config file
                     require_once "config.php";
 
+                    //Pagination stuff
+                    if (isset($_GET['pageno'])) {
+                        $pageno = $_GET['pageno'];
+                    } else {
+                        $pageno = 1;
+                    }
+                    $no_of_records_per_page = 25;
+                    $offset = ($pageno-1) * $no_of_records_per_page;
+
+                    $total_pages_sql = "SELECT COUNT(*) FROM {TABLE_NAME}";
+                    $result = mysqli_query($link,$total_pages_sql);
+                    $total_rows = mysqli_fetch_array($result)[0];
+                    $total_pages = ceil($total_rows / $no_of_records_per_page);
+
                     // Attempt select query execution
-                    $sql = "{INDEX_QUERY}";
+                    $sql = "{INDEX_QUERY} LIMIT $offset, $no_of_records_per_page";
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
                             echo "<table class='table table-bordered table-striped'>";
@@ -66,6 +79,17 @@ $indexfile = <<<'EOT'
                                 }
                                 echo "</tbody>";
                             echo "</table>";
+                              ?> <ul class="pagination" align-right>
+                                    <li><a href="?pageno=1">First</a></li>
+                                    <li class="<?php if($pageno <= 1){ echo 'disabled'; } ?>">
+                                        <a href="<?php if($pageno <= 1){ echo '#'; } else { echo "?pageno=".($pageno - 1); } ?>">Prev</a>
+                                    </li>
+                                    <li class="<?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
+                                        <a href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?pageno=".($pageno + 1); } ?>">Next</a>
+                                    </li>
+                                    <li><a href="?pageno=<?php echo $total_pages; ?>">Last</a></li>
+                                </ul>
+<?php
                             // Free result set
                             mysqli_free_result($result);
                         } else{
@@ -358,7 +382,7 @@ require_once "config.php";
 // Processing form data when form is submitted
 if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     // Get hidden input value
-    $id = $_POST["{COLUMN_ID}"];
+    ${COLUMN_ID} = $_POST["{COLUMN_ID}"];
 
     // Field validation
 
@@ -369,7 +393,6 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
         {CREATE_POST_VARIABLES}
 
         $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
-            $dsn->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
         $options = [
           PDO::ATTR_EMULATE_PREPARES   => false, // turn off emulation mode for "real" prepared statements
           PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, //turn on errors in the form of exceptions
@@ -395,7 +418,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     // Check existence of id parameter before processing further
     if(isset($_GET["{COLUMN_ID}"]) && !empty(trim($_GET["{COLUMN_ID}"]))){
         // Get URL parameter
-        $id =  trim($_GET["{COLUMN_ID}"]);
+        ${COLUMN_ID} =  trim($_GET["{COLUMN_ID}"]);
 
         // Prepare a select statement
         $sql = "SELECT * FROM {TABLE_NAME} WHERE {COLUMN_ID} = ?";
@@ -404,7 +427,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
             mysqli_stmt_bind_param($stmt, "i", $param_id);
 
             // Set parameters
-            $param_id = $id;
+            $param_id = ${COLUMN_ID};
 
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){
@@ -470,8 +493,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 
                         {CREATE_HTML}
 
-
-                        <input type="hidden" name="{COLUMN_ID}" value="<?php echo $id; ?>"/>
+                        <input type="hidden" name="{COLUMN_ID}" value="<?php echo ${COLUMN_ID}; ?>"/>
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="{TABLE_NAME}-index.php" class="btn btn-default">Cancel</a>
                     </form>

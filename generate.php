@@ -15,6 +15,18 @@ $columnvisible = '';
 $index_table_rows = '';
 $index_table_headers = '';
 
+function column_type($columnname){
+    echo $columnname;
+    if(preg_match("/text/i", $columnname)) {
+    echo 'true';
+    return 1;
+    }    
+    else {
+    echo 'nope ';
+    return 0;
+    }
+}
+
 function generate_error(){
     global $errorfile;
     $destination_file = fopen("app/error.php", "w") or die("Unable to open file!");
@@ -123,7 +135,6 @@ function count_index_colums($table) {
         foreach ( $_POST[$key] as $columns )
             {
                 $column_visible = $columns['columnvisible'];
-                //if ($columns['columnvisible'] == 1) {
                 if ($column_visible == 1) {
                     $i++;
                 }
@@ -221,7 +232,7 @@ foreach ($_POST as $key => $value) {
                 }
 
             if (!empty($columns['auto'])){
-                //Dont create html field for auto increment columns
+                //Dont create html field for auto-increment columns
                 $j++;
                 $total_params--;
             }
@@ -241,18 +252,25 @@ foreach ($_POST as $key => $value) {
         $create_err_record = "\$$columnname".'_err';
         $create_sqlcolumns [] = $columnname;   
         $create_sql_params [] = "\$$columnname"; 
-        $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n";
+        $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
 
         $update_sql_params [] = "$columnname".'=?';
         $update_sql_id = "$column_id".'=?';
-        $update_column_rows .= "$$columnname = \$row[\"$columnname\"]; ";
-        
-
+        $update_column_rows .= "$$columnname = \$row[\"$columnname\"];\n\t\t\t\t\t";
+        $type = column_type($columns['columntype']);
+        if ($type == 0) {
         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="text" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
                             <span class="help-block"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
+        } else if ($type == 1){
+            $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                            <textarea name="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>
+                            <span class="help-block"><?php echo ' . $create_err_record . '; ?></span>
+                        </div>';
+        }
           $j++;
         }
 }
@@ -266,14 +284,14 @@ foreach ($_POST as $key => $value) {
                 $create_numberofparams = implode(",", $create_numberofparams);
                 $create_sqlcolumns = implode(",", $create_sqlcolumns);
                 $create_sql_params = implode(",", $create_sql_params);
-                $create_html = implode("\n", $create_html);
+                $create_html = implode("\n\t\t\t\t\t\t", $create_html);
 
                 $update_sql_params = implode(",", $update_sql_params);
 
                 //Generate some stuff
 
                 foreach($tables as $key => $value) {
-                    echo "$key is at $value";
+                    //echo "$key is at $value";
                     $start_page .= '<a href="'. $key . '-index.php" class="btn btn-primary" role="button">'. $value. '</a> ';
                 }
 
