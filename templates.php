@@ -41,7 +41,7 @@ $indexfile = <<<'EOT'
                     // Include config file
                     require_once "config.php";
 
-                    //Pagination stuff
+                    //Pagination
                     if (isset($_GET['pageno'])) {
                         $pageno = $_GET['pageno'];
                     } else {
@@ -54,9 +54,26 @@ $indexfile = <<<'EOT'
                     $result = mysqli_query($link,$total_pages_sql);
                     $total_rows = mysqli_fetch_array($result)[0];
                     $total_pages = ceil($total_rows / $no_of_records_per_page);
+                    
+                    //Column sorting on column name
+                    $orderBy = array('{COLUMNS}'); 
+                    $order = '{COLUMN_ID}';
+                    if (isset($_GET['order']) && in_array($_GET['order'], $orderBy)) {
+                            $order = $_GET['order'];
+                        }
 
+                    //Column sort order
+                    $sortBy = array('asc', 'desc'); $sort = 'desc';
+                    if (isset($_GET['sort']) && in_array($_GET['sort'], $sortBy)) {                                                                    
+                          if($_GET['sort']=='asc') {                                                                                                                            
+                            $sort='desc';
+                            }                                                                                   
+                    else {
+                        $sort='asc';
+                        }                                                                                                                           
+                    }
                     // Attempt select query execution
-                    $sql = "{INDEX_QUERY} LIMIT $offset, $no_of_records_per_page";
+                    $sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
                             echo "<table class='table table-bordered table-striped'>";
@@ -563,7 +580,7 @@ $startfile = <<<'EOT'
 </head>
 <fieldset>
 <center>
-<legend>Available Table pages</legend>
+<legend>Available CRUD pages</legend>
 <div class="form-group">
     {TABLE_BUTTONS}
 </div>

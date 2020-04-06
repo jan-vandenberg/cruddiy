@@ -68,7 +68,7 @@ if ( isset( $_POST['table'] ) )
         while ($column = mysqli_fetch_array($result)) {
 
         $column_type = get_col_types($tablename,$column[0]);
-        echo $column_type;
+//        echo $column_type;
 
         if (in_array ("$column[0]", $primary_keys)) {
                $primary = "🔑";
