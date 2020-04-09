@@ -129,7 +129,6 @@ EOT;
 
 
 $readfile = <<<'EOT'
-
 <?php
 // Check existence of id parameter before processing further
 if(isset($_GET["{TABLE_ID}"]) && !empty(trim($_GET["{TABLE_ID}"]))){
@@ -387,7 +386,6 @@ EOT;
 
 
 $updatefile = <<<'EOT'
-
 <?php
 // Include config file
 require_once "config.php";

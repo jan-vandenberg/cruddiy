@@ -1,6 +1,6 @@
 <pre>
     <?php
-//      print_r($_POST);
+    //  print_r($_POST);
     ?>
 </pre>
 
@@ -16,11 +16,11 @@ $index_table_rows = '';
 $index_table_headers = '';
 
 function column_type($columnname){
-    //For now when the colum has type mediumtext / longtext / text show a textarea
+    //When the colum has type mediumtext / longtext / text show a textarea in input/update
     if(preg_match("/text/i", $columnname)) {
         return 1;
     }   
-   // All other types are input fields 
+   //All other types are input fields 
     else {
         return 0;
     }
@@ -31,8 +31,7 @@ function generate_error(){
     $destination_file = fopen("app/error.php", "w") or die("Unable to open file!");
     fwrite($destination_file, $errorfile);
     fclose($destination_file);
-
-    echo "Generating errorfile<br>";
+    echo "Generating Error file<br><br>";
 }
 
 function generate_start($start_page){
@@ -41,37 +40,31 @@ function generate_start($start_page){
     $destination_file = fopen("app/index.php", "w") or die("Unable to open file!");
     fwrite($destination_file, $step0);
     fclose($destination_file);
-
-    echo "Generating Startpage file(s)<br>";    
+    echo "Generating Startpage file<br>";    
 }
 
 function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available) {
-  global $indexfile;
-
-  $columns_available = implode("', '", $columns_available);
-  $step0 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
-  $step1 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step0);
-  $step2 = str_replace("{INDEX_QUERY}", "SELECT * FROM $tablename", $step1 );
-  $step3 = str_replace("{INDEX_TABLE_HEADERS}", $index_table_headers, $step2 );
-  $step4 = str_replace("{INDEX_TABLE_ROWS}", $index_table_rows, $step3 );
-  $step5 = str_replace("{COLUMN_ID}", $column_id, $step4 );
-  $step6 = str_replace("{COLUMN_NAME}", $column_id, $step5 );
-  $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
-
-  $destination_file = fopen("app/".$tablename."-index.php", "w") or die("Unable to open file!");
-  fwrite($destination_file, $step7);
-  fclose($destination_file);
-
-  echo "Generating $tablename Index file(s)<br>";
+    global $indexfile;
+    $columns_available = implode("', '", $columns_available);
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
+    $step1 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step0);
+    $step2 = str_replace("{INDEX_QUERY}", "SELECT * FROM $tablename", $step1 );
+    $step3 = str_replace("{INDEX_TABLE_HEADERS}", $index_table_headers, $step2 );
+    $step4 = str_replace("{INDEX_TABLE_ROWS}", $index_table_rows, $step3 );
+    $step5 = str_replace("{COLUMN_ID}", $column_id, $step4 );
+    $step6 = str_replace("{COLUMN_NAME}", $column_id, $step5 );
+    $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
+    $destination_file = fopen("app/".$tablename."-index.php", "w") or die("Unable to open file!");
+    fwrite($destination_file, $step7);
+    fclose($destination_file);
+    echo "Generating $tablename Index file(s)<br>";
 }
 
 function generate_read($tablename, $column_id, $read_records){
   global $readfile;
-
   $step0 = str_replace("{TABLE_NAME}", $tablename, $readfile);
   $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
   $step2 = str_replace("{RECORDS_READ_FORM}", $read_records, $step1 );
-  
   $destination_file = fopen("app/".$tablename."-read.php", "w") or die("Unable to open file!");
   fwrite($destination_file, $step2);
   fclose($destination_file);
@@ -80,19 +73,16 @@ function generate_read($tablename, $column_id, $read_records){
 
 function generate_delete($tablename, $column_id){
   global $deletefile;
-
   $step0 = str_replace("{TABLE_NAME}", $tablename, $deletefile);
   $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
-  
   $destination_file = fopen("app/".$tablename."-delete.php", "w") or die("Unable to open file!");
   fwrite($destination_file, $step1);
   fclose($destination_file);
-  echo "Generating $tablename Delete file(s)<br>";
+  echo "Generating $tablename Delete file(s)<br><br>";
 }
 
 function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) { 
   global $createfile;
-
   $step0 = str_replace("{TABLE_NAME}", $tablename, $createfile);
   $step1 = str_replace("{CREATE_RECORDS}", $create_records, $step0);
   $step2 = str_replace("{CREATE_ERR_RECORDS}", $create_err_records, $step1);
@@ -101,17 +91,14 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
   $step5 = str_replace("{CREATE_SQL_PARAMS}", $create_sql_params, $step4 );
   $step6 = str_replace("{CREATE_HTML}", $create_html, $step5);
   $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
-  
   $destination_file = fopen("app/".$tablename."-create.php", "w") or die("Unable to open file!");
   fwrite($destination_file, $step7);
   fclose($destination_file);
-
   echo "Generating $tablename Create file(s)<br>";
 }
 
 function generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns){
   global $updatefile;
-
   $step0 = str_replace("{TABLE_NAME}", $tablename, $updatefile);
   $step1 = str_replace("{CREATE_RECORDS}", $create_records, $step0);
   $step2 = str_replace("{CREATE_ERR_RECORDS}", $create_err_records, $step1);
@@ -122,7 +109,6 @@ function generate_update($tablename, $create_records, $create_err_records, $crea
   $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
   $step8 = str_replace("{UPDATE_COLUMN_ROWS}", $update_column_rows, $step7);
   $step9 = str_replace("{UPDATE_SQL_COLUMNS}", $update_sql_columns, $step8);
-
   $destination_file = fopen("app/".$tablename."-update.php", "w") or die("Unable to open file!");
   fwrite($destination_file, $step9);
   fclose($destination_file);
@@ -175,18 +161,14 @@ foreach ($_POST as $key => $value) {
     $update_sql_id = '';
     $update_column_rows = '';
 
-
    if ($key != 'singlebutton') {
-        $i = 1;
+        $i = 0;
         $j = 0; 
         $max = count_index_colums($key)+1;
         $total_columns = count($_POST[$key]);
         $total_params = count($_POST[$key]);
         
-    //
-    //   Generate INDEX pages: one for each selected table
-    //
-        
+    //Specific INDEX page variables
     foreach ( $_POST[$key] as $columns ) { 
         if (isset($columns['primary'])){
            $column_id =  $columns['columnname'];
@@ -194,36 +176,24 @@ foreach ($_POST as $key => $value) {
 
         //INDEXFILE VARIABLES
         //Get the columns visible in the index file
-        if ($columns['columnvisible'] == 1 || $i <= $max) {
+        if ($columns['columnvisible'] == 1 &&  $i < $max) {
 
-            if (isset($columns['columndisplay'])){
-                $columndisplay = $columns['columndisplay'];   
-            }
-            if (empty($columns['columndisplay'])){
-                $columndisplay = $columns['columnname'];   
-            }
-          
-            $tablename = $columns['tablename'];
-            $tabledisplay = $columns['tabledisplay'];
             $columnname = $columns['columnname'];
 
-            if (!in_array($tablename, $tables))
-            {
-                $tables[$tablename] = $tabledisplay; 
+            if (!empty($columns['columndisplay'])){
+                $columndisplay = $columns['columndisplay'];   
+            } else {
+                $columndisplay = $columns['columnname'];   
             }
+
             $columns_available [] = $columnname; 
             $index_table_headers .= 'echo "<th><a href=?order='.$columnname.'&sort=$sort>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
             $index_table_rows .= 'echo "<td>" . $row['. "'" . $columnname . "'" . '] . "</td>";';
             $i++;
         }   
-              if ($i == $max) {
-    //            generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available);
-        } 
     }
         
-    //
-    // DETAIL CREATE UPDATE AND DELETE pages 
-    //
+    //DETAIL CREATE UPDATE AND DELETE pages variables
     foreach ( $_POST[$key] as $columns ) {
         //print_r($columns);
         if ($j < $total_columns) {
@@ -236,14 +206,25 @@ foreach ($_POST as $key => $value) {
                 }
 
             if (!empty($columns['auto'])){
-                //Dont create html field for auto-increment columns
+                //Dont create html input field for auto-increment columns
                 $j++;
                 $total_params--;
             }
             if(empty($columns['auto'])) {
 
+       //Get all tablenames in an array
         $tablename = $columns['tablename'];
-        $tabledisplay = $columns['tabledisplay'];
+        if (!in_array($tablename, $tables))
+        {
+            $tables[$tablename] = $tabledisplay;
+        }
+
+        $tablename = $columns['tablename'];
+        if (!empty($columns['tabledisplay'])) {
+            $tabledisplay = $columns['tabledisplay'];
+        } else {
+            $tabledisplay = $columns['tablename'];
+        }
         $columnname = $columns['columnname'];
         $read_records .= '<div class="form-group">
                         <label>'.$columndisplay.'</label>
@@ -292,7 +273,7 @@ foreach ($_POST as $key => $value) {
 
                 $update_sql_params = implode(",", $update_sql_params);
 
-                //Generate some stuff
+                //Generate everything
 
                 foreach($tables as $key => $value) {
                     //echo "$key is at $value";
@@ -307,7 +288,6 @@ foreach ($_POST as $key => $value) {
                 generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
                 generate_delete($tablename,$column_id);
             }
-
    }
 
  }
