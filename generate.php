@@ -124,9 +124,11 @@ function count_index_colums($table) {
     else if ($key == $table) {
         foreach ( $_POST[$key] as $columns )
             {
-                $column_visible = $columns['columnvisible'];
-                if ($column_visible == 1) {
-                    $i++;
+                if (isset($columns['columnvisible'])){
+                    $column_visible = $columns['columnvisible'];
+                        if ($column_visible == 1) {
+                        $i++;
+                    }
                 }
             }
         }
@@ -176,6 +178,8 @@ foreach ($_POST as $key => $value) {
 
         //INDEXFILE VARIABLES
         //Get the columns visible in the index file
+        if (isset($columns['columnvisible'])){
+                $column_visible = $columns['columnvisible'];
         if ($columns['columnvisible'] == 1 &&  $i < $max) {
 
             $columnname = $columns['columnname'];
@@ -190,7 +194,8 @@ foreach ($_POST as $key => $value) {
             $index_table_headers .= 'echo "<th><a href=?order='.$columnname.'&sort=$sort>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
             $index_table_rows .= 'echo "<td>" . $row['. "'" . $columnname . "'" . '] . "</td>";';
             $i++;
-        }   
+            }   
+        }
     }
         
     //DETAIL CREATE UPDATE AND DELETE pages variables
@@ -274,6 +279,7 @@ foreach ($_POST as $key => $value) {
                 $update_sql_params = implode(",", $update_sql_params);
 
                 //Generate everything
+                $start_page = "";
 
                 foreach($tables as $key => $value) {
                     //echo "$key is at $value";

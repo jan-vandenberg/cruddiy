@@ -54,7 +54,7 @@ if ( isset( $_POST['table'] ) )
     foreach ( $_POST['table'] as $table )
     {
         $i=0;
-        if ($table['tablecheckbox'] == 1) {
+        if (isset($table['tablecheckbox']) && $table['tablecheckbox'] == 1) {
             $tablename = $table['tablename'];
             $tabledisplay = $table['tabledisplay'];
                 echo "<center><b>Table: " . $tabledisplay . " (". $tablename .")</b></center>";
