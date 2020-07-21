@@ -20,6 +20,9 @@ $indexfile = <<<'EOT'
         table tr td:last-child a{
             margin-right: 15px;
         }
+        body {
+            font-size: 13px;
+        }
     </style>
     <script type="text/javascript">
         $(document).ready(function(){
@@ -37,6 +40,16 @@ $indexfile = <<<'EOT'
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success pull-right">Add New Record</a>
                         <a href="index.php" class="btn btn-light pull-right">Back</a>
                     </div>
+
+                    <div class="form-row">
+                        <form action="{TABLE_NAME}-index.php" method="get">
+                        <div class="col">
+                          <input type="text" class="form-control" placeholder="Search anything in this table" name="search">
+                        </div>
+                    </div>
+                        </form>
+                    <br>
+
                     <?php
                     // Include config file
                     require_once "config.php";
@@ -74,6 +87,16 @@ $indexfile = <<<'EOT'
                     }
                     // Attempt select query execution
                     $sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
+                    
+                    if(!empty($_GET['search'])) {
+                        $search = ($_GET['search']);
+                        $sql = "SELECT * FROM {TABLE_NAME}
+                            WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
+                            LIKE '%$search%'
+                            ORDER BY $order $sort 
+                            LIMIT $offset, $no_of_records_per_page";
+                    }
+
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
                             echo "<table class='table table-bordered table-striped'>";

@@ -43,7 +43,7 @@ function generate_start($start_page){
     echo "Generating Startpage file<br>";    
 }
 
-function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available) {
+function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search) {
     global $indexfile;
     $columns_available = implode("', '", $columns_available);
     $step0 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
@@ -54,8 +54,9 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $step5 = str_replace("{COLUMN_ID}", $column_id, $step4 );
     $step6 = str_replace("{COLUMN_NAME}", $column_id, $step5 );
     $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
+    $step8 = str_replace("{INDEX_CONCAT_SEARCH_FIELDS}", $index_sql_search, $step7 );
     $destination_file = fopen("app/".$tablename."-index.php", "w") or die("Unable to open file!");
-    fwrite($destination_file, $step7);
+    fwrite($destination_file, $step8);
     fclose($destination_file);
     echo "Generating $tablename Index file(s)<br>";
 }
@@ -190,8 +191,8 @@ foreach ($_POST as $key => $value) {
                 $columndisplay = $columns['columnname'];   
             }
 
-            $columns_available [] = $columnname; 
-            $index_table_headers .= 'echo "<th><a href=?order='.$columnname.'&sort=$sort>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
+            $columns_available [] = $columnname;
+            $index_table_headers .= 'echo "<th><a href=?search=$search&sort='.$sort.'&order='.$columnname.'&sort=$sort>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
             $index_table_rows .= 'echo "<td>" . $row['. "'" . $columnname . "'" . '] . "</td>";';
             $i++;
             }   
@@ -270,6 +271,8 @@ foreach ($_POST as $key => $value) {
                 $update_sql_columns [] = "\$$column_id";
                 $update_sql_columns = implode(",", $update_sql_columns);
 
+                $index_sql_search = implode(",", $columns_available);
+                echo $index_sql_search;
                 $create_numberofparams = array_fill(0, $total_params, '?');
                 $create_numberofparams = implode(",", $create_numberofparams);
                 $create_sqlcolumns = implode(",", $create_sqlcolumns);
@@ -288,7 +291,7 @@ foreach ($_POST as $key => $value) {
 
                 generate_start($start_page);
                 generate_error();
-                generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available);
+                generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
                 generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
                 generate_read($tablename,$column_id,$read_records);
                 generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
