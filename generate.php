@@ -272,7 +272,6 @@ foreach ($_POST as $key => $value) {
                 $update_sql_columns = implode(",", $update_sql_columns);
 
                 $index_sql_search = implode(",", $columns_available);
-                echo $index_sql_search;
                 $create_numberofparams = array_fill(0, $total_params, '?');
                 $create_numberofparams = implode(",", $create_numberofparams);
                 $create_sqlcolumns = implode(",", $create_sqlcolumns);

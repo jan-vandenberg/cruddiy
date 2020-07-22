@@ -96,6 +96,9 @@ $indexfile = <<<'EOT'
                             ORDER BY $order $sort 
                             LIMIT $offset, $no_of_records_per_page";
                     }
+                    else {
+                        $search = "";
+                    }
 
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
