@@ -1,8 +1,8 @@
 # CRUDDIY
 
-Cruddiy is a free **no-code**  PHP Bootstrap CRUD generator.
+Cruddiy is a free **no-code**  PHP Bootstrap 4 CRUD generator.
 
-If you have a MySQL database and want to generate some simple -- but beautiful -- PHP Bootstrap CRUD pages (Create, Read, Update and Delete) but you don't want to handcode these pages for the umpteenth time, Cruddiy is for you.
+If you have a MySQL database and want to generate some simple, but beautiful, PHP Bootstrap CRUD pages (Create, Read, Update and Delete) but you don't want to handcode these pages for the umpteenth time, Cruddiy is for you.
 
 # How it works
 
@@ -20,11 +20,11 @@ From there you can select tables you wish to generate CRUD pages for, and you ca
 
 And that's it!
 
-Click Generate pages and Cruddiy will generate a complete app for you in a separate folder, with config file, startpage and errorfile. And you can directly navigate to your app.
+Click Generate pages and Cruddiy will generate a complete PHP app for you in a separate folder, with config file, startpage and errorfile. And you can directly navigate to your app.
 
 [![N|Cruddiy](https://j11g.com/cruddiy/20200409-cruddiy-app.png)](https://cruddiy.com)
 
-This is the startpage. For every selected table, Cruddiy has created 5 pages (Index, Create, Read, Update and Delete pages). These pages are fully functional: the Index page has pagination and can be sorted by clicking on the columnname. You can also search globally search that specific table.
+This is the startpage. For every selected table, Cruddiy has created 5 pages (Index, Create, Read, Update and Delete pages). These pages are fully functional: the Index page has pagination and can be sorted by clicking on the columnname. You can also search globally in that specific table to quickly find records.
 
 [![N|Cruddiy](https://j11g.com/cruddiy/20200409-cruddiy-app-index.png)](https://cruddiy.com)
 
