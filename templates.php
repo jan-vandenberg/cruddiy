@@ -45,6 +45,15 @@ $indexfile = <<<'EOT'
                     // Include config file
                     require_once "config.php";
 
+                    //Get current URL and parameters for correct pagination
+                    $protocol = $_SERVER['SERVER_PROTOCOL'];
+                    $domain     = $_SERVER['HTTP_HOST'];
+                    $script   = $_SERVER['SCRIPT_NAME'];
+                    $parameters   = $_SERVER['QUERY_STRING'];
+                    $protocol=strpos(strtolower($_SERVER['SERVER_PROTOCOL']),'https')
+                                === FALSE ? 'http' : 'https';
+                    $currenturl = $protocol . '://' . $domain. $script . '?' . $parameters;
+
                     //Pagination
                     if (isset($_GET['pageno'])) {
                         $pageno = $_GET['pageno'];
@@ -76,8 +85,11 @@ $indexfile = <<<'EOT'
                         $sort='asc';
                         }                                                                                                                           
                     }
+
                     // Attempt select query execution
                     $sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
+                    $count_pages = "{INDEX_QUERY}";
+
                     
                     if(!empty($_GET['search'])) {
                         $search = ($_GET['search']);
@@ -86,6 +98,10 @@ $indexfile = <<<'EOT'
                             LIKE '%$search%'
                             ORDER BY $order $sort 
                             LIMIT $offset, $no_of_records_per_page";
+                        $count_pages = "SELECT * FROM {TABLE_NAME}
+                            WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
+                            LIKE '%$search%'
+                            ORDER BY $order $sort";
                     }
                     else {
                         $search = "";
@@ -93,6 +109,12 @@ $indexfile = <<<'EOT'
 
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
+                            if ($result_count = mysqli_query($link, $count_pages)) {
+                               $total_pages = ceil(mysqli_num_rows($result_count) / $no_of_records_per_page);
+                           }
+                            $number_of_results = mysqli_num_rows($result_count);
+                            echo " " . $number_of_results . " results";
+
                             echo "<table class='table table-bordered table-striped'>";
                                 echo "<thead>";
                                     echo "<tr>";
@@ -113,15 +135,21 @@ $indexfile = <<<'EOT'
                                 }
                                 echo "</tbody>";
                             echo "</table>";
-                              ?> <ul class="pagination" align-right>
-                                    <li class="page-item"><a class="page-link" href="?pageno=1">First</a></li>
+?>
+                                <ul class="pagination" align-right>
+                                <?php
+                                    $new_url = preg_replace('/&?pageno=[^&]*/', '', $currenturl);
+                                 ?> 
+                                    <li class="page-item"><a class="page-link" href="<?php echo $new_url .'&pageno=1' ?>">First</a></li>
                                     <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
-                                        <a class="page-link" href="<?php if($pageno <= 1){ echo '#'; } else { echo "?pageno=".($pageno - 1); } ?>">Prev</a>
+                                        <a class="page-link" href="<?php if($pageno <= 1){ echo '#'; } else { echo $new_url ."&pageno=".($pageno - 1); } ?>">Prev</a>
                                     </li>
                                     <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
-                                        <a class="page-link" href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo "?pageno=".($pageno + 1); } ?>">Next</a>
+                                        <a class="page-link" href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo $new_url . "&pageno=".($pageno + 1); } ?>">Next</a>
                                     </li>
-                                    <li class="page-item"><a class="page-link" href="?pageno=<?php echo $total_pages; ?>">Last</a></li>
+                                    <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
+                                        <a class="page-item"><a class="page-link" href="<?php echo $new_url .'&pageno=' . $total_pages; ?>">Last</a>
+                                    </li>
                                 </ul>
 <?php
                             // Free result set
