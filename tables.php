@@ -42,7 +42,7 @@ $link = mysqli_connect($server, $username, $password, $database);
                 <form class="form-horizontal" action="columns.php" method="post">
                     <fieldset>
                         <div class="text-center mb-4">
-                            <legend>Availabe tables</legend>
+                            <legend>Available tables</legend>
                         </div>
 
                         <?php
