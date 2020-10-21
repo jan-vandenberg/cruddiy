@@ -22,6 +22,9 @@ function column_type($columnname){
     if(preg_match("/text/i", $columnname)) {
         return 1;
     }
+    elseif (preg_match("/enum/i", $columnname)){
+        return 2;
+    }
     //All other types are input fields
     else {
         return 0;
@@ -251,19 +254,42 @@ foreach ($_POST as $key => $value) {
                     $update_sql_id = "$column_id".'=?';
                     $update_column_rows .= "$$columnname = \$row[\"$columnname\"];\n\t\t\t\t\t";
                     $type = column_type($columns['columntype']);
+
                     if ($type == 0) {
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="text" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
-                    } else if ($type == 1){
+                    
+                    //ENUM types
+
+                    } elseif ($type == 2){
+                        $regex = "/'(.*?)'/";
+                        preg_match_all( $regex , $columns['columntype'] , $enum_array );
+                        $enum_fields = $enum_array[1];
+
+                        $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                            <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
+
+                        foreach ($enum_fields as $key=>$value)
+                                {
+                                    $enums[$value] = $value; 
+                                    $create_html [] .= '    <option value="'.$value.'">'.$value.'</option>';
+                                }
+                        $create_html [] .= '</select>
+                            <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                            </div>';
+
+                    } else {
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <textarea name="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
-                    }
+                    }       
+
                     $j++;
                 }
             }
