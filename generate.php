@@ -18,16 +18,19 @@ $start_page = '';
 $sort = '';
 
 function column_type($columnname){
-    //When the colum has type mediumtext / longtext / text show a textarea in input/update
-    if(preg_match("/text/i", $columnname)) {
-        return 1;
-    }
-    elseif (preg_match("/enum/i", $columnname)){
-        return 2;
-    }
-    //All other types are input fields
-    else {
-        return 0;
+    switch ($columnname) {
+        case (preg_match("/text/i", $columnname) ? true : false) :
+            return 1;
+        break;
+        case (preg_match("/enum/i", $columnname) ? true : false) :
+            return 2;
+        break;
+        case (preg_match("/varchar/i", $columnname) ? true : false) :
+            return 3;
+        break;
+        default:
+            return 0;
+        break;
     }
 }
 
@@ -255,16 +258,18 @@ foreach ($_POST as $key => $value) {
                     $update_column_rows .= "$$columnname = \$row[\"$columnname\"];\n\t\t\t\t\t";
                     $type = column_type($columns['columntype']);
 
-                    if ($type == 0) {
+                    switch($type) {
+                    //TEXT
+                    case 0:
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="text" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
-                    
-                    //ENUM types
+                    break;
 
-                    } elseif ($type == 2){
+                    //ENUM types
+                    case 2:
                         $regex = "/'(.*?)'/";
                         preg_match_all( $regex , $columns['columntype'] , $enum_array );
                         $enum_fields = $enum_array[1];
@@ -281,15 +286,26 @@ foreach ($_POST as $key => $value) {
                         $create_html [] .= '</select>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                             </div>';
-
-                    } else {
+                    break;
+                    //VARCHAR
+                    case 3:
+                        preg_match('#\((.*?)\)#', $columns['columntype'], $match);
+                        $maxlength = $match[1];
+                        
+                        $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                            <input type="text" name="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">
+                            <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                        </div>';
+                    break;
+                    default:
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <textarea name="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
-                    }       
-
+                    break;
+                    }
                     $j++;
                 }
             }
