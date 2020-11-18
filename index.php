@@ -45,6 +45,13 @@
                             <input id="password" name="password" type="password" placeholder="" class="form-control input-md">
                     </div>
 
+                    <!-- Number records per page-->
+                    <div class="form-group">
+                            <label class="col-form-label" for="recordsperpage">Items per generated page</label>
+                            <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="10">
+                    </div>
+
+
                     <div class="form-group">
                         <label class="col-form-label" for="singlebutton"></label>
                             <button id="singlebutton" name="singlebutton" class="btn btn-primary">Submit</button>

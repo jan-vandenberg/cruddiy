@@ -60,7 +60,8 @@ $indexfile = <<<'EOT'
                     } else {
                         $pageno = 1;
                     }
-                    $no_of_records_per_page = 10;
+
+                    //$no_of_records_per_page is set on the index page. Default is 10.
                     $offset = ($pageno-1) * $no_of_records_per_page;
 
                     $total_pages_sql = "SELECT COUNT(*) FROM {TABLE_NAME}";

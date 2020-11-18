@@ -3,6 +3,7 @@ if(isset($_POST['server'])) $server=$_POST['server'];
 if(isset($_POST['username'])) $username=$_POST['username'];
 if(isset($_POST['password'])) $password=$_POST['password'];
 if(isset($_POST['database'])) $database=$_POST['database'];
+if(isset($_POST['numrecordsperpage'])) $numrecordsperpage=$_POST['numrecordsperpage'];
 
 /* Attempt to connect to MySQL database */
 $link = mysqli_connect($server, $username, $password, $database);
@@ -20,7 +21,8 @@ $link = mysqli_connect($server, $username, $password, $database);
             $txt .= "\$db_server = '$server'; \n";
             $txt .= "\$db_name = '$database'; \n";
             $txt .= "\$db_user = '$username'; \n";
-            $txt .= "\$db_password = '$password'; \n?>";
+            $txt .= "\$db_password = '$password'; \n";
+            $txt .= "\$no_of_records_per_page = $numrecordsperpage; \n?>";
             fwrite($configfile, $txt);
             fclose($configfile);
      }
