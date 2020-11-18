@@ -28,6 +28,12 @@ function column_type($columnname){
         case (preg_match("/varchar/i", $columnname) ? true : false) :
             return 3;
         break;
+        case (preg_match("/tinyint\(1\)/i", $columnname) ? true : false) :
+            return 4;
+        break;
+        case (preg_match("/int/i", $columnname) ? true : false) :
+            return 5;
+        break;
         default:
             return 0;
         break;
@@ -298,6 +304,29 @@ foreach ($_POST as $key => $value) {
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
                     break;
+                    //TINYINT
+                    case 4:
+                        $regex = "/'(.*?)'/";
+                        preg_match_all( $regex , $columns['columntype'] , $enum_array );
+
+                        $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                            <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
+                                    $create_html [] .= '    <option value="0">0</option>';
+                                    $create_html [] .= '    <option value="1">1</option>';
+                        $create_html [] .= '</select>
+                            <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                            </div>';
+                    break;
+                    //INT
+                    case 5:
+                        $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                            <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
+                            <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                        </div>';
+                    break;
+
                     default:
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
