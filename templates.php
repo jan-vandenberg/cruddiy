@@ -113,7 +113,7 @@ $indexfile = <<<'EOT'
                                $total_pages = ceil(mysqli_num_rows($result_count) / $no_of_records_per_page);
                            }
                             $number_of_results = mysqli_num_rows($result_count);
-                            echo " " . $number_of_results . " results";
+                            echo " " . $number_of_results . " results - Page " . $pageno . " of " . $total_pages;
 
                             echo "<table class='table table-bordered table-striped'>";
                                 echo "<thead>";
