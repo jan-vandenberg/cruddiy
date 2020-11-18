@@ -444,10 +444,6 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     // Get hidden input value
     ${COLUMN_ID} = $_POST["{COLUMN_ID}"];
 
-    // Field validation
-
-    // Check input errors before inserting in database
-//    if(empty($name_err) && empty($address_err) && empty($salary_err)){
         // Prepare an update statement
         
         {CREATE_POST_VARIABLES}
@@ -462,17 +458,16 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
           $pdo = new PDO($dsn, $db_user, $db_password, $options);
         } catch (Exception $e) {
           error_log($e->getMessage());
-          exit('Something weird happened'); //something a user can understand
+          exit('Something weird happened');
         }
         $stmt = $pdo->prepare("UPDATE {TABLE_NAME} SET {UPDATE_SQL_PARAMS} WHERE {UPDATE_SQL_ID}");
-
 
         if(!$stmt->execute([ {UPDATE_SQL_COLUMNS}  ])) {
                 echo "Something went wrong. Please try again later.";
                 header("location: error.php");
             } else{
                 $stmt = null;
-                header("location: {TABLE_NAME}-index.php");
+                header("location: {TABLE_NAME}-read.php?id=$id");
             }
 } else {
     // Check existence of id parameter before processing further
