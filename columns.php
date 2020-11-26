@@ -10,7 +10,7 @@
 <section class="py-5">
     <div class="container">
         <div class="row">
-            <div class="col-md-10 mx-auto">
+            <div class="col-md-12 mx-auto">
                 <div class="text-center">
                     <h4 class="mb-0">All available columns</h4>
                 </div>
@@ -45,11 +45,28 @@
                         }
 
                         function get_col_types($table,$column){
-                            global $link;
+                            global $link; 
                             $sql = "SHOW FIELDS FROM $table where FIELD ="."'".$column."'";
                             $result = mysqli_query($link,$sql);
                             $row = mysqli_fetch_assoc($result);
                             return $row['Type'] ;
+                            mysqli_free_result($result);
+                        }
+
+                        function get_foreign_keys($table){
+                            global $link;
+                            global $db_name;
+                            $fks[] = "";
+                            $sql = "SELECT k.COLUMN_NAME as 'Foreign Key'
+                                    FROM information_schema.TABLE_CONSTRAINTS i
+                                    LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+                                    WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND i.TABLE_NAME = '$table'";
+                            $result = mysqli_query($link,$sql);
+                            while($row = mysqli_fetch_assoc($result))
+                            {
+                                $fks[] = $row['Foreign Key'];
+                            }
+                            return $fks;
                             mysqli_free_result($result);
                         }
 
@@ -65,14 +82,12 @@
                                     $sql = "SHOW columns FROM $tablename";
                                     $primary_keys = get_primary_keys($tablename);
                                     $auto_keys = get_autoincrement_cols($tablename);
-
-                                    //print_r($primary_keys);
+                                    $foreign_keys = get_foreign_keys($tablename);
 
                                     $result = mysqli_query($link,$sql);
                                     while ($column = mysqli_fetch_array($result)) {
 
                                         $column_type = get_col_types($tablename,$column[0]);
-                                        //        echo $column_type;
 
                                         if (in_array ("$column[0]", $primary_keys)) {
                                             $primary = "🔑";
@@ -90,9 +105,17 @@
                                             $auto = "";
                                         }
 
+                                        if (in_array ("$column[0]", $foreign_keys)) {
+                                            $fk = "🛅";
+                                            echo '<input type="hidden" name="'.$tablename.'columns['.$i.'][fk]" value="'.$fk.'"/>';
+                                        }
+                                        else {
+                                            $fk = "";
+                                        }
+
                                         echo '<div class="row align-items-center mb-2">
                                     <div class="col-2 text-right"
-                                        <label class="col-form-label" for="'.$tablename.'">'. $primary . $auto . $column[0] . ' </label>
+                                        <label class="col-form-label" for="'.$tablename.'">'. $primary . $auto . $fk . $column[0] . ' </label>
                                     </div>
                                     <div class="col-md-6">
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][tablename]" value="'.$tablename.'"/>
@@ -113,7 +136,7 @@
                         ?>
 
                         <div class="row">
-                            <div class="col-6 offset-2">
+                            <div class="col-12 offset-5">
                                 <label class="col-form-label mt-3" for="singlebutton"></label>
                                 <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary">Generate pages</button>
                             </div>

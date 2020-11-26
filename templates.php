@@ -207,13 +207,6 @@ if(isset($_GET["{TABLE_ID}"]) && !empty(trim($_GET["{TABLE_ID}"]))){
                 /* Fetch result row as an associative array. Since the result set
                 contains only one row, we don't need to use while loop */
                 $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-
-                /* Retrieve individual field value
-                {INDIVIDUAL_FIELDS}
-                $name = $row["name"];
-                $address = $row["address"];
-                $salary = $row["salary"];
-                 */
             } else{
                 // URL doesn't contain valid id parameter. Redirect to error page
                 header("location: error.php");
@@ -356,19 +349,7 @@ require_once "config.php";
 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-/*    
-    // Validate input
-    $input_address = trim($_POST["address"]);
-    if(empty($input_address)){
-        $address_err = "Please enter an address.";
-    } else{
-        $address = $input_address;
-    }
 
-    // Check input errors before inserting in database
-    if(empty($name_err) && empty($address_err) && empty($salary_err)){
-        // Prepare an insert statement
- */
         {CREATE_POST_VARIABLES}
 
         $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
@@ -467,7 +448,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                 header("location: error.php");
             } else{
                 $stmt = null;
-                header("location: {TABLE_NAME}-read.php?id=$id");
+                header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=${COLUMN_ID}");
             }
 } else {
     // Check existence of id parameter before processing further
@@ -510,9 +491,6 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 
         // Close statement
         mysqli_stmt_close($stmt);
-
-        // Close connection
-        mysqli_close($link);
 
     }  else{
         // URL doesn't contain id parameter. Redirect to error page

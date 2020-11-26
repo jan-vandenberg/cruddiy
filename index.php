@@ -14,7 +14,7 @@
 <div class="container">
     <div class="row">
         <div class="col-md-4 mx-auto">
-            <form class="form-group-row" action="tables.php" method="post" >
+            <form class="form-group-row" action="relations.php" method="post" >
                 <fieldset>
 
                     <!-- Form Name -->
@@ -53,8 +53,8 @@
 
 
                     <div class="form-group">
-                        <label class="col-form-label" for="singlebutton"></label>
-                            <button id="singlebutton" name="singlebutton" class="btn btn-primary">Submit</button>
+                        <label class="col-form-label" for="index"></label>
+                            <button id="index" name="index" class="btn btn-primary">Submit</button>
                     </div>
                 </fieldset>
             </form>

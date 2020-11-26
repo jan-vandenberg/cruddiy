@@ -1,12 +1,13 @@
 <pre>
     <?php
-    //  print_r($_POST);
+      //print_r($_POST);
     ?>
 </pre>
 
 <?php
-include "app/config.php";
-include "templates.php";
+
+require "app/config.php";
+require "templates.php";
 $tablename = '';
 $tabledisplay = '';
 $columnname = '' ;
@@ -28,8 +29,11 @@ function column_type($columnname){
         case (preg_match("/varchar/i", $columnname) ? true : false) :
             return 3;
         break;
+            //Tinyint needs work to be selectable from dropdown list
+            //So for now a tinyint will be just a input field (in Create)
+            //and a prefilled input field (in Update).
         case (preg_match("/tinyint\(1\)/i", $columnname) ? true : false) :
-            return 4;
+            return 5;
         break;
         case (preg_match("/int/i", $columnname) ? true : false) :
             return 5;
@@ -262,6 +266,52 @@ foreach ($_POST as $key => $value) {
                     $update_sql_params [] = "$columnname".'=?';
                     $update_sql_id = "$column_id".'=?';
                     $update_column_rows .= "$$columnname = \$row[\"$columnname\"];\n\t\t\t\t\t";
+
+
+                    //Foreign Key 
+                    //Check if there are foreign keys to take into consideration
+                    if(!empty($columns['fk'])){
+                        //Get the Foreign Key
+                        $sql_getfk = "SELECT i.TABLE_NAME as 'Table', k.COLUMN_NAME as 'Column',
+                                k.REFERENCED_TABLE_NAME as 'FK Table', k.REFERENCED_COLUMN_NAME as 'FK Column',
+                                i.CONSTRAINT_NAME as 'Constraint Name'
+                                FROM information_schema.TABLE_CONSTRAINTS i
+                                LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+                                WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND k.TABLE_NAME = '$tablename' AND k.COLUMN_NAME = '$columnname'";
+                        $result = mysqli_query($link, $sql_getfk);
+                        if (mysqli_num_rows($result) > 0) {
+                          while($row = mysqli_fetch_assoc($result)) {
+                            $fk_table = $row["FK Table"];
+                            $fk_column = $row["FK Column"];
+                          }
+
+                        
+                        //Be careful code below is particular regarding single and double quotes.
+
+                        $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                                <select class="form-control" id="'. $columnname .'" name="'. $columnname .'">
+                                <?php
+                                      $sql = "SELECT *,'. $fk_column .' FROM '. $fk_table . '";
+                                      $result = mysqli_query($link, $sql);
+                                      while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                        array_pop($row);
+                                        $value = implode(" | ", $row);
+                                        if ($row["' . $fk_column . '"] == $' . $columnname . '){
+                                           echo \'<option value="\' . "$row['. $fk_column. ']" . \'"selected="selected">\' . "$value" . \'</option>\';
+                                        } else {
+                                            echo \'<option value="\' . "$row['. $fk_column. ']" . \'">\' . "$value" . \'</option>\';
+                                      }
+                                    }
+                                ?>
+                                </select>
+                            <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                        </div>';
+                    }
+
+            // No Foreign Keys, just regular columns from here on
+            } else {
+
                     $type = column_type($columns['columntype']);
 
                     switch($type) {
@@ -276,19 +326,27 @@ foreach ($_POST as $key => $value) {
 
                     //ENUM types
                     case 2:
-                        $regex = "/'(.*?)'/";
-                        preg_match_all( $regex , $columns['columntype'] , $enum_array );
-                        $enum_fields = $enum_array[1];
-
+                    //Make sure on the update form that the previously selected type is also selected from the list    
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
+                        $create_html [] .=  '<?php 
+                                        $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues 
+                                        FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '. "'$tablename'" .'  AND COLUMN_NAME = '."'$columnname'" .'";
+                                        $result = mysqli_query($link, $sql_enum);
+                                        while($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
+                                        preg_match(\'/enum\((.*)\)$/\', $row[0], $matches);
+                                        $vals = explode("," , $matches[1]);
+                                        foreach ($vals as $val){
+                                            $val = substr($val, 1);
+                                            $val = rtrim($val, "\'");
+                                            if ($val == $'.$columnname.'){
+                                               echo \'<option value="\' . $val . \'" selected="selected">\' . $val . \'</option>\';
+                                            } else 
+                                               echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
+                                                    }
+                                           }?>';
 
-                        foreach ($enum_fields as $key=>$value)
-                                {
-                                    $enums[$value] = $value; 
-                                    $create_html [] .= '    <option value="'.$value.'">'.$value.'</option>';
-                                }
                         $create_html [] .= '</select>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                             </div>';
@@ -304,7 +362,7 @@ foreach ($_POST as $key => $value) {
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
                     break;
-                    //TINYINT
+                    //TINYINT - Will never hit. Needs work.
                     case 4:
                         $regex = "/'(.*?)'/";
                         preg_match_all( $regex , $columns['columntype'] , $enum_array );
@@ -335,6 +393,7 @@ foreach ($_POST as $key => $value) {
                         </div>';
                     break;
                     }
+                }
                     $j++;
                 }
             }
@@ -375,5 +434,8 @@ foreach ($_POST as $key => $value) {
     }
 
 }
-echo "<br><a href=app/index.php>Go to your app</a>";
 ?>
+<br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
+<a href="app/index.php" target="_blank" rel="noopener noreferrer">Go to your app</a> (this will open your app in a new tab).<br><br>
+You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app.<br>
+If you need further instructions please visit <a href="http://cruddiy.com">cruddiy.com</a>

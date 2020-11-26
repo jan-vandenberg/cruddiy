@@ -1,32 +1,5 @@
 <?php
-if(isset($_POST['server'])) $server=$_POST['server'];
-if(isset($_POST['username'])) $username=$_POST['username'];
-if(isset($_POST['password'])) $password=$_POST['password'];
-if(isset($_POST['database'])) $database=$_POST['database'];
-if(isset($_POST['numrecordsperpage'])) $numrecordsperpage=$_POST['numrecordsperpage'];
-
-/* Attempt to connect to MySQL database */
-$link = mysqli_connect($server, $username, $password, $database);
-
-// Check connection
- if($link === false){
-     die("ERROR: Could not connect. " . mysqli_connect_error());
-     }
- else {
-     if (!file_exists('app')) {
-            mkdir('app', 0777, true);
-        }
-            $configfile = fopen("app/config.php", "w") or die("Unable to open file!");
-            $txt = "<?php \n \$link = mysqli_connect('$server', '$username', '$password', '$database'); \n";
-            $txt .= "\$db_server = '$server'; \n";
-            $txt .= "\$db_name = '$database'; \n";
-            $txt .= "\$db_user = '$username'; \n";
-            $txt .= "\$db_password = '$password'; \n";
-            $txt .= "\$no_of_records_per_page = $numrecordsperpage; \n?>";
-            fwrite($configfile, $txt);
-            fclose($configfile);
-     }
-
+    include "app/config.php";
 ?>
 <!doctype html>
 <html lang="en">
@@ -40,11 +13,11 @@ $link = mysqli_connect($server, $username, $password, $database);
 <section class="pt-5">
     <div class="container">
         <div class="row">
-            <div class="col-md-8 mx-auto">
+            <div class="col-md-12 mx-auto">
                 <form class="form-horizontal" action="columns.php" method="post">
                     <fieldset>
                         <div class="text-center mb-4">
-                            <legend>Available tables</legend>
+                            <h4>Available tables</h4>
                         </div>
 
                         <?php
@@ -61,15 +34,15 @@ $link = mysqli_connect($server, $username, $password, $database);
                         foreach($tablelist as $table) {
 
                             echo
-                    '<div class="row align-items-center">
-                        <div class="col-2 text-right">
+                    '<div class="row align-items-center mb-1">
+                        <div class="col-md-3 text-right">
                               <label class="control-label" for="table['.$i.'][tablename]">'. $table . ' </label>
                         </div>
-                        <div class="col-6">
+                        <div class="col-md-6">
                                  <input type="hidden" name="table['.$i.'][tablename]" value="'.$table.'"/>
                                  <input id="textinput_'.$table. '" name="table['.$i.'][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control">
                         </div>
-                        <div class="col-4">
+                        <div class="col-md-3">
                           <input class="mr-1" type="checkbox"  name="table['.$i.'][tablecheckbox]" id="checkboxes-0" value="1">Generate CRUD
                         </div>
                     </div>
@@ -81,7 +54,7 @@ $link = mysqli_connect($server, $username, $password, $database);
                         }
                         ?>
                         <div class="row">
-                            <div class="col-6 offset-2">
+                            <div class="col-md-12 offset-5">
                                 <label class="control-label" for="singlebutton"></label>
                                 <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary">Select columns from tables</button>
                             </div>
@@ -92,6 +65,7 @@ $link = mysqli_connect($server, $username, $password, $database);
         </div>
     </div>
 </section>
+<br>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
