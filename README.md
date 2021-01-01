@@ -15,24 +15,24 @@ Once the connection parameters are entered correctly, Cruddiy will display all e
 [![N|Cruddiy](https://j11g.com/cruddiy/bs4-cruddiy-relations.png)](https://cruddiy.com)
 
 It is possible to add or delete database relations and define actions (e.g. ON DELETE CASCADE).
-It is safe to skip this skip and continue if you please. However having well-defined relations will result in prepopulated input fields when Creating new records, and make sure child records are deleted correctly etc.
+It is absolutely safe to SKIP this step (press the big green button) and continue if you please. However, having well-defined relations will result in prepopulated input fields on the create forms, and it will make sure child records are deleted correctly etc.
 
-Next, Cruddiy will display all available **tables** in your database.
+For the next step, Cruddiy will display all available **tables** in your database.
 
 [![N|Cruddiy](https://j11g.com/cruddiy/bs4-cruddiy-tables.png)](https://cruddiy.com)
 
-From there you can select tables you wish to generate CRUD pages for, and you can give them proper readable names (with capitalization or spaces etc.). Selecting a table will generate CRUD pages for that specific table (if you leave them unselected, no pages will be created). 
-After you have selected your tables Cruddiy presents all **columns** from the previously selected tables. Also here: you can give proper names and select which tablefields (columns) should be visible in the Index page. In this example you can see two tables, who each have three columns selected for their index page. 
+From there you can select tables you wish to generate CRUD pages for (maybe you just need a couple and not all tables in your database), and you can give them proper readable names (with capitalization or spaces etc.). Selecting a table will generate CRUD pages for that specific table. If you leave them unselected, NO pages will be created.
+After you have selected your tables, Cruddiy will present all **columns** from the previously selected tables. Again: you can give proper names and select which tablefields (columns) should be visible in the Index page. In this example you can see two tables, each have three columns selected to be visible on the index page. 
 
 [![N|Cruddiy](https://j11g.com/cruddiy/bs4-cruddiy-columns.png)](https://cruddiy.com)
 
 And that's it!
 
-Click Generate pages and Cruddiy will generate a complete PHP app for you in a separate folder, with config file, startpage and errorfile. And you can directly navigate to your app.
+Click Generate pages and Cruddiy will generate a complete PHP app for you in a separate folder, with config file, startpage and errorfile. You can directly navigate to your app, it will open in a new tab.
 
 [![N|Cruddiy](https://j11g.com/cruddiy/bs4-cruddiy-app.png)](https://cruddiy.com)
 
-This is the startpage. For every selected table, Cruddiy has created 5 pages (Index, Create, Read, Update and Delete pages). These pages are fully functional: the Index page has pagination and can be sorted by clicking on the columnname. You can also search globally in that specific table to quickly find records.
+This is the startpage. For every selected table, Cruddiy has created 5 pages: Index, Create, Read, Update and Delete. These pages are fully functional: the Index page has pagination and can be sorted by clicking on the columnname. You can also use the search box to quickly find records for that table.
 
 [![N|Cruddiy](https://j11g.com/cruddiy/bs4-cruddiy-app-index.png)](https://cruddiy.com)
 
