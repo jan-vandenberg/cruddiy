@@ -2,18 +2,23 @@
 
 if(isset($_POST['index'])) {
     
-    if(isset($_POST['server'])) {
-        $server=$_POST['server'];
+    if((isset($_POST['server'])) && $_POST['server'] <> '') {
+        $server=trim($_POST['server']);
     } else {
             $server = "localhost";
     }
-if(isset($_POST['username'])) $username=$_POST['username'];
-if(isset($_POST['password'])) $password=$_POST['password'];
-if(isset($_POST['database'])) $database=$_POST['database'];
+if(isset($_POST['username'])) $username=trim($_POST['username']);
+if(isset($_POST['password'])) $password=trim($_POST['password']);
+if(isset($_POST['database'])) $database=trim($_POST['database']);
 if(isset($_POST['numrecordsperpage'])) $numrecordsperpage=$_POST['numrecordsperpage'];
 
 /* Attempt to connect to MySQL database */
 $link = mysqli_connect($server, $username, $password, $database);
+
+/* Clean up User inputs against SQL injection */
+foreach($_POST as $k => $v) {
+	$_POST[$k] = mysqli_real_escape_string($link, $v);
+}
 
 // Check connection
  if($link === false){
@@ -24,12 +29,14 @@ $link = mysqli_connect($server, $username, $password, $database);
             mkdir('app', 0777, true);
         }
             $configfile = fopen("app/config.php", "w") or die("Unable to open file!");
-            $txt = "<?php \n \$link = mysqli_connect('$server', '$username', '$password', '$database'); \n";
+			$txt  = "<?php \n";
             $txt .= "\$db_server = '$server'; \n";
             $txt .= "\$db_name = '$database'; \n";
             $txt .= "\$db_user = '$username'; \n";
             $txt .= "\$db_password = '$password'; \n";
-            $txt .= "\$no_of_records_per_page = $numrecordsperpage; \n?>";
+            $txt .= "\$no_of_records_per_page = $numrecordsperpage; \n\n";
+            $txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n";
+			$txt .= "\n?>";
             fwrite($configfile, $txt);
             fclose($configfile);
      }
