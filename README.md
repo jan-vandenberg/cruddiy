@@ -8,8 +8,7 @@ With Cruddiy you can easily generate some simple, but beautiful, PHP Bootstrap C
 * Does not support MyISAM for Foreign Keys and Cascades. Will need InnoDB type ENGINE.
 * Although PHP 7 is recommended, it currently works with PHP 5.4 too.
 * The [Original repo](https://github.com/jan-vandenberg/cruddiy) has been forked here.
-* This is the [Ap.Muthu fork](https://github.com/apmuthu/cruddiy) and will be updated only when I get time.
-* This fork now is capable of string ID Primary Keys as well as the existing integer ones.
+* Capable of string ID Primary Keys as well as integer ones.
 
 # How it works
 
