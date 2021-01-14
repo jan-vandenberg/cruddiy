@@ -24,6 +24,7 @@
                             global $link;
                             $sql = "SHOW KEYS FROM $table WHERE Key_name = 'PRIMARY'";
                             $result = mysqli_query($link,$sql);
+							$primary_keys = Array();
                             while($row = mysqli_fetch_assoc($result))
                             {
                                 $primary_keys[] = $row['Column_name'];
@@ -35,6 +36,7 @@
                             global $link;
                             $sql = "DESCRIBE $table";
                             $result = mysqli_query($link,$sql);
+							$auto_keys = Array();
                             while($row = mysqli_fetch_assoc($result))
                             {
                                 if ($row['Extra'] == 'auto_increment') {
@@ -122,7 +124,7 @@
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][tabledisplay]" value="'.$tabledisplay.'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columnname]" value="'.$column[0].'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columntype]" value="'.$column_type.'"/>
-                                        <input id="textinput_'.$tablename. '"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display table name in frontend" class="form-control">
+                                        <input id="textinput_'.$tablename. '"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control">
                                     </div>
                                     <div class="col-md-4">
                                         <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-0" value="1">
