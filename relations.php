@@ -124,36 +124,38 @@ if(isset($_POST['addkey'])){
                                         FROM information_schema.TABLE_CONSTRAINTS i
                                         LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
                                         WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND i.TABLE_SCHEMA = DATABASE()";
-                                if ($result = mysqli_query($link, $sql)) {
+                                if (($result = mysqli_query($link, $sql)) && $result->num_rows > 0) {
                                     $row = mysqli_fetch_assoc($result);
                                     foreach ($row as $col => $value) {
                                         echo "<th>";
                                         echo $col;
-                                        echo "</th>"; }
-                                    }
-                                mysqli_data_seek($result, 0);
-                                while($row = mysqli_fetch_array($result))
-                                {
-                                    echo "<tr>";
-                                    echo "<td>" . $row['Table Name'] . "</td>";
-                                    echo "<td>" . $row['Foreign Key'] . "</td>";
-                                    echo "<td>" . $row['Primary Table'] . "</td>";
-                                    echo "<td>" . $row['Primary Key'] . "</td>";
-                                    echo "<td>" . $row['Constraint Name'] . "</td>";
-                                    echo "<td class='fk-delete'>";
-                                    ?><form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                                    <?php
-                                            echo '<input type="hidden" name="tablename" value="';
-                                            echo $row['Table Name'] .'">';
-                                            echo '<input type="hidden" name="fkname" value="';
-                                            echo $row['Constraint Name'] . '">';
-                                            echo "<button type='submit' id='singlebutton' name='submit' class='btn btn-danger'>Delete</button>"; 
-                                            echo "</form></td>";
-                                            echo "</tr>";
-                                }
+                                        echo "</th>"; 
+									}
+									echo "</thead><tbody>";
+									mysqli_data_seek($result, 0);
+									while($row = mysqli_fetch_array($result))
+									{
+										echo "<tr>";
+										echo "<td>" . $row['Table Name'] . "</td>";
+										echo "<td>" . $row['Foreign Key'] . "</td>";
+										echo "<td>" . $row['Primary Table'] . "</td>";
+										echo "<td>" . $row['Primary Key'] . "</td>";
+										echo "<td>" . $row['Constraint Name'] . "</td>";
+										echo "<td class='fk-delete'>";
+										?><form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+										<?php
+												echo '<input type="hidden" name="tablename" value="';
+												echo $row['Table Name'] .'">';
+												echo '<input type="hidden" name="fkname" value="';
+												echo $row['Constraint Name'] . '">';
+												echo "<button type='submit' id='singlebutton' name='submit' class='btn btn-danger'>Delete</button>"; 
+												echo "</form></td>";
+												echo "</tr>";
+									}
+								} else echo "</thead><tbody><tr><td>No relations found</td></tr>";
                             ?>
                                 </tbody>
-                                </table>
+                                </table> 
                 <div class="text-center">
                     <h4 class="mb-0">Add New Table Relation</h4><br>
                       <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">                                                                 
@@ -210,3 +212,4 @@ On this page you can add new or delete existing table relations i.e. foreign key
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
 </html>
+
