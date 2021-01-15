@@ -185,7 +185,8 @@ EOT;
 $readfile = <<<'EOT'
 <?php
 // Check existence of id parameter before processing further
-if(isset($_GET["{TABLE_ID}"]) && !empty(trim($_GET["{TABLE_ID}"]))){
+$_GET["{TABLE_ID}"] = trim($_GET["{TABLE_ID}"]);
+if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     // Include config file
     require_once "config.php";
 
@@ -193,11 +194,15 @@ if(isset($_GET["{TABLE_ID}"]) && !empty(trim($_GET["{TABLE_ID}"]))){
     $sql = "SELECT * FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
 
     if($stmt = mysqli_prepare($link, $sql)){
-        // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "i", $param_id);
-
         // Set parameters
         $param_id = trim($_GET["{TABLE_ID}"]);
+
+        // Bind variables to the prepared statement as parameters
+		if (is_int($param_id)) $__vartype = "i";
+		elseif (is_string($param_id)) $__vartype = "s";
+		elseif (is_numeric($param_id)) $__vartype = "d";
+		else $__vartype = "b"; // blob
+        mysqli_stmt_bind_param($stmt, $__vartype, $param_id);
 
         // Attempt to execute the prepared statement
         if(mysqli_stmt_execute($stmt)){
@@ -271,11 +276,15 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
     $sql = "DELETE FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
 
     if($stmt = mysqli_prepare($link, $sql)){
-        // Bind variables to the prepared statement as parameters
-        mysqli_stmt_bind_param($stmt, "i", $param_id);
-
         // Set parameters
         $param_id = trim($_POST["{TABLE_ID}"]);
+
+        // Bind variables to the prepared statement as parameters
+		if (is_int($param_id)) $__vartype = "i";
+		elseif (is_string($param_id)) $__vartype = "s";
+		elseif (is_numeric($param_id)) $__vartype = "d";
+		else $__vartype = "b"; // blob
+        mysqli_stmt_bind_param($stmt, $__vartype, $param_id);
 
         // Attempt to execute the prepared statement
         if(mysqli_stmt_execute($stmt)){
@@ -294,7 +303,8 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
     mysqli_close($link);
 } else{
     // Check existence of id parameter
-    if(empty(trim($_GET["{TABLE_ID}"]))){
+	$_GET["{TABLE_ID}"] = trim($_GET["{TABLE_ID}"]);
+    if(empty($_GET["{TABLE_ID}"])){
         // URL doesn't contain id parameter. Redirect to error page
         header("location: error.php");
         exit();
@@ -452,18 +462,23 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
             }
 } else {
     // Check existence of id parameter before processing further
-    if(isset($_GET["{COLUMN_ID}"]) && !empty(trim($_GET["{COLUMN_ID}"]))){
+	$_GET["{COLUMN_ID}"] = trim($_GET["{COLUMN_ID}"]);
+    if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
         // Get URL parameter
         ${COLUMN_ID} =  trim($_GET["{COLUMN_ID}"]);
 
         // Prepare a select statement
         $sql = "SELECT * FROM {TABLE_NAME} WHERE {COLUMN_ID} = ?";
         if($stmt = mysqli_prepare($link, $sql)){
-            // Bind variables to the prepared statement as parameters
-            mysqli_stmt_bind_param($stmt, "i", $param_id);
-
             // Set parameters
             $param_id = ${COLUMN_ID};
+
+            // Bind variables to the prepared statement as parameters
+			if (is_int($param_id)) $__vartype = "i";
+			elseif (is_string($param_id)) $__vartype = "s";
+			elseif (is_numeric($param_id)) $__vartype = "d";
+			else $__vartype = "b"; // blob
+			mysqli_stmt_bind_param($stmt, $__vartype, $param_id);
 
             // Attempt to execute the prepared statement
             if(mysqli_stmt_execute($stmt)){

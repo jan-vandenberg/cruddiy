@@ -2,64 +2,69 @@
 
 if(isset($_POST['index'])) {
     
-    if(isset($_POST['server'])) {
-        $server=$_POST['server'];
+    if((isset($_POST['server'])) && $_POST['server'] <> '') {
+        $server=trim($_POST['server']);
     } else {
-            $server = "localhost";
+        $server = "localhost";
     }
-if(isset($_POST['username'])) $username=$_POST['username'];
-if(isset($_POST['password'])) $password=$_POST['password'];
-if(isset($_POST['database'])) $database=$_POST['database'];
-if(isset($_POST['numrecordsperpage'])) $numrecordsperpage=$_POST['numrecordsperpage'];
+	if(isset($_POST['username'])) $username=trim($_POST['username']);
+	if(isset($_POST['password'])) $password=trim($_POST['password']);
+	if(isset($_POST['database'])) $database=trim($_POST['database']);
+	if(isset($_POST['numrecordsperpage'])) $numrecordsperpage=$_POST['numrecordsperpage'];
 
-/* Attempt to connect to MySQL database */
-$link = mysqli_connect($server, $username, $password, $database);
+	/* Attempt to connect to MySQL database */
+	$link = mysqli_connect($server, $username, $password, $database);
+	// Check connection
+	if($link === false)
+		die("ERROR: Could not connect. " . mysqli_connect_error());
 
-// Check connection
- if($link === false){
-     die("ERROR: Could not connect. " . mysqli_connect_error());
-     }
- else {
-     if (!file_exists('app')) {
-            mkdir('app', 0777, true);
-        }
-            $configfile = fopen("app/config.php", "w") or die("Unable to open file!");
-            $txt = "<?php \n \$link = mysqli_connect('$server', '$username', '$password', '$database'); \n";
-            $txt .= "\$db_server = '$server'; \n";
-            $txt .= "\$db_name = '$database'; \n";
-            $txt .= "\$db_user = '$username'; \n";
-            $txt .= "\$db_password = '$password'; \n";
-            $txt .= "\$no_of_records_per_page = $numrecordsperpage; \n?>";
-            fwrite($configfile, $txt);
-            fclose($configfile);
-     }
+	/* Clean up User inputs against SQL injection */
+	foreach($_POST as $k => $v) {
+		$_POST[$k] = mysqli_real_escape_string($link, $v);
+	}
+
+	if (!file_exists('app'))
+		mkdir('app', 0777, true);
+
+	$configfile = fopen("app/config.php", "w") or die("Unable to open file!");
+	$txt  = "<?php \n";
+	$txt .= "\$db_server = '$server'; \n";
+	$txt .= "\$db_name = '$database'; \n";
+	$txt .= "\$db_user = '$username'; \n";
+	$txt .= "\$db_password = '$password'; \n";
+	$txt .= "\$no_of_records_per_page = $numrecordsperpage; \n\n";
+	$txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n";
+	$txt .= "\n?>";
+	fwrite($configfile, $txt);
+	fclose($configfile);
+
 }
 require "app/config.php";
 
 if(isset($_POST['submit'])){
-    $tablename = $_POST['tablename'];                                                                                                                                   
-    $fkname = $_POST['fkname'];                                                                                                                                   
+    $tablename = $_POST['tablename'];
+    $fkname = $_POST['fkname'];
 
     $sql = "ALTER TABLE $tablename DROP FOREIGN KEY $fkname";
-    if ($result = mysqli_query($link, $sql)) {                                                                                              
+    if ($result = mysqli_query($link, $sql)) {
         echo "The foreign_key '$fkname' was deleted from '$tablename'";
     } else {
         echo("Something went wrong. Error description: " . mysqli_error($link));
     }
-}                                                                                                                                                                      
+}
 
 if(isset($_POST['addkey'])){
     $primary = $_POST['primary'];  
     $fk = $_POST['fk'];
-    
+
     $split_primary=explode('|', $primary);
     $split_fk=explode('|', $fk);
 
     $fk_name = $split_fk[0].'_ibfk_1';
-    
+
     $ondel_val = $_POST['ondelete'];
     $onupd_val = $_POST['onupdate'];
-    
+
     switch ($ondel_val) {
         case "cascade":
            $ondel = "ON DELETE CASCADE";
@@ -90,7 +95,7 @@ if(isset($_POST['addkey'])){
 
     $sql = "ALTER TABLE $split_fk[0] ADD FOREIGN KEY $fk_name ($split_fk[1]) REFERENCES $split_primary[0]($split_primary[1]) $ondel $onupd;";
 
-    if ($result = mysqli_query($link, $sql)) {                                                                                              
+    if ($result = mysqli_query($link, $sql)) {
         echo "The foreign_key '$fk_name' was created from ' $split_fk[0]($split_fk[1])' to '$split_primary[0]($split_primary[1])'.";
     } else {
          echo("Something went wrong. Error description: " . mysqli_error($link));
@@ -158,7 +163,7 @@ if(isset($_POST['addkey'])){
                                 </table> 
                 <div class="text-center">
                     <h4 class="mb-0">Add New Table Relation</h4><br>
-                      <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">                                                                 
+                      <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 <?php
                         $sql = "select TABLE_NAME as TableName, COLUMN_NAME as ColumnName from information_schema.columns where table_schema = '$db_name'";
                         $result = mysqli_query($link,$sql);
@@ -174,7 +179,7 @@ if(isset($_POST['addkey'])){
                         echo "<label>has a foreign key relation to:</label>
                             <select name='primary' id='primary' style='max-width:20%'>";
                         while ($column = mysqli_fetch_array($result)) {
-                            echo '<option name="'.$column[0]. '|'.$column[1]. '  " value="'.$column[0].'|'.$column[1]. '">'.$column[0].' ('.$column[1].')</option>';    
+                            echo '<option name="'.$column[0]. '|'.$column[1]. '  " value="'.$column[0].'|'.$column[1]. '">'.$column[0].' ('.$column[1].')</option>';
 
                         }
                         echo '</select>';
@@ -203,7 +208,7 @@ if(isset($_POST['addkey'])){
 On this page you can add new or delete existing table relations i.e. foreign keys. Having foreign keys will result in Cruddiy forms with cascading deletes/updates and dropdown fields populated by foreign keys. If it is not clear what you want or need to do here, it is SAFER to skip this step and move to the next step! You can always come back later and regenerate new forms.
 <hr>
 <form method="post" action="tables.php">
-    <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success">Continue CRUD Creation Process</button>                               
+    <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success">Continue CRUD Creation Process</button>
 </form>     
 </section>
 
