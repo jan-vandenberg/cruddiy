@@ -5,23 +5,22 @@ Cruddiy is a free **no-code**  PHP Bootstrap 4 CRUD generator (with foreign key 
 With Cruddiy you can easily generate some simple, but beautiful, PHP Bootstrap CRUD pages (Create, Read, Update and Delete) with search, pagination and foreign key awareness.
 
 ### Notes
-* Does not support MyISAM for Foreign Keys and Cascades. Will need InnoDB type ENGINE.
+* Does not support MyISAM for Foreign Keys and Cascades. Will need InnoDB type ENGINE. MyISAM can be used, but Foreign Keys and Cascades will not be available.
 * Although PHP 7 is recommended, it currently works with PHP 5.4 too.
-* The [Original repo](https://github.com/jan-vandenberg/cruddiy) has been forked here.
 * Capable of string ID Primary Keys as well as integer ones.
 
 # How it works
 
-Cruddiy is written in PHP and will run on any PHP 7+ webserver. Just drop the folder with the code somewhere on your webserver and navigate to the folder. Cruddiy will first ask for your **database connection** information. Most of the time the database server is on the same machine (localhost): but it can be anywhere, and as long as you can connect to it, Cruddiy can generate the code for you.
+Cruddiy is written in PHP and will run on any PHP 7+ webserver. Just drop the folder with the code somewhere on your webserver and navigate to the folder (core/index.php). Cruddiy will first ask for your **database connection** information. Most of the time the database server is on the same machine (localhost): but it can be anywhere, and as long as you can connect to it, Cruddiy can generate the code for you.
 
 [![N|Cruddiy](https://j11g.com/cruddiy/bs4-cruddiy-start.png)](https://cruddiy.com)
 
-Once the connection parameters are entered correctly, Cruddiy will display all existing table relations (aka foreign keys).
+Once the connection parameters are entered correctly, Cruddiy will display all existing table relations (aka Foreign Keys). This only works for InnoDB tables.
 
 [![N|Cruddiy](https://j11g.com/cruddiy/bs4-cruddiy-relations.png)](https://cruddiy.com)
 
 It is possible to add or delete database relations and define actions (e.g. ON DELETE CASCADE).
-It is absolutely safe to SKIP this step (press the big green button) and continue if you please. However, having well-defined relations will result in prepopulated input fields on the create forms, and it will make sure child records are deleted correctly etc.
+It is absolutely safe to SKIP this step (press the big green button) and continue if you please. However, having well-defined relations will result in prepopulated input fields on the create forms, and it will make sure child records are deleted correctly etc. When you use MyISAM you need to skip this step anyway.
 
 For the next step, Cruddiy will display all available **tables** in your database.
 
