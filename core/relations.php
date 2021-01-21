@@ -33,8 +33,10 @@ if(isset($_POST['index'])) {
 	$txt .= "\$db_user = '$username'; \n";
 	$txt .= "\$db_password = '$password'; \n";
 	$txt .= "\$no_of_records_per_page = $numrecordsperpage; \n\n";
-	$txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n";
-	$txt .= "\n?>";
+	$txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n\n";
+    $txt .= "require __DIR__ . '/../Basic.php'; \n";
+    $txt .= "Basic::setFirewall(); \n";
+    $txt .= "\n?>";
 	fwrite($configfile, $txt);
 	fclose($configfile);
 
