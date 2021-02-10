@@ -234,7 +234,6 @@ foreach ($_POST as $key => $value) {
                     $j++;
                     $total_params--;
                 }
-                if(empty($columns['auto'])) {
 
                     //Get all tablenames in an array
                     $tablename = $columns['tablename'];
@@ -249,6 +248,10 @@ foreach ($_POST as $key => $value) {
                     } else {
                         $tabledisplay = $columns['tablename'];
                     }
+
+
+                if(empty($columns['auto'])) {
+
                     $columnname = $columns['columnname'];
                     $read_records .= '<div class="form-group">
                         <label>'.$columndisplay.'</label>
