@@ -148,12 +148,12 @@
                                     </small>
                                     <input class="form-check-input" type="checkbox" value="true" id="keep_startpage" name="keep_startpage">
                                     <label class="form-check-label" for="keep_startpage">
-                                        Keep previously generated startpage page if it exists
+                                        Keep previously generated startpage if it exists
                                     </label>
                                     <br>
                                     <input class="form-check-input" type="checkbox" value="true" id="append_links" name="append_links">
                                     <label class="form-check-label" for="append_links">
-                                        Append new link<?php echo $checked_tables_counter > 1 ? 's' : '' ?> to previously generated startpage page if necessary
+                                        Append new link<?php echo $checked_tables_counter > 1 ? 's' : '' ?> to previously generated startpage if necessary
                                     </label>
                                 </p>
                             </div>
