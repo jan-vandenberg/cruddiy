@@ -312,7 +312,7 @@ foreach ($_POST as $key => $value) {
                     $create_err_record = "\$$columnname".'_err';
                     $create_sqlcolumns [] = $columnname;
                     $create_sql_params [] = "\$$columnname";
-                    $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
+                    $create_postvars .= "$$columnname = isset(\$_POST[\"$columnname\"]) ? trim(\$_POST[\"$columnname\"]) : null;\n\t\t";
 
                     $update_sql_params [] = "$columnname".'=?';
                     $update_sql_id = "$column_id".'=?';
