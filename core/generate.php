@@ -426,7 +426,7 @@ foreach ($_POST as $key => $value) {
                     $start_page .= "\n\t";
                 }
 
-                generate_start($start_page);
+                generate_start($start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false);
                 generate_error();
                 generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
                 generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
