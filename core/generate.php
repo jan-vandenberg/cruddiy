@@ -54,7 +54,8 @@ function generate_start($start_page, $keep_startpage, $append_links){
     global $generate_start_checked_links;
     global $startpage_filename;
 
-    if (!$keep_startpage) {
+    // make sure that a previous startpage was created before trying to keep it alive
+    if (!$keep_startpage || ($keep_startpage && !filesize($startpage_filename))) {
         $step0 = str_replace("{TABLE_BUTTONS}", $start_page, $startfile);
         $destination_file = fopen($startpage_filename, "w") or die("Unable to open fresh startpage file!");
         fwrite($destination_file, $step0);
@@ -89,7 +90,7 @@ function generate_start($start_page, $keep_startpage, $append_links){
                             echo '- Appending '.$start_page_link.'<br>';
                             array_push($startfile_links[1], $start_page_link);
                             $linkname = str_replace('-index.php', '', basename($start_page_link));
-                            $step0 = preg_replace('/<\/div>.*<\/center>/msx', "\t".'<a href="'.$start_page_link.'>" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n</div>\n</center>", $startfile);
+                            $step0 = preg_replace('/<\/div>.*<\/center>/msx', "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n</div>\n</center>", $startfile);
                             $destination_file = fopen($startpage_filename, "w") or die("Unable to open file!");
                             fwrite($destination_file, $step0);
                             fclose($destination_file);
