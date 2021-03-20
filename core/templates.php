@@ -221,7 +221,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
             }
 
         } else{
-            echo "Oops! Something went wrong. Please try again later.";
+            echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
         }
     }
 
@@ -295,7 +295,7 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
             header("location: {TABLE_NAME}-index.php");
             exit();
         } else{
-            echo "Oops! Something went wrong. Please try again later.";
+            echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
         }
     }
 
@@ -504,7 +504,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                 }
 
             } else{
-                echo "Oops! Something went wrong. Please try again later.";
+                echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
             }
         }
 
