@@ -1,9 +1,3 @@
-<pre>
-    <?php
-      //print_r($_POST);
-    ?>
-</pre>
-
 <?php
 
 require "app/config.php";
@@ -154,6 +148,10 @@ function count_index_colums($table) {
     }
     return $i;
 }
+
+// echo "<pre>";
+// print_r($_POST);
+// echo "</pre>";
 // Go trough the POST array
 // Every table is a key
 foreach ($_POST as $key => $value) {
