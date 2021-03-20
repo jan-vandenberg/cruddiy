@@ -11,6 +11,9 @@ $index_table_rows = '';
 $index_table_headers = '';
 $start_page = '';
 $sort = '';
+$excluded_keys = array('singlebutton', 'keep_startpage', 'append_links');
+$generate_start_checked_links = array();
+$startpage_filename = "app/index.php";
 
 function column_type($columnname){
     switch ($columnname) {
@@ -129,9 +132,10 @@ function generate_update($tablename, $create_records, $create_err_records, $crea
 }
 
 function count_index_colums($table) {
+    global $excluded_keys;
     $i = 0;
     foreach ( $_POST as $key => $value) {
-        if ($key == 'singlebutton') {
+        if (in_array($key, $excluded_keys)) {
             //echo "nope";
         }
         else if ($key == $table) {
@@ -180,7 +184,7 @@ foreach ($_POST as $key => $value) {
     $update_sql_id = '';
     $update_column_rows = '';
 
-    if ($key != 'singlebutton') {
+    if (!in_array($key, $excluded_keys)) {
         $i = 0;
         $j = 0;
         $max = count_index_colums($key)+1;
