@@ -364,8 +364,6 @@ require_once "helpers.php";
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 
-        {CREATE_POST_VARIABLES}
-
         $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
         $options = [
           PDO::ATTR_EMULATE_PREPARES   => false, // turn off emulation mode for "real" prepared statements
@@ -378,6 +376,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
           error_log($e->getMessage());
           exit('Something weird happened'); //something a user can understand
         }
+
+        $vars = parse_columns('{TABLE_NAME}', $_POST);
         $stmt = $pdo->prepare("INSERT INTO {TABLE_NAME} ({CREATE_COLUMN_NAMES}) VALUES ({CREATE_QUESTIONMARK_PARAMS})"); 
         
         if($stmt->execute([ {CREATE_SQL_PARAMS}  ])) {
@@ -440,31 +440,30 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     // Get hidden input value
     ${COLUMN_ID} = $_POST["{COLUMN_ID}"];
 
-        // Prepare an update statement
-        
-        {CREATE_POST_VARIABLES}
+    // Prepare an update statement
+    $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
+    $options = [
+        PDO::ATTR_EMULATE_PREPARES   => false, // turn off emulation mode for "real" prepared statements
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, //turn on errors in the form of exceptions
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //make the default fetch be an associative array
+    ];
+    try {
+        $pdo = new PDO($dsn, $db_user, $db_password, $options);
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        exit('Something weird happened');
+    }
 
-        $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
-        $options = [
-          PDO::ATTR_EMULATE_PREPARES   => false, // turn off emulation mode for "real" prepared statements
-          PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, //turn on errors in the form of exceptions
-          PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //make the default fetch be an associative array
-        ];
-        try {
-          $pdo = new PDO($dsn, $db_user, $db_password, $options);
-        } catch (Exception $e) {
-          error_log($e->getMessage());
-          exit('Something weird happened');
-        }
-        $stmt = $pdo->prepare("UPDATE {TABLE_NAME} SET {UPDATE_SQL_PARAMS} WHERE {UPDATE_SQL_ID}");
+    $vars = parse_columns('{TABLE_NAME}', $_POST);
+    $stmt = $pdo->prepare("UPDATE {TABLE_NAME} SET {UPDATE_SQL_PARAMS} WHERE {UPDATE_SQL_ID}");
 
-        if(!$stmt->execute([ {UPDATE_SQL_COLUMNS}  ])) {
-                echo "Something went wrong. Please try again later.";
-                header("location: error.php");
-            } else{
-                $stmt = null;
-                header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=${COLUMN_ID}");
-            }
+    if(!$stmt->execute([ {UPDATE_SQL_COLUMNS}  ])) {
+        echo "Something went wrong. Please try again later.";
+        header("location: error.php");
+    } else {
+        $stmt = null;
+        header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=${COLUMN_ID}");
+    }
 } else {
     // Check existence of id parameter before processing further
 	$_GET["{COLUMN_ID}"] = trim($_GET["{COLUMN_ID}"]);

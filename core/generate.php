@@ -89,7 +89,7 @@ function generate_start($start_page, $keep_startpage, $append_links){
                             echo '- Appending '.$start_page_link.'<br>';
                             array_push($startfile_links[1], $start_page_link);
                             $linkname = str_replace('-index.php', '', basename($start_page_link));
-                            $step0 = preg_replace('/<\/div>.*<\/center>/msx', "\t".'<a href="'.$start_page_link.'>" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n</div>\n</center>", $startfile);
+                            $step0 = preg_replace('/<\/div>.*<\/center>/msx', "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n</div>\n</center>", $startfile);
                             $destination_file = fopen($startpage_filename, "w") or die("Unable to open file!");
                             fwrite($destination_file, $step0);
                             fclose($destination_file);
@@ -311,8 +311,8 @@ foreach ($_POST as $key => $value) {
                     $create_err_records .= "\$$columnname".'_err'." = \"\";\n";
                     $create_err_record = "\$$columnname".'_err';
                     $create_sqlcolumns [] = $columnname;
-                    $create_sql_params [] = "\$$columnname";
-                    $create_postvars .= "$$columnname = isset(\$_POST[\"$columnname\"]) ? trim(\$_POST[\"$columnname\"]) : null;\n\t\t";
+                    $create_sql_params [] = '$vars[\''.$columnname.'\']';
+                    // $create_postvars .= "$$columnname = isset(\$_POST[\"$columnname\"]) ? trim(\$_POST[\"$columnname\"]) : null;\n\t\t";
 
                     $update_sql_params [] = "$columnname".'=?';
                     $update_sql_id = "$column_id".'=?';
