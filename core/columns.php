@@ -72,6 +72,7 @@
                             mysqli_free_result($result);
                         }
 
+                        $checked_tables_counter=0;
                         if ( isset( $_POST['table'] ) )
                         {
                             foreach ( $_POST['table'] as $table )
@@ -132,14 +133,31 @@
                      </div>';
                                         $i++;
                                     }
+                                    $checked_tables_counter++;
                                 }
                             }
                         }
                         ?>
 
                         <div class="row">
+                            <div class="col-12 offset-2">
+                                <p class="form-check">
+                                    <small id="passwordHelpBlock" class="form-text text-muted">
+                                        Cruddiy will create a fresh startpage in the app/ sub-folder, with link<?php echo $checked_tables_counter > 1 ? 's' : '' ?> to manage the table<?php echo $checked_tables_counter > 1 ? 's' : '' ?> above.<br>
+                                        If you have used Cruddiy on other tables before, your start page will be replaced by the fresh one, and previous links will be lost.
+                                    </small>
+                                    <input class="form-check-input" type="checkbox" value="true" id="keep_startpage" name="keep_startpage">
+                                    <label class="form-check-label" for="keep_startpage">
+                                        Keep previously generated startpage if it exists
+                                    </label>
+                                    <br>
+                                    <input class="form-check-input" type="checkbox" value="true" id="append_links" name="append_links">
+                                    <label class="form-check-label" for="append_links">
+                                        Append new link<?php echo $checked_tables_counter > 1 ? 's' : '' ?> to previously generated startpage if necessary
+                                    </label>
+                                </p>
+                            </div>
                             <div class="col-12 offset-5">
-                                <label class="col-form-label mt-3" for="singlebutton"></label>
                                 <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary">Generate pages</button>
                             </div>
                         </div>
