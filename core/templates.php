@@ -44,6 +44,7 @@ $indexfile = <<<'EOT'
                     <?php
                     // Include config file
                     require_once "config.php";
+                    require_once "helpers.php";
 
                     //Get current URL and parameters for correct pagination
                     $protocol = $_SERVER['SERVER_PROTOCOL'];
@@ -189,6 +190,7 @@ $_GET["{TABLE_ID}"] = trim($_GET["{TABLE_ID}"]);
 if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     // Include config file
     require_once "config.php";
+    require_once "helpers.php";
 
     // Prepare a select statement
     $sql = "SELECT * FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
@@ -271,6 +273,7 @@ $deletefile = <<<'EOT'
 if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
     // Include config file
     require_once "config.php";
+    require_once "helpers.php";
 
     // Prepare a delete statement
     $sql = "DELETE FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
@@ -352,6 +355,7 @@ $createfile = <<<'EOT'
 <?php
 // Include config file
 require_once "config.php";
+require_once "helpers.php";
 
 // Define variables and initialize with empty values
 {CREATE_RECORDS}
@@ -425,6 +429,7 @@ $updatefile = <<<'EOT'
 <?php
 // Include config file
 require_once "config.php";
+require_once "helpers.php";
 
 // Define variables and initialize with empty values
 {CREATE_RECORDS}
