@@ -60,10 +60,16 @@ function generate_start($tablename, $start_page, $keep_startpage, $append_links)
     // make sure that a previous startpage was created before trying to keep it alive
     if (!$keep_startpage || ($keep_startpage && !file_exists($startpage_filename))) {
         echo "Generating Startpage file<br>";
-        $step0 = str_replace("{TABLE_BUTTONS}", $start_page, $startfile);
-        $destination_file = fopen($startpage_filename, "w") or die("Unable to open fresh startpage file!");
-        fwrite($destination_file, $step0);
-        fclose($destination_file);
+        if (!file_exists($startpage_filename)) {
+            $step0 = str_replace("{TABLE_BUTTONS}", $start_page, $startfile);
+            $destination_file = fopen($startpage_filename, "w") or die("Unable to open fresh startpage file!");
+            fwrite($destination_file, $step0);
+            fclose($destination_file);
+        } else {
+            $destination_file = fopen($startpage_filename, "rb") or die("Unable to open existing startpage file!");
+            $contents = fread($destination_file, filesize($startpage_filename));
+            append_links_to_startpage($contents, $start_page, $startpage_filename, $generate_start_checked_links);
+        }
     } else {
         if ($append_links) {
             // load existing template
@@ -71,42 +77,44 @@ function generate_start($tablename, $start_page, $keep_startpage, $append_links)
             $handle = fopen($startpage_filename, "r") or die("Unable to open existing startpage file!");;
             $startfile = fread($handle, filesize($startpage_filename));
             fclose($handle);
+            append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links);
+        }
+    }
+}
 
-            // extract existing links from app/index.php
-            echo "Looking for new links to append to Startpage file<br>";
-            $link_matcher_pattern = '/href=["\']?([^"\'>]+)["\']?/im';
-            preg_match_all($link_matcher_pattern, $startfile, $startfile_links);
-            if (count($startfile_links)) {
-                foreach($startfile_links[1] as $startfile_link) {
-                    // echo '- Found existing link '.$startfile_link.'<br>';
-                }
-            }
-
-            // do not append links to app/index.php if they  already
-            preg_match_all($link_matcher_pattern, $start_page, $start_page_links);
-            if (count($start_page_links)) {
-                foreach($start_page_links[1] as $start_page_link) {
-                    if (!in_array($start_page_link, $generate_start_checked_links)) {
-                        if (in_array($start_page_link, $startfile_links[1])) {
-                            echo '- Not appending '.$start_page_link.' as it already exists<br>';
-                        } else {
-                            echo '- Appending '.$start_page_link.'<br>';
-                            array_push($startfile_links[1], $start_page_link);
-                            $linkname = str_replace('-index.php', '', basename($start_page_link));
-                            $step0 = preg_replace('/<\/div>.*<\/center>/msx', "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n</div>\n</center>", $startfile);
-                            $destination_file = fopen($startpage_filename, "w") or die("Unable to open file!");
-                            fwrite($destination_file, $step0);
-                            fclose($destination_file);
-                        }
-                        array_push($generate_start_checked_links, $start_page_link);
-                    }
-                }
-            }
+function append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links) {
+    // extract existing links from app/index.php
+    echo "Looking for new links to append to Startpage file<br>";
+    $link_matcher_pattern = '/href=["\']?([^"\'>]+)["\']?/im';
+    preg_match_all($link_matcher_pattern, $startfile, $startfile_links);
+    if (count($startfile_links)) {
+        foreach($startfile_links[1] as $startfile_link) {
+            // echo '- Found existing link '.$startfile_link.'<br>';
         }
     }
 
-
+    // do not append links to app/index.php if they  already
+    preg_match_all($link_matcher_pattern, $start_page, $start_page_links);
+    if (count($start_page_links)) {
+        foreach($start_page_links[1] as $start_page_link) {
+            if (!in_array($start_page_link, $generate_start_checked_links)) {
+                if (in_array($start_page_link, $startfile_links[1])) {
+                    echo '- Not appending '.$start_page_link.' as it already exists<br>';
+                } else {
+                    echo '- Appending '.$start_page_link.'<br>';
+                    array_push($startfile_links[1], $start_page_link);
+                    $linkname = str_replace('-index.php', '', basename($start_page_link));
+                    $step0 = preg_replace('/<\/div>.*<\/center>/msx', "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n</div>\n</center>", $startfile);
+                    $destination_file = fopen($startpage_filename, "w") or die("Unable to open file!");
+                    fwrite($destination_file, $step0);
+                    fclose($destination_file);
+                }
+                array_push($generate_start_checked_links, $start_page_link);
+            }
+        }
+    }
 }
+
 
 function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search) {
     global $indexfile;
