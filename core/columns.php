@@ -148,7 +148,7 @@
                                     </small>
                                     <input class="form-check-input" type="checkbox" value="true" id="keep_startpage" name="keep_startpage">
                                     <label class="form-check-label" for="keep_startpage">
-                                        Keep previously generated startpage if it exists
+                                        Keep previously generated startpage and CRUD pages if they exist
                                     </label>
                                     <br>
                                     <input class="form-check-input" type="checkbox" value="true" id="append_links" name="append_links">
