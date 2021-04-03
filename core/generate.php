@@ -465,7 +465,7 @@ foreach ($_POST as $key => $value) {
                 $update_sql_params = implode(",", $update_sql_params);
 
                 //Generate everything
-                $start_page .= "";
+                $start_page = "";
 
                 foreach($tables as $key => $value) {
                     //echo "$key is at $value";
