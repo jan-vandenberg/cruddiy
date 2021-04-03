@@ -49,10 +49,12 @@ function generate_error(){
     echo "Generating Error file<br>";
 }
 
-function generate_start($start_page, $keep_startpage, $append_links){
+function generate_start($tablename, $start_page, $keep_startpage, $append_links){
     global $startfile;
     global $generate_start_checked_links;
     global $startpage_filename;
+
+    echo "<h3>$tablename</h3>";
 
     // make sure that a previous startpage was created before trying to keep it alive
     if (!$keep_startpage || ($keep_startpage && !file_exists($startpage_filename))) {
@@ -473,7 +475,7 @@ foreach ($_POST as $key => $value) {
                     $start_page .= "\n\t";
                 }
 
-                generate_start($start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false);
+                generate_start($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false);
                 generate_error();
                 generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
                 generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
