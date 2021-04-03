@@ -9,7 +9,6 @@ $columndisplay = '';
 $columnvisible = '';
 $index_table_rows = '';
 $index_table_headers = '';
-$start_page = '';
 $sort = '';
 $excluded_keys = array('singlebutton', 'keep_startpage', 'append_links');
 $generate_start_checked_links = array();
