@@ -14,6 +14,7 @@ $sort = '';
 $excluded_keys = array('singlebutton', 'keep_startpage', 'append_links');
 $generate_start_checked_links = array();
 $startpage_filename = "app/index.php";
+$forced_deletion = false;
 
 function column_type($columnname){
     switch ($columnname) {
@@ -237,6 +238,7 @@ function generate($postdata) {
         global $excluded_keys;
         global $sort;
         global $link;
+        global $forced_deletion;
 
         if (!in_array($key, $excluded_keys)) {
             $i = 0;
@@ -478,6 +480,21 @@ function generate($postdata) {
                         //echo "$key is at $value";
                         $start_page .= '<a href="'. $key . '-index.php" class="btn btn-primary" role="button">'. $value. '</a> ';
                         $start_page .= "\n\t";
+                    }
+
+                    // force existing files deletion
+                    if (!$forced_deletion && (!isset($_POST['keep_startpage']) || (isset($_POST['keep_startpage']) && $_POST['keep_startpage'] != 'true'))) {
+                        $forced_deletion = true;
+                        echo '<h3>Deleting existing files</h3>';
+                        $keep = array('config.php');
+                        foreach( glob("app/*") as $file ) {
+                            if( !in_array(basename($file), $keep) ){
+                                if (unlink($file)) {
+                                    echo $file.'<br>';
+                                }
+                            }
+                        }
+                        echo '<br>';
                     }
 
                     generate_start($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false);
