@@ -596,7 +596,6 @@ $startfile = <<<'EOT'
 </head>
 <body>
 <fieldset>
-<a href="../tables.php">Back to Available Tables</a>
 <center>
 <legend>Available CRUD pages</legend>
 <div class="form-group">
