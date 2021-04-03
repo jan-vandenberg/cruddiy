@@ -46,7 +46,7 @@ function generate_error(){
     $destination_file = fopen("app/error.php", "w") or die("Unable to open file!");
     fwrite($destination_file, $errorfile);
     fclose($destination_file);
-    echo "Generating Error file<br><br>";
+    echo "Generating Error file<br>";
 }
 
 function generate_start($start_page, $keep_startpage, $append_links){
