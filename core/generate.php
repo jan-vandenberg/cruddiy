@@ -489,7 +489,9 @@ foreach ($_POST as $key => $value) {
 
 }
 ?>
+<hr>
 <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
 <a href="app/index.php" target="_blank" rel="noopener noreferrer">Go to your app</a> (this will open your app in a new tab).<br><br>
-You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app.<br>
+You can close this tab or leave it open and use the back button or <a href="columns.php">this link</a> to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
+<hr>
 If you need further instructions please visit <a href="http://cruddiy.com">cruddiy.com</a>
