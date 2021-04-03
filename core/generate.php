@@ -54,7 +54,8 @@ function generate_start($start_page, $keep_startpage, $append_links){
     global $generate_start_checked_links;
     global $startpage_filename;
 
-    if (!$keep_startpage) {
+    // make sure that a previous startpage was created before trying to keep it alive
+    if (!$keep_startpage || ($keep_startpage && !filesize($startpage_filename))) {
         $step0 = str_replace("{TABLE_BUTTONS}", $start_page, $startfile);
         $destination_file = fopen($startpage_filename, "w") or die("Unable to open fresh startpage file!");
         fwrite($destination_file, $step0);
