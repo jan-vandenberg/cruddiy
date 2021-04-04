@@ -68,7 +68,7 @@ function generate_start($start_page, $keep_startpage, $append_links){
             $handle = fopen($startpage_filename, "r") or die("Unable to open existing startpage file!");;
             $startfile = fread($handle, filesize($startpage_filename));
             fclose($handle);
-            
+
             // extract existing links from app/index.php
             echo "Looking for new links to append to Startpage file<br>";
             $link_matcher_pattern = '/href=["\']?([^"\'>]+)["\']?/im';
@@ -79,7 +79,7 @@ function generate_start($start_page, $keep_startpage, $append_links){
                 }
             }
 
-            // do not append links to app/index.php if they  already 
+            // do not append links to app/index.php if they  already
             preg_match_all($link_matcher_pattern, $start_page, $start_page_links);
             if (count($start_page_links)) {
                 foreach($start_page_links[1] as $start_page_link) {
@@ -102,7 +102,7 @@ function generate_start($start_page, $keep_startpage, $append_links){
         }
     }
 
-    
+
 }
 
 function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search) {
@@ -324,7 +324,7 @@ foreach ($_POST as $key => $value) {
                     $update_column_rows .= "\${$columnname}['COLUMN_DEFAULT'] = \$row[\"$columnname\"];\n\t\t\t\t\t";
 
 
-                    //Foreign Key 
+                    //Foreign Key
                     //Check if there are foreign keys to take into consideration
                     if(!empty($columns['fk'])){
                         //Get the Foreign Key
@@ -341,7 +341,7 @@ foreach ($_POST as $key => $value) {
                             $fk_column = $row["FK Column"];
                           }
 
-                        
+
                         //Be careful code below is particular regarding single and double quotes.
 
                         $create_html [] = '<div class="form-group">
@@ -383,12 +383,12 @@ foreach ($_POST as $key => $value) {
 
                     //ENUM types
                     case 2:
-                    //Make sure on the update form that the previously selected type is also selected from the list    
+                    //Make sure on the update form that the previously selected type is also selected from the list
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
-                        $create_html [] .=  '<?php 
-                                        $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues 
+                        $create_html [] .=  '<?php
+                                        $sql_enum = "SELECT COLUMN_TYPE, IS_NULLABLE
                                         FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '. "'$tablename'" .'  AND COLUMN_NAME = '."'$columnname'" .'";
                                         $result = mysqli_query($link, $sql_enum);
                                         while($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
@@ -399,9 +399,12 @@ foreach ($_POST as $key => $value) {
                                             $val = rtrim($val, "\'");
                                             if ($val == $'.$columnname.'){
                                                echo \'<option value="\' . $val . \'" selected="selected">\' . $val . \'</option>\';
-                                            } else 
+                                            } else
                                                echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
-                                                    }
+                                            }
+                                            if ($row[1] == \'YES\') {
+                                                echo \'<option value="" selected="selected"></option>\';
+                                            }
                                            }?>';
 
                         $create_html [] .= '</select>
@@ -413,7 +416,7 @@ foreach ($_POST as $key => $value) {
                     case 3:
                         preg_match('#\((.*?)\)#', $columns['columntype'], $match);
                         $maxlength = $match[1];
-                        
+
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="text" name="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">
