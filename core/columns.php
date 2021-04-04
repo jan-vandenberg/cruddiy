@@ -127,8 +127,8 @@
                                         <input id="textinput_'.$tablename. '"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control">
                                     </div>
                                     <div class="col-md-4">
-                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-0" value="1">
-                                Visible in overview?</div>
+                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$i.'" value="1">
+                                <label for="checkboxes-'.$i.'">Visible in overview?</label></div>
                      </div>';
                                         $i++;
                                     }

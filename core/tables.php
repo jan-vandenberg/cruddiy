@@ -43,7 +43,7 @@
                                  <input id="textinput_'.$table. '" name="table['.$i.'][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control">
                         </div>
                         <div class="col-md-3">
-                          <input class="mr-1" type="checkbox"  name="table['.$i.'][tablecheckbox]" id="checkboxes-0" value="1">Generate CRUD
+                          <input class="mr-1" type="checkbox"  name="table['.$i.'][tablecheckbox]" id="checkboxes-'.$i.'" value="1"><label for="checkboxes-'.$i.'">Generate CRUD</label>
                         </div>
                     </div>
   
