@@ -16,6 +16,7 @@ $generate_start_checked_links = array();
 $startpage_filename = "app/index.php";
 
 function column_type($columnname){
+    // echo "columnname : ".$columnname."<br>";
     switch ($columnname) {
         case (preg_match("/text/i", $columnname) ? true : false) :
             return 1;
@@ -34,6 +35,9 @@ function column_type($columnname){
         break;
         case (preg_match("/int/i", $columnname) ? true : false) :
             return 5;
+        break;
+        case (preg_match("/decimal/i", $columnname) ? true : false) :
+            return 6;
         break;
         default:
             return 0;
@@ -444,6 +448,15 @@ foreach ($_POST as $key => $value) {
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
+                            <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                        </div>';
+                    break;
+                    //DECIMAL
+                    case 6:
+                        $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                            <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">
                             <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
