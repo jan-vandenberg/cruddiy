@@ -317,7 +317,10 @@ foreach ($_POST as $key => $value) {
 
                     $update_sql_params [] = "$columnname".'=?';
                     $update_sql_id = "$column_id".'=?';
-                    $update_column_rows .= "$$columnname = \$row[\"$columnname\"];\n\t\t\t\t\t";
+                    // we're using COLUMN_DEFAULT to set actual value from DB (not default value)
+                    // because the fieldsets are the same for create and update forms at the moment
+                    // TODO: create a different fieldset for each state and use COLUMN_DEFAULT only on create form
+                    $update_column_rows .= "\${$columnname}['COLUMN_DEFAULT'] = \$row[\"$columnname\"];\n\t\t\t\t\t";
 
 
                     //Foreign Key 
