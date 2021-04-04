@@ -307,8 +307,8 @@ foreach ($_POST as $key => $value) {
                         <p class="form-control-static"><?php echo $row["'.$columnname.'"]; ?></p>
                     </div>';
 
-                    $create_records .= "\$$columnname = \"\";\n";
-                    $create_record = "\$$columnname";
+                    $create_records .= "\$$columnname = get_columns_attributes('$tablename', '$columnname');\n";
+                    $create_record = "\${$columnname}['COLUMN_DEFAULT']";
                     $create_err_records .= "\$$columnname".'_err'." = \"\";\n";
                     $create_err_record = "\$$columnname".'_err';
                     $create_sqlcolumns [] = $columnname;
