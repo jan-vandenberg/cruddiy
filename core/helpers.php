@@ -30,7 +30,7 @@ function parse_columns($table_name, $postdata) {
 
         switch($row['DATA_TYPE']) {
 
-            // fix "Incorrect decimal value: '' error in STRICT_MODE or STRICT_TRANS_TABLE 
+            // fix "Incorrect decimal value: '' error in STRICT_MODE or STRICT_TRANS_TABLE
             // @see https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html
             case 'decimal':
                 $default = 0;
@@ -40,13 +40,20 @@ function parse_columns($table_name, $postdata) {
             // with 'CURRENT_TIMESTAMP' default not being set automatically
             // and refusing to take NULL value
             case 'datetime':
-                $default = ($row['COLUMN_DEFAULT'] != 'CURRENT_TIMESTAMP' && $row['IS_NULLABLE'] == 'YES') ? null : date('Y-m-d H:i:s');
+                if ($row['COLUMN_DEFAULT'] != 'CURRENT_TIMESTAMP' && $row['IS_NULLABLE'] == 'YES') {
+                    $default = null;
+                } else {
+                    $default =  date('Y-m-d H:i:s');
+                }
+                if ($postdata[$row['COLUMN_NAME']] == 'CURRENT_TIMESTAMP') {
+                    $_POST[$row['COLUMN_NAME']] =  date('Y-m-d H:i:s');
+                }
                 break;
         }
-        
+
         // check that fieldname was set before sending values to pdo
         $vars[$row['COLUMN_NAME']] = isset($_POST[$row['COLUMN_NAME']]) && $_POST[$row['COLUMN_NAME']] ? trim($_POST[$row['COLUMN_NAME']]) : $default;
-    }    
+    }
     return $vars;
 }
 
