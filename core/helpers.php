@@ -14,6 +14,20 @@ function parse_columns($table_name, $postdata) {
     $result = mysqli_query($link,$sql);
     while($row = mysqli_fetch_assoc($result))
     {
+
+        $debug = 0;
+        if ($debug) {
+            echo "<pre>";
+            // print_r($postdata);
+            echo $row['COLUMN_NAME'] . "\t";
+            echo $row['DATA_TYPE'] . "\t";
+            echo $row['IS_NULLABLE'] . "\t";
+            echo $row['COLUMN_DEFAULT'] . "\t";
+            echo $row['EXTRA'] . "\t";
+            echo $default . "\n";
+            echo "</pre>";
+        }
+
         switch($row['DATA_TYPE']) {
 
             // fix "Incorrect decimal value: '' error in STRICT_MODE or STRICT_TRANS_TABLE 
