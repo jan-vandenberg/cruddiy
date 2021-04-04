@@ -39,6 +39,12 @@ function column_type($columnname){
         case (preg_match("/decimal/i", $columnname) ? true : false) :
             return 6;
         break;
+        case (preg_match("/date/i", $columnname) ? true : false) :
+            return 7;
+        break;
+        case (preg_match("/datetime/i", $columnname) ? true : false) :
+            return 8;
+        break;
         default:
             return 0;
         break;
@@ -457,6 +463,24 @@ foreach ($_POST as $key => $value) {
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
+                            <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                        </div>';
+                    break;
+                    //DATE
+                    case 7:
+                        $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                            <input type="date" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
+                            <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                        </div>';
+                    break;
+                    //DATETIME
+                    case 8:
+                        $create_html [] = '<div class="form-group">
+                            <label>'.$columndisplay.'</label>
+                            <input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
                             <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
