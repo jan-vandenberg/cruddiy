@@ -72,6 +72,7 @@
                             mysqli_free_result($result);
                         }
 
+                        $checked_tables_counter=0;
                         if ( isset( $_POST['table'] ) )
                         {
                             foreach ( $_POST['table'] as $table )
@@ -127,11 +128,12 @@
                                         <input id="textinput_'.$tablename. '"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control">
                                     </div>
                                     <div class="col-md-4">
-                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$i.'" value="1">
-                                <label for="checkboxes-'.$i.'">Visible in overview?</label></div>
+                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'" value="1">
+                                <label for="checkboxes-'.$checked_tables_counter.'-'.$i.'">Visible in overview?</label></div>
                      </div>';
                                         $i++;
                                     }
+                                    $checked_tables_counter++;
                                 }
                             }
                         }
