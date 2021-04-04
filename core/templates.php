@@ -69,9 +69,9 @@ $indexfile = <<<'EOT'
                     $result = mysqli_query($link,$total_pages_sql);
                     $total_rows = mysqli_fetch_array($result)[0];
                     $total_pages = ceil($total_rows / $no_of_records_per_page);
-                    
+
                     //Column sorting on column name
-                    $orderBy = array('{COLUMNS}'); 
+                    $orderBy = array('{COLUMNS}');
                     $order = '{COLUMN_ID}';
                     if (isset($_GET['order']) && in_array($_GET['order'], $orderBy)) {
                             $order = $_GET['order'];
@@ -79,26 +79,26 @@ $indexfile = <<<'EOT'
 
                     //Column sort order
                     $sortBy = array('asc', 'desc'); $sort = 'desc';
-                    if (isset($_GET['sort']) && in_array($_GET['sort'], $sortBy)) {                                                                    
-                          if($_GET['sort']=='asc') {                                                                                                                            
+                    if (isset($_GET['sort']) && in_array($_GET['sort'], $sortBy)) {
+                          if($_GET['sort']=='asc') {
                             $sort='desc';
-                            }                                                                                   
+                            }
                     else {
                         $sort='asc';
-                        }                                                                                                                           
+                        }
                     }
 
                     // Attempt select query execution
                     $sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
                     $count_pages = "{INDEX_QUERY}";
 
-                    
+
                     if(!empty($_GET['search'])) {
                         $search = ($_GET['search']);
                         $sql = "SELECT * FROM {TABLE_NAME}
                             WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
                             LIKE '%$search%'
-                            ORDER BY $order $sort 
+                            ORDER BY $order $sort
                             LIMIT $offset, $no_of_records_per_page";
                         $count_pages = "SELECT * FROM {TABLE_NAME}
                             WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
@@ -141,7 +141,7 @@ $indexfile = <<<'EOT'
                                 <ul class="pagination" align-right>
                                 <?php
                                     $new_url = preg_replace('/&?pageno=[^&]*/', '', $currenturl);
-                                 ?> 
+                                 ?>
                                     <li class="page-item"><a class="page-link" href="<?php echo $new_url .'&pageno=1' ?>">First</a></li>
                                     <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
                                         <a class="page-link" href="<?php if($pageno <= 1){ echo '#'; } else { echo $new_url ."&pageno=".($pageno - 1); } ?>">Prev</a>
@@ -251,9 +251,9 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                     <div class="page-header">
                         <h1>View Record</h1>
                     </div>
-                        
-                     {RECORDS_READ_FORM}                    
-                    
+
+                     {RECORDS_READ_FORM}
+
                     <p><a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a></p>
                 </div>
             </div>
@@ -378,8 +378,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
 
         $vars = parse_columns('{TABLE_NAME}', $_POST);
-        $stmt = $pdo->prepare("INSERT INTO {TABLE_NAME} ({CREATE_COLUMN_NAMES}) VALUES ({CREATE_QUESTIONMARK_PARAMS})"); 
-        
+        $stmt = $pdo->prepare("INSERT INTO {TABLE_NAME} ({CREATE_COLUMN_NAMES}) VALUES ({CREATE_QUESTIONMARK_PARAMS})");
+
         if($stmt->execute([ {CREATE_SQL_PARAMS}  ])) {
                 $stmt = null;
                 header("location: {TABLE_NAME}-index.php");
