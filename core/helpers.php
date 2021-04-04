@@ -49,4 +49,5 @@ function parse_columns($table_name, $postdata) {
     }    
     return $vars;
 }
+// get extra attributes for  table keys on CREATE and UPDATE events
 ?>
