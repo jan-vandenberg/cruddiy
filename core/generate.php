@@ -480,7 +480,12 @@ foreach ($_POST as $key => $value) {
                     case 8:
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
-                            <input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">
+                            <?php if ('. $create_record .' == \'CURRENT_TIMESTAMP\') {
+                                $datevalue = date("Y-m-d\TH:i:s");
+                            } else {
+                                $datevalue = date("Y-m-d\TH:i:s", strtotime('. $create_record. '));
+                            } ?>
+                            <input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo $datevalue  ?>">
                             <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
