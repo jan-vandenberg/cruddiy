@@ -49,5 +49,26 @@ function parse_columns($table_name, $postdata) {
     }    
     return $vars;
 }
+
+
+
 // get extra attributes for  table keys on CREATE and UPDATE events
+function get_columns_attributes($table_name, $column) {
+    global $link;
+    $sql = "SELECT COLUMN_DEFAULT, COLUMN_COMMENT
+            FROM INFORMATION_SCHEMA.COLUMNS
+            WHERE table_name = '".$table_name."'
+            AND column_name = '".$column."'";
+    $result = mysqli_query($link,$sql);
+    while($row = mysqli_fetch_assoc($result))
+    {
+        $debug = 0;
+        if ($debug) {
+            echo "<pre>";
+            print_r($row);
+            echo "</pre>";
+        }
+        return $row;
+    }
+}
 ?>
