@@ -309,6 +309,7 @@ foreach ($_POST as $key => $value) {
 
                     $create_records .= "\$$columnname = get_columns_attributes('$tablename', '$columnname');\n";
                     $create_record = "\${$columnname}['COLUMN_DEFAULT']";
+                    $create_hint_record = "\${$columnname}['COLUMN_COMMENT']";
                     $create_err_records .= "\$$columnname".'_err'." = \"\";\n";
                     $create_err_record = "\$$columnname".'_err';
                     $create_sqlcolumns [] = $columnname;
@@ -375,6 +376,7 @@ foreach ($_POST as $key => $value) {
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="text" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
                     break;
@@ -403,6 +405,7 @@ foreach ($_POST as $key => $value) {
                                            }?>';
 
                         $create_html [] .= '</select>
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                             </div>';
                     break;
@@ -414,6 +417,7 @@ foreach ($_POST as $key => $value) {
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="text" name="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
                     break;
@@ -428,6 +432,7 @@ foreach ($_POST as $key => $value) {
                                     $create_html [] .= '    <option value="0">0</option>';
                                     $create_html [] .= '    <option value="1">1</option>';
                         $create_html [] .= '</select>
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                             </div>';
                     break;
@@ -436,6 +441,7 @@ foreach ($_POST as $key => $value) {
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
                     break;
@@ -444,6 +450,7 @@ foreach ($_POST as $key => $value) {
                         $create_html [] = '<div class="form-group">
                             <label>'.$columndisplay.'</label>
                             <textarea name="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>
+                            <small class="form-text text-muted"><?php echo '. $create_hint_record. '; ?></small>
                             <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                         </div>';
                     break;
