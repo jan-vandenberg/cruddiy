@@ -600,6 +600,7 @@ $startfile = <<<'EOT'
 <legend>Available CRUD pages</legend>
 <div class="form-group">
     {TABLE_BUTTONS}
+    <!-- TABLE_BUTTONS -->
 </div>
 </center>
 </fieldset>
