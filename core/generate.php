@@ -14,6 +14,7 @@ $excluded_keys = array('singlebutton', 'keep_startpage', 'append_links');
 $generate_start_checked_links = array();
 $startpage_filename = "app/index.php";
 $forced_deletion = false;
+$buttons_delimiter = '<!-- TABLE_BUTTONS -->';
 
 function column_type($columnname){
     switch ($columnname) {
@@ -43,9 +44,9 @@ function column_type($columnname){
 
 function generate_error(){
     global $errorfile;
-    $destination_file = fopen("app/error.php", "w") or die("Unable to open file!");
-    fwrite($destination_file, $errorfile);
-    fclose($destination_file);
+    if (!file_put_contents("app/error.php", $errorfile, LOCK_EX)) {
+        die("Unable to open file!");
+    }
     echo "Generating Error file<br>";
 }
 
@@ -58,32 +59,41 @@ function generate_start($tablename, $start_page, $keep_startpage, $append_links)
 
     // make sure that a previous startpage was created before trying to keep it alive
     if (!$keep_startpage || ($keep_startpage && !file_exists($startpage_filename))) {
-        echo "Generating Startpage file<br>";
         if (!file_exists($startpage_filename)) {
+            // called on the first run of the POST loop
+            echo "Generating fresh Startpage file<br>";
             $step0 = str_replace("{TABLE_BUTTONS}", $start_page, $startfile);
-            $destination_file = fopen($startpage_filename, "w") or die("Unable to open fresh startpage file!");
-            fwrite($destination_file, $step0);
-            fclose($destination_file);
+            if (!file_put_contents($startpage_filename, $step0, LOCK_EX)) {
+                die("Unable to open fresh startpage file!");
+            }
         } else {
-            $destination_file = fopen($startpage_filename, "rb") or die("Unable to open existing startpage file!");
-            $contents = fread($destination_file, filesize($startpage_filename));
-            append_links_to_startpage($contents, $start_page, $startpage_filename, $generate_start_checked_links);
+            // called on subsequent runs of the POST loop
+            echo "Populating Startpage file<br>";
+            $startfile = file_get_contents($startpage_filename);
+            if (!$startfile) {
+                die("Unable to open existing startpage file!");
+            }
+            append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links);
         }
     } else {
         if ($append_links) {
             // load existing template
             echo "Retrieving existing Startpage file<br>";
-            $handle = fopen($startpage_filename, "r") or die("Unable to open existing startpage file!");;
-            $startfile = fread($handle, filesize($startpage_filename));
-            fclose($handle);
+            $startfile = file_get_contents($startpage_filename);
+            if (!$startfile) {
+                die("Unable to open existing startpage file!");
+            }
             append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links);
         }
     }
 }
 
 function append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links) {
+    global $buttons_delimiter;
+
     // extract existing links from app/index.php
-    echo "Looking for new links to append to Startpage file<br>";
+    echo "Looking for new link to append to Startpage file<br>";
+    $startfile_appended = $startfile;
     $link_matcher_pattern = '/href=["\']?([^"\'>]+)["\']?/im';
     preg_match_all($link_matcher_pattern, $startfile, $startfile_links);
     if (count($startfile_links)) {
@@ -92,7 +102,7 @@ function append_links_to_startpage($startfile, $start_page, $startpage_filename,
         }
     }
 
-    // do not append links to app/index.php if they  already
+    // do not append links to app/index.php if they already exist
     preg_match_all($link_matcher_pattern, $start_page, $start_page_links);
     if (count($start_page_links)) {
         foreach($start_page_links[1] as $start_page_link) {
@@ -103,10 +113,11 @@ function append_links_to_startpage($startfile, $start_page, $startpage_filename,
                     echo '- Appending '.$start_page_link.'<br>';
                     array_push($startfile_links[1], $start_page_link);
                     $linkname = str_replace('-index.php', '', basename($start_page_link));
-                    $step0 = preg_replace('/<\/div>.*<\/center>/msx', "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n</div>\n</center>", $startfile);
-                    $destination_file = fopen($startpage_filename, "w") or die("Unable to open file!");
-                    fwrite($destination_file, $step0);
-                    fclose($destination_file);
+                    $button_string = "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n\t".$buttons_delimiter;
+                    $step0 = str_replace($buttons_delimiter, $button_string, $startfile);
+                    if (!file_put_contents($startpage_filename, $step0, LOCK_EX)) {
+                        die("Unable to open file!");
+                    }
                 }
                 array_push($generate_start_checked_links, $start_page_link);
             }
@@ -127,10 +138,10 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $step6 = str_replace("{COLUMN_NAME}", $column_id, $step5 );
     $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
     $step8 = str_replace("{INDEX_CONCAT_SEARCH_FIELDS}", $index_sql_search, $step7 );
-    $destination_file = fopen("app/".$tablename."-index.php", "w") or die("Unable to open file!");
-    fwrite($destination_file, $step8);
-    fclose($destination_file);
-    echo "Generating $tablename Index file(s)<br>";
+    if (!file_put_contents("app/".$tablename."-index.php", $step8, LOCK_EX)) {
+        die("Unable to open file!");
+    }
+    echo "Generating $tablename Index file<br>";
 }
 
 function generate_read($tablename, $column_id, $read_records){
@@ -138,20 +149,20 @@ function generate_read($tablename, $column_id, $read_records){
     $step0 = str_replace("{TABLE_NAME}", $tablename, $readfile);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
     $step2 = str_replace("{RECORDS_READ_FORM}", $read_records, $step1 );
-    $destination_file = fopen("app/".$tablename."-read.php", "w") or die("Unable to open file!");
-    fwrite($destination_file, $step2);
-    fclose($destination_file);
-    echo "Generating $tablename Read file(s)<br>";
+    if (!file_put_contents("app/".$tablename."-read.php", $step2, LOCK_EX)) {
+        die("Unable to open file!");
+    }
+    echo "Generating $tablename Read file<br>";
 }
 
 function generate_delete($tablename, $column_id){
     global $deletefile;
     $step0 = str_replace("{TABLE_NAME}", $tablename, $deletefile);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
-    $destination_file = fopen("app/".$tablename."-delete.php", "w") or die("Unable to open file!");
-    fwrite($destination_file, $step1);
-    fclose($destination_file);
-    echo "Generating $tablename Delete file(s)<br><br>";
+    if (!file_put_contents("app/".$tablename."-delete.php", $step1, LOCK_EX)) {
+        die("Unable to open file!");
+    }
+    echo "Generating $tablename Delete file<br><br>";
 }
 
 function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
@@ -164,10 +175,10 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
     $step5 = str_replace("{CREATE_SQL_PARAMS}", $create_sql_params, $step4 );
     $step6 = str_replace("{CREATE_HTML}", $create_html, $step5);
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
-    $destination_file = fopen("app/".$tablename."-create.php", "w") or die("Unable to open file!");
-    fwrite($destination_file, $step7);
-    fclose($destination_file);
-    echo "Generating $tablename Create file(s)<br>";
+    if (!file_put_contents("app/".$tablename."-create.php", $step7, LOCK_EX)) {
+        die("Unable to open file!");
+    }
+    echo "Generating $tablename Create file<br>";
 }
 
 function generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns){
@@ -182,10 +193,10 @@ function generate_update($tablename, $create_records, $create_err_records, $crea
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
     $step8 = str_replace("{UPDATE_COLUMN_ROWS}", $update_column_rows, $step7);
     $step9 = str_replace("{UPDATE_SQL_COLUMNS}", $update_sql_columns, $step8);
-    $destination_file = fopen("app/".$tablename."-update.php", "w") or die("Unable to open file!");
-    fwrite($destination_file, $step9);
-    fclose($destination_file);
-    echo "Generating $tablename Update file(s)<br>";
+    if (!file_put_contents("app/".$tablename."-update.php", $step9, LOCK_EX)) {
+        die("Unable to open file!");
+    }
+    echo "Generating $tablename Update file<br>";
 }
 
 function count_index_colums($table) {
