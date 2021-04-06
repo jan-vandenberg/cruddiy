@@ -26,7 +26,17 @@ if(isset($_POST['index'])) {
 	if (!file_exists('app'))
 		mkdir('app', 0777, true);
 
-	$configfile = fopen("app/config.php", "w") or die("Unable to open file!");
+
+    $helpersfilename = 'helpers.php';
+    $handle = fopen('helpers.php', "r") or die("Unable to open Helpers file!");;
+    $helpers = fread($handle, filesize($helpersfilename));
+    fclose($handle);
+
+    $helpersfile = fopen("app/".$helpersfilename, "w") or die("Unable to create Helpers file!");
+    fwrite($helpersfile, $helpers);
+	fclose($helpersfile);
+
+	$configfile = fopen("app/config.php", "w") or die("Unable to open Config file!");
 	$txt  = "<?php \n";
 	$txt .= "\$db_server = '$server'; \n";
 	$txt .= "\$db_name = '$database'; \n";
