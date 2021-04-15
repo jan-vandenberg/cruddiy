@@ -441,6 +441,8 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     // Get hidden input value
     ${COLUMN_ID} = $_POST["{COLUMN_ID}"];
 
+    {CREATE_POST_VARIABLES}
+
     // Prepare an update statement
     $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
     $options = [
