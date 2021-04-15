@@ -363,6 +363,7 @@ require_once "helpers.php";
 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
+        {CREATE_POST_VARIABLES}
 
         $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
         $options = [
