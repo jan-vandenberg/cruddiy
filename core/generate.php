@@ -50,7 +50,7 @@ function generate_error(){
     echo "Generating Error file<br>";
 }
 
-function generate_start($tablename, $start_page, $keep_startpage, $append_links){
+function generate_start($tablename, $start_page, $keep_startpage, $append_links, $td){
     global $startfile;
     global $generate_start_checked_links;
     global $startpage_filename;
@@ -73,7 +73,7 @@ function generate_start($tablename, $start_page, $keep_startpage, $append_links)
             if (!$startfile) {
                 die("Unable to open existing startpage file!");
             }
-            append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links);
+            append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
         }
     } else {
         if ($append_links) {
@@ -83,12 +83,12 @@ function generate_start($tablename, $start_page, $keep_startpage, $append_links)
             if (!$startfile) {
                 die("Unable to open existing startpage file!");
             }
-            append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links);
+            append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
         }
     }
 }
 
-function append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links) {
+function append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links, $td) {
     global $buttons_delimiter;
 
     // extract existing links from app/index.php
@@ -112,8 +112,7 @@ function append_links_to_startpage($startfile, $start_page, $startpage_filename,
                 } else {
                     echo '- Appending '.$start_page_link.'<br>';
                     array_push($startfile_links[1], $start_page_link);
-                    $linkname = str_replace('-index.php', '', basename($start_page_link));
-                    $button_string = "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$linkname.'</a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$td.'</a>'."\n\t".$buttons_delimiter;
                     $step0 = str_replace($buttons_delimiter, $button_string, $startfile);
                     if (!file_put_contents($startpage_filename, $step0, LOCK_EX)) {
                         die("Unable to open file!");
@@ -515,7 +514,7 @@ function generate($postdata) {
                         echo '<br>';
                     }
 
-                    generate_start($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false);
+                    generate_start($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay);
                     generate_error();
                     generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
                     generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
