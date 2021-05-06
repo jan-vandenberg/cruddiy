@@ -96,12 +96,12 @@ $indexfile = <<<'EOT'
                     if(!empty($_GET['search'])) {
                         $search = ($_GET['search']);
                         $sql = "SELECT * FROM {TABLE_NAME}
-                            WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
+                            WHERE CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
                             LIKE '%$search%'
                             ORDER BY $order $sort
                             LIMIT $offset, $no_of_records_per_page";
                         $count_pages = "SELECT * FROM {TABLE_NAME}
-                            WHERE CONCAT ({INDEX_CONCAT_SEARCH_FIELDS})
+                            WHERE CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
                             LIKE '%$search%'
                             ORDER BY $order $sort";
                     }
@@ -617,5 +617,3 @@ $startfile = <<<'EOT'
 </body>
 </html>
 EOT;
-
-?>
