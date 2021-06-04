@@ -1,5 +1,15 @@
 <?php
 
+$total_postvars = array_sum( array_map( 'count', $_POST ) );
+$max_postvars = ini_get("max_input_vars"); 
+if ($total_postvars >= $max_postvars) {
+    echo "Uh oh, it looks like you're trying to use more variables than your PHP settings (<a href='https://www.php.net/manual/en/info.configuration.php#ini.max-input-vars'>max_input_variables</a>) allow! <br>";
+    echo "Go back and choose less tables and/or columns or change your php.ini setting. <br>";      
+    echo "Read <a href='https://betterstudio.com/blog/increase-max-input-vars-limit/'>here</a> how you can increase this limit.<br>";
+    echo "Cruddiy will now exit because only part of what you wanted would otherwise be generated. 🙇";
+    exit();
+}
+
 require "app/config.php";
 require "templates.php";
 $tablename = '';
