@@ -1,6 +1,6 @@
 <?php
 
-$total_postvars = array_sum( array_map( 'count', $_POST ) );
+$total_postvars = count($_POST, COUNT_RECURSIVE);
 $max_postvars = ini_get("max_input_vars"); 
 if ($total_postvars >= $max_postvars) {
     echo "Uh oh, it looks like you're trying to use more variables than your PHP settings (<a href='https://www.php.net/manual/en/info.configuration.php#ini.max-input-vars'>max_input_variables</a>) allow! <br>";
