@@ -339,7 +339,7 @@ function generate($postdata) {
 
                         $columnname = $columns['columnname'];
                         $read_records .= '<div class="form-group">
-                            <label>'.$columndisplay.'</label>
+                            <h4>'.$columndisplay.'</h4>
                             <p class="form-control-static"><?php echo $row["'.$columnname.'"]; ?></p>
                         </div>';
 
