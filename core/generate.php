@@ -46,6 +46,15 @@ function column_type($columnname){
         case (preg_match("/int/i", $columnname) ? true : false) :
             return 5;
         break;
+        case (preg_match("/decimal/i", $columnname) ? true : false) :
+            return 6;
+        break;
+        case (preg_match("/datetime/i", $columnname) ? true : false) :
+            return 8;
+        break;
+        case (preg_match("/date/i", $columnname) ? true : false) :
+            return 7;
+        break;
         default:
             return 0;
         break;
@@ -469,6 +478,31 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
+                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                            </div>';
+                        break;
+
+                        //DECIMAL
+                        case 6:
+                            $create_html [] = '<div class="form-group">
+                                <label>'.$columndisplay.'</label>
+                                <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">
+                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                            </div>';
+                        break;
+                        //DATE
+                        case 7:
+                            $create_html [] = '<div class="form-group">
+                                <label>'.$columndisplay.'</label>
+                                <input type="date" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
+                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                            </div>';
+                        break;
+                        //DATETIME
+                        case 8:
+                            $create_html [] = '<div class="form-group">
+                                <label>'.$columndisplay.'</label>
+                                <input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">
                                 <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                             </div>';
                         break;
