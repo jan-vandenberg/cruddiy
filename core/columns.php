@@ -6,16 +6,16 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
 </head>
-<body>
+<body class="bg-light">
 <section class="py-5">
-    <div class="container">
+    <div class="container bg-white shadow py-5">
         <div class="row">
             <div class="col-md-12 mx-auto">
                 <div class="text-center">
-                    <h4 class="mb-0">All available columns</h4>
+                    <h4 class="h1 border-bottom pb-2">All Available Columns</h4>
                 </div>
 
-                <div class="col-md-4 offset-md-8">
+                <div class="col-md-10 mx-atuo text-right pr-5 ml-4">
                     <input type="checkbox" id="checkall">
                     <label for="checkall">Check/uncheck all</label>
                 </div>
@@ -88,7 +88,7 @@
                                 if (isset($table['tablecheckbox']) && $table['tablecheckbox'] == 1) {
                                     $tablename = $table['tablename'];
                                     $tabledisplay = $table['tabledisplay'];
-                                    echo "<div class='text-center my-4'><b>Table: " . $tabledisplay . " (". $tablename .")</b></div>";
+                                    echo "<div class='text-center mb-4'><b>Table: " . $tabledisplay . " (". $tablename .")</b></div>";
                                     $sql = "SHOW columns FROM $tablename";
                                     $primary_keys = get_primary_keys($tablename);
                                     $auto_keys = get_autoincrement_cols($tablename);
@@ -132,7 +132,7 @@
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][tabledisplay]" value="'.$tabledisplay.'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columnname]" value="'.$column[0].'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columntype]" value="'.$column_type.'"/>
-                                        <input id="textinput_'.$tablename. '-'.$i.'"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control">
+                                        <input id="textinput_'.$tablename. '-'.$i.'"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control rounded-0">
                                     </div>
                                     <div class="col-md-4">
                                         <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'" value="1">
@@ -147,7 +147,7 @@
                         ?>
 
                         <div class="row">
-                            <div class="col-12 offset-2">
+                            <div class="col-md-8 mx-auto">
                                 <p class="form-check">
                                     <small id="passwordHelpBlock" class="form-text text-muted">
                                         Cruddiy will create a fresh startpage in the app/ sub-folder, with link<?php echo $checked_tables_counter > 1 ? 's' : '' ?> to manage the table<?php echo $checked_tables_counter > 1 ? 's' : '' ?> above.<br>
@@ -164,8 +164,8 @@
                                     </label>
                                 </p>
                             </div>
-                            <div class="col-12 offset-5">
-                                <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary">Generate pages</button>
+                            <div class="col-md-8 mx-auto">
+                                <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success btn-block rounded-0 shadow-sm">Generate Pages</button>
                             </div>
                         </div>
                     </fieldset>
