@@ -1,5 +1,15 @@
 <?php
 
+$total_postvars = count($_POST, COUNT_RECURSIVE);
+$max_postvars = ini_get("max_input_vars"); 
+if ($total_postvars >= $max_postvars) {
+    echo "Uh oh, it looks like you're trying to use more variables than your PHP settings (<a href='https://www.php.net/manual/en/info.configuration.php#ini.max-input-vars'>max_input_variables</a>) allow! <br>";
+    echo "Go back and choose less tables and/or columns or change your php.ini setting. <br>";      
+    echo "Read <a href='https://betterstudio.com/blog/increase-max-input-vars-limit/'>here</a> how you can increase this limit.<br>";
+    echo "Cruddiy will now exit because only part of what you wanted would otherwise be generated. 🙇";
+    exit();
+}
+
 require "app/config.php";
 require "templates.php";
 $tablename = '';
@@ -35,6 +45,15 @@ function column_type($columnname){
         break;
         case (preg_match("/int/i", $columnname) ? true : false) :
             return 5;
+        break;
+        case (preg_match("/decimal/i", $columnname) ? true : false) :
+            return 6;
+        break;
+        case (preg_match("/datetime/i", $columnname) ? true : false) :
+            return 8;
+        break;
+        case (preg_match("/date/i", $columnname) ? true : false) :
+            return 7;
         break;
         default:
             return 0;
@@ -329,7 +348,7 @@ function generate($postdata) {
 
                         $columnname = $columns['columnname'];
                         $read_records .= '<div class="form-group">
-                            <label>'.$columndisplay.'</label>
+                            <h4>'.$columndisplay.'</h4>
                             <p class="form-control-static"><?php echo $row["'.$columnname.'"]; ?></p>
                         </div>';
 
@@ -463,6 +482,31 @@ function generate($postdata) {
                             </div>';
                         break;
 
+                        //DECIMAL
+                        case 6:
+                            $create_html [] = '<div class="form-group">
+                                <label>'.$columndisplay.'</label>
+                                <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">
+                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                            </div>';
+                        break;
+                        //DATE
+                        case 7:
+                            $create_html [] = '<div class="form-group">
+                                <label>'.$columndisplay.'</label>
+                                <input type="date" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
+                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                            </div>';
+                        break;
+                        //DATETIME
+                        case 8:
+                            $create_html [] = '<div class="form-group">
+                                <label>'.$columndisplay.'</label>
+                                <input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">
+                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                            </div>';
+                        break;
+
                         default:
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
@@ -537,11 +581,11 @@ function generate($postdata) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
 </head>
-<body>
+<body class="bg-light">
 <section class="py-5">
-    <div class="container">
+    <div class="container bg-white py-5 shadow">
         <div class="row">
-            <div class="col-md-12 mx-auto">
+            <div class="col-md-12 mx-auto px-5">
                 <?php generate($_POST); ?>
                 <hr>
                 <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
