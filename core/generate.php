@@ -581,11 +581,11 @@ function generate($postdata) {
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
 </head>
-<body>
+<body class="bg-light">
 <section class="py-5">
-    <div class="container">
+    <div class="container bg-white py-5 shadow">
         <div class="row">
-            <div class="col-md-12 mx-auto">
+            <div class="col-md-12 mx-auto px-5">
                 <?php generate($_POST); ?>
                 <hr>
                 <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
