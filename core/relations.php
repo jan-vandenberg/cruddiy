@@ -28,11 +28,11 @@ if(isset($_POST['index'])) {
 
 
     $helpersfilename = 'helpers.php';
-    $handle = fopen('helpers.php', "r") or die("Unable to open Helpers file!");;
+    $handle = fopen('helpers.php', "r") or die("Unable to open Helpers file! Please check your file permissions.");;
     $helpers = fread($handle, filesize($helpersfilename));
     fclose($handle);
 
-    $helpersfile = fopen("app/".$helpersfilename, "w") or die("Unable to create Helpers file!");
+    $helpersfile = fopen("app/".$helpersfilename, "w") or die("Unable to create Helpers file! Please check your file permissions");
     fwrite($helpersfile, $helpers);
 	fclose($helpersfile);
 
