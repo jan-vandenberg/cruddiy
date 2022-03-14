@@ -22,7 +22,7 @@ $index_table_headers = '';
 $sort = '';
 $excluded_keys = array('singlebutton', 'keep_startpage', 'append_links');
 $generate_start_checked_links = array();
-$startpage_filename = "app/index.php";
+$startpage_filename = "app/navbar.php";
 $forced_deletion = false;
 $buttons_delimiter = '<!-- TABLE_BUTTONS -->';
 
@@ -69,8 +69,17 @@ function generate_error(){
     echo "Generating Error file<br>";
 }
 
-function generate_start($tablename, $start_page, $keep_startpage, $append_links, $td){
-    global $startfile;
+function generate_startpage(){
+    global $startfile; 
+    if (!file_put_contents("app/index.php", $startfile, LOCK_EX)) {
+        die("Unable to open file!");
+    }
+    echo "Generating main index file.<br>";
+
+}
+
+function generate_navbar($tablename, $start_page, $keep_startpage, $append_links, $td){
+    global $navbarfile;
     global $generate_start_checked_links;
     global $startpage_filename;
 
@@ -81,43 +90,43 @@ function generate_start($tablename, $start_page, $keep_startpage, $append_links,
         if (!file_exists($startpage_filename)) {
             // called on the first run of the POST loop
             echo "Generating fresh Startpage file<br>";
-            $step0 = str_replace("{TABLE_BUTTONS}", $start_page, $startfile);
+            $step0 = str_replace("{TABLE_BUTTONS}", $start_page, $navbarfile);
             if (!file_put_contents($startpage_filename, $step0, LOCK_EX)) {
                 die("Unable to open fresh startpage file!");
             }
         } else {
             // called on subsequent runs of the POST loop
             echo "Populating Startpage file<br>";
-            $startfile = file_get_contents($startpage_filename);
-            if (!$startfile) {
+            $navbarfile = file_get_contents($startpage_filename);
+            if (!$navbarfile) {
                 die("Unable to open existing startpage file!");
             }
-            append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
+            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
         }
     } else {
         if ($append_links) {
             // load existing template
             echo "Retrieving existing Startpage file<br>";
-            $startfile = file_get_contents($startpage_filename);
-            if (!$startfile) {
+            $navbarfile = file_get_contents($startpage_filename);
+            if (!$navbarfile) {
                 die("Unable to open existing startpage file!");
             }
-            append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
+            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
         }
     }
 }
 
-function append_links_to_startpage($startfile, $start_page, $startpage_filename, $generate_start_checked_links, $td) {
+function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $td) {
     global $buttons_delimiter;
 
     // extract existing links from app/index.php
     echo "Looking for new link to append to Startpage file<br>";
-    $startfile_appended = $startfile;
+    $navbarfile_appended = $navbarfile;
     $link_matcher_pattern = '/href=["\']?([^"\'>]+)["\']?/im';
-    preg_match_all($link_matcher_pattern, $startfile, $startfile_links);
-    if (count($startfile_links)) {
-        foreach($startfile_links[1] as $startfile_link) {
-            // echo '- Found existing link '.$startfile_link.'<br>';
+    preg_match_all($link_matcher_pattern, $navbarfile, $navbarfile_links);
+    if (count($navbarfile_links)) {
+        foreach($navbarfile_links[1] as $navbarfile_link) {
+            // echo '- Found existing link '.$navbarfile_link.'<br>';
         }
     }
 
@@ -126,13 +135,13 @@ function append_links_to_startpage($startfile, $start_page, $startpage_filename,
     if (count($start_page_links)) {
         foreach($start_page_links[1] as $start_page_link) {
             if (!in_array($start_page_link, $generate_start_checked_links)) {
-                if (in_array($start_page_link, $startfile_links[1])) {
+                if (in_array($start_page_link, $navbarfile_links[1])) {
                     echo '- Not appending '.$start_page_link.' as it already exists<br>';
                 } else {
                     echo '- Appending '.$start_page_link.'<br>';
-                    array_push($startfile_links[1], $start_page_link);
-                    $button_string = "\t".'<a href="'.$start_page_link.'" class="btn btn-primary" role="button">'.$td.'</a>'."\n\t".$buttons_delimiter;
-                    $step0 = str_replace($buttons_delimiter, $button_string, $startfile);
+                    array_push($navbarfile_links[1], $start_page_link);
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'">'.$td.'</a>'."\n\t".$buttons_delimiter;
+                    $step0 = str_replace($buttons_delimiter, $button_string, $navbarfile);
                     if (!file_put_contents($startpage_filename, $step0, LOCK_EX)) {
                         die("Unable to open file!");
                     }
@@ -539,7 +548,9 @@ function generate($postdata) {
 
                     foreach($tables as $key => $value) {
                         //echo "$key is at $value";
-                        $start_page .= '<a href="'. $key . '-index.php" class="btn btn-primary" role="button">'. $value. '</a> ';
+                        //$start_page .= '<a href="'. $key . '-index.php" class="btn btn-primary" role="button">'. $value. '</a> ';
+                        //$button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'">'.$td.'</a>'."\n\t".$buttons_delimiter;
+                        $start_page .= '<a href="'. $key . '-index.php" class="dropdown-item">'. $value. '</a> ';
                         $start_page .= "\n\t";
                     }
 
@@ -558,8 +569,9 @@ function generate($postdata) {
                         echo '<br>';
                     }
 
-                    generate_start($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay);
+                    generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay);
                     generate_error();
+                    generate_startpage();
                     generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
                     generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
                     generate_read($tablename,$column_id,$read_records);
