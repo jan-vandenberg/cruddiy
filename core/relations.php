@@ -12,6 +12,11 @@ if(isset($_POST['index'])) {
 	if(isset($_POST['database'])) $database=trim($_POST['database']);
 	if(isset($_POST['numrecordsperpage'])) $numrecordsperpage=$_POST['numrecordsperpage'];
 
+    if((isset($_POST['appname'])) && $_POST['appname'] <> '') {
+        $appname=trim($_POST['appname']);
+    } else {
+        $appname = "Database Admin";
+    }
 	/* Attempt to connect to MySQL database */
 	$link = mysqli_connect($server, $username, $password, $database);
 	// Check connection
@@ -42,7 +47,8 @@ if(isset($_POST['index'])) {
 	$txt .= "\$db_name = '$database'; \n";
 	$txt .= "\$db_user = '$username'; \n";
 	$txt .= "\$db_password = '$password'; \n";
-	$txt .= "\$no_of_records_per_page = $numrecordsperpage; \n\n";
+	$txt .= "\$no_of_records_per_page = $numrecordsperpage; \n";
+	$txt .= "\$appname = '$appname'; \n\n";
 	$txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n";
 
     $txt .= '$query = "SHOW VARIABLES LIKE \'character_set_database\'";' ."\n";

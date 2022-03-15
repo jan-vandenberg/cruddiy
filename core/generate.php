@@ -118,6 +118,7 @@ function generate_navbar($tablename, $start_page, $keep_startpage, $append_links
 
 function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $td) {
     global $buttons_delimiter;
+    global $appname;
 
     // extract existing links from app/index.php
     echo "Looking for new link to append to Startpage file<br>";
@@ -142,7 +143,8 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
                     array_push($navbarfile_links[1], $start_page_link);
                     $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'">'.$td.'</a>'."\n\t".$buttons_delimiter;
                     $step0 = str_replace($buttons_delimiter, $button_string, $navbarfile);
-                    if (!file_put_contents($startpage_filename, $step0, LOCK_EX)) {
+                    $step1 = str_replace("{APP_NAME}", $appname, $step0 );
+                    if (!file_put_contents($startpage_filename, $step1, LOCK_EX)) {
                         die("Unable to open file!");
                     }
                 }
@@ -155,6 +157,8 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
 
 function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search) {
     global $indexfile;
+    global $appname;
+
     $columns_available = implode("', '", $columns_available);
     $step0 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
     $step1 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step0);
@@ -165,7 +169,8 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $step6 = str_replace("{COLUMN_NAME}", $column_id, $step5 );
     $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
     $step8 = str_replace("{INDEX_CONCAT_SEARCH_FIELDS}", $index_sql_search, $step7 );
-    if (!file_put_contents("app/".$tablename."-index.php", $step8, LOCK_EX)) {
+    $step9 = str_replace("{APP_NAME}", $appname, $step8 );
+    if (!file_put_contents("app/".$tablename."-index.php", $step9, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Index file<br>";

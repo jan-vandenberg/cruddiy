@@ -57,6 +57,11 @@ if (file_exists("../config.php")) {
                         <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="10" value="<?php echo $no_of_records_per_page ?>">
                     </div>
 
+                    <!-- Text input-->
+                    <div class="form-group">
+                        <label class="col-form-label" for="textinput">App Name</label>
+                        <input id="appname" name="appname" type="text" placeholder="Name for your app (optional)" class="form-control " value="<?php echo $appname; ?>">
+                    </div>
 
                     <div class="form-group">
                         <label class="col-form-label" for="index"></label>
