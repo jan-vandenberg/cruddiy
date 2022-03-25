@@ -1,6 +1,6 @@
 <?php
-if (file_exists("../config.php")) {
-    include("../config.php");
+if (file_exists("app/config.php")) {
+    include("app/config.php");
 }
 ?>
 <!doctype html>
