@@ -1,12 +1,12 @@
 # CRUDDIY
 
-Cruddiy is a free **no-code**  PHP Bootstrap 4 CRUD generator (with foreign key support).
+Cruddiy is a free **no-code**  PHP Bootstrap CRUD generator with foreign key support.
 
-With Cruddiy you can easily generate some simple, but beautiful, PHP Bootstrap CRUD pages (Create, Read, Update and Delete) with search, pagination and foreign key awareness.
+With Cruddiy you can easily generate some simple, but beautiful, PHP Bootstrap 4 CRUD pages (Create, Read, Update and Delete) with search, pagination and foreign key awareness.
 
 ### Notes
 * Does not support MyISAM for Foreign Keys and Cascades. Will need InnoDB type ENGINE. MyISAM can be used, but Foreign Keys and Cascades will not be available.
-* Although PHP 7 is recommended, it currently works with PHP 5.4 too.
+* PHP 7+ is recommended
 * Capable of string ID Primary Keys as well as integer ones.
 
 # How it works
