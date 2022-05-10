@@ -7,9 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
 
 </head>
-<body class="bg-light">
+<body>
 <section class="py-5">
-    <div class="container bg-white shadow py-5">
+    <div class="container shadow py-5">
         <div class="row">
             <div class="col-md-12 mx-auto">
                 <div class="text-center">

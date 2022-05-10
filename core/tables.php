@@ -12,9 +12,9 @@
 
     </head>
 
-    <body class="bg-light">
+    <body>
         <section class="pt-5">
-            <div class="container bg-white shadow py-5">
+            <div class="container shadow py-5">
                 <div class="row">
                     <div class="col-md-12 mx-auto">
                         <div class="text-center mb-4">
