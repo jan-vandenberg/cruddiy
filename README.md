@@ -1,5 +1,11 @@
 # CRUDDIY
 
+# Updates:
+* Updated from Bootstrap `4.5.0` to latest release `5.1.3`
+* Included [Bootstrap 5 Dark by Vino CSS](https://vinorodrigues.github.io/bootstrap-dark-5/) for automatic Light/Dark mode switching based on user device preferences
+* Updated Jquery to `3.6.0`
+- - - -
+
 Cruddiy is a free **no-code**  PHP Bootstrap CRUD generator with foreign key support.
 
 With Cruddiy you can easily generate some simple, but beautiful, PHP Bootstrap 4 CRUD pages (Create, Read, Update and Delete) with search, pagination and foreign key awareness.
