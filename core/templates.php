@@ -36,8 +36,8 @@ $indexfile = <<<'EOT'
 
                     <div class="form-row">
                         <form action="{TABLE_NAME}-index.php" method="get">
-                        <div class="col">
-                          <input type="text" class="form-control" placeholder="Search this table" name="search">
+                        <div class="col py-2">
+                          <input type="search" class="form-control" placeholder="Search this table" name="search">
                         </div>
                     </div>
                         </form>
@@ -255,10 +255,14 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                     <div class="page-header">
                         <h1>View Record</h1>
                     </div>
+                    <ol class="list-group">
 
                      {RECORDS_READ_FORM}
 
+                    </ol>
+                    <div class="py-2">
                     <p><a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -419,8 +423,10 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
                         {CREATE_HTML}
 
+                        <div class="py-2">
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -553,8 +559,10 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                         {CREATE_HTML}
 
                         <input type="hidden" name="{COLUMN_ID}" value="<?php echo ${COLUMN_ID}; ?>"/>
+                        <div class="py-2">
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
+                        </div>
                     </form>
                 </div>
             </div>

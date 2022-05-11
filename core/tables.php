@@ -6,7 +6,7 @@
 
     <head>
         <meta charset="UTF-8">
-    <meta name="color-scheme" content="light dark">
+        <meta name="color-scheme" content="light dark">
         <title>CRUD generator</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-dark-5@1.1.3/dist/css/bootstrap-dark.min.css" rel="stylesheet">
 
@@ -23,7 +23,7 @@
 
                         <div class="row align-items-center mb-1">
                             <div class="col-md-11 text-right pr-5 ml-3">
-                                <input type="checkbox" id="checkall">
+                                <input class="form-check-input" type="checkbox" type="checkbox" id="checkall">
                                 <label for="checkall">Check/uncheck all</label>
                             </div>
                         </div>
@@ -45,24 +45,27 @@
 
                                     echo
                                     '<div class="row align-items-center">
-                            <div class="col-md-3 text-right">
-                                  <label class="control-label" for="table[' . $i . '][tablename]">' . $table . ' </label>
-                            </div>
-                            <div class="col-md-6">
-                                     <input type="hidden" name="table[' . $i . '][tablename]" value="' . $table . '"/>
-                                     <input id="textinput_' . $table . '" name="table[' . $i . '][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm">
-                            </div>
-                            <div class="col-md-3">
-                              <input class="mr-1" type="checkbox"  name="table[' . $i . '][tablecheckbox]" id="checkboxes-' . $i . '" value="1"><label for="checkboxes-' . $i . '">Generate CRUD</label>
-                            </div>
-                        </div>
+                                        <div class="col-md-3 text-right">
+                                        <label class="control-label" for="table[' . $i . '][tablename]">' . $table . ' </label>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <input type="hidden" name="table[' . $i . '][tablename]" value="' . $table . '"/>
+                                        <input id="textinput_' . $table . '" name="table[' . $i . '][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm">
+                                    </div>
+                            
+                                    <div class="col-md-3">
+                                        <input class="form-check-input" type="checkbox" type="checkbox"  name="table[' . $i . '][tablecheckbox]" id="checkboxes-' . $i . '" value="1">
+                                        <label class="checkboxes-' . $i . '">Generate CRUD</label>
+                                    </div>
+                                    </div>
                         ';
 
                                     $i++;
                                 }
                                 ?>
                                 <div class="row">
-                                    <div class="col-md-6 mx-auto">
+                                    <div class="d-grid gap-2 col-6 mx-auto">
                                         <label class="control-label" for="singlebutton"></label>
                                         <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success btn-block shadow rounded-0">Select columns from tables</button>
                                     </div>

@@ -361,10 +361,13 @@ function generate($postdata) {
                     if(empty($columns['auto'])) {
 
                         $columnname = $columns['columnname'];
-                        $read_records .= '<div class="form-group">
-                            <h4>'.$columndisplay.'</h4>
-                            <p class="form-control-static"><?php echo $row["'.$columnname.'"]; ?></p>
-                        </div>';
+                        $read_records .= '
+                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                            <div class="ms-2 me-auto">
+                                <div class="fw-bold fs-5">'.$columndisplay.'</div>
+                                <?php echo $row["'.$columnname.'"]; ?>
+                            </div>
+                        </li>';
 
                         $create_records .= "\$$columnname = \"\";\n";
                         $create_record = "\$$columnname";
