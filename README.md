@@ -1,10 +1,9 @@
 # CRUDDIY
 
 # Changes:
-## I am still working on migrating the existing Bootstrap 4.5.0 code to 5.1.3.
-### This is currently working, but not perfect.
+> Fair warning: This is not a perfect migration to BS5! There is too much stuff to change, and I don't care enough. I've changed the major stuff, and it works fine as it is.
 * Updated from Bootstrap `4.5.0` to latest release `5.1.3`
-* Included [Bootstrap 5 Dark by Vino CSS](https://vinorodrigues.github.io/bootstrap-dark-5/) for automatic Light/Dark mode switching based on user device preferences
+* Included [Bootstrap 5 Dark CSS by Vino](https://vinorodrigues.github.io/bootstrap-dark-5/) for automatic Light/Dark mode switching based on user device preferences
 * Updated Jquery to `3.6.0`
 - - - -
 
