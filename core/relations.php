@@ -17,7 +17,8 @@ if(isset($_POST['index'])) {
     } else {
         $appname = "Database Admin";
     }
-	/* Attempt to connect to MySQL database */
+
+    /* Attempt to connect to MySQL database */
 	$link = mysqli_connect($server, $username, $password, $database);
 	// Check connection
 	if($link === false)
