@@ -376,7 +376,7 @@ function generate($postdata) {
 
                         $update_sql_params [] = "$columnname".'=?';
                         $update_sql_id = "$column_id".'=?';
-                        $update_column_rows .= "$$columnname = \$row[\"$columnname\"];\n\t\t\t\t\t";
+                        $update_column_rows .= "$$columnname = htmlspecialchars(\$row[\"$columnname\"]);\n\t\t\t\t\t";
 
 
                         //Foreign Key
