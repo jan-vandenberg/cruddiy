@@ -406,8 +406,9 @@ function generate($postdata) {
                                         $sql = "SELECT *,'. $fk_column .' FROM '. $fk_table . '";
                                         $result = mysqli_query($link, $sql);
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                                            array_pop($row);
-                                            $value = implode(" | ", $row);
+                                            $duprow = $row;
+                                            unset($duprow["' . $fk_column . '"]);
+                                            $value = implode(" | ", $duprow);
                                             if ($row["' . $fk_column . '"] == $' . $columnname . '){
                                             echo \'<option value="\' . "$row['. $fk_column. ']" . \'"selected="selected">\' . "$value" . \'</option>\';
                                             } else {
