@@ -51,7 +51,6 @@ $indexfile = <<<'EOT'
                     $domain   = $_SERVER['HTTP_HOST'];
                     $script   = $_SERVER['SCRIPT_NAME'];
                     $parameters   = $_GET ? $_SERVER['QUERY_STRING'] : "" ;
-                                === FALSE ? 'http' : 'https';
                     $protocol=($_SERVER['HTTPS'] == "on" ? "https" : "http");
                     $currenturl = $protocol . '://' . $domain. $script . '?' . $parameters;
 
