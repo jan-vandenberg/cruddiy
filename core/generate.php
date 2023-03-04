@@ -296,6 +296,9 @@ function generate($postdata) {
             $max = count_index_colums($key)+1;
             $total_columns = count($_POST[$key]);
             $total_params = count($_POST[$key]);
+            
+            echo "KEYS VAN DE ARRAY";
+            print_r($_POST);
 
             //Specific INDEX page variables
             foreach ( $_POST[$key] as $columns ) {
@@ -335,6 +338,9 @@ function generate($postdata) {
                     }
                     if (empty($columns['columndisplay'])){
                         $columndisplay = $columns['columnname'];
+                    }
+                    if (isset($columns['columncomment'])){
+                        $columndisplay .= "(" . $columns['columncomment'] . ")";
                     }
 
                     if (!empty($columns['auto'])){

@@ -62,6 +62,15 @@
                             mysqli_free_result($result);
                         }
 
+                        function get_col_comments($table,$column){
+                            global $link; 
+                            $sql = "SHOW FULL FIELDS FROM $table where FIELD ="."'".$column."'";
+                            $result = mysqli_query($link,$sql);
+                            $row = mysqli_fetch_assoc($result);
+                            return $row['Comment'] ;
+                            mysqli_free_result($result);
+                        }
+
                         function get_foreign_keys($table){
                             global $link;
                             global $db_name;
@@ -98,6 +107,7 @@
                                     while ($column = mysqli_fetch_array($result)) {
 
                                         $column_type = get_col_types($tablename,$column[0]);
+                                        $column_comment = get_col_comments($tablename,$column[0]);
 
                                         if (in_array ("$column[0]", $primary_keys)) {
                                             $primary = "🔑";
@@ -132,6 +142,7 @@
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][tabledisplay]" value="'.$tabledisplay.'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columnname]" value="'.$column[0].'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columntype]" value="'.$column_type.'"/>
+                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][columncomment]" value="'.$column_comment.'"/>
                                         <input id="textinput_'.$tablename. '-'.$i.'"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control rounded-0">
                                     </div>
                                     <div class="col-md-4">
