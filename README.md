@@ -1,5 +1,16 @@
 # Crud forms generator for WaterWeb
-Cruddy kan php forms genereren voor Database operator (Create, Read, Update en Delete)
+Cruddy kan php forms genereren voor Database operator (Create, Read, Update en Delete). \
+(Geplande) nieuwe functionaliteiten t.o.v. cruddiy
+- [x] Laat colom comments zien bij velden
+- [ ] Comments van een tabel toevoegen aan de paginas.
+- [ ] Foreign key doorverwijzen naar dat record.
+- [ ] Vanuit de foreign key, laat records zien die deze key gebuiken.
+- [ ] Edit, delete knop maken op read pagina.
+- [ ] Boolean / tinyint.
+- [ ] SQL injections fixen.
+- [ ] Formateer datum -> dd-mm-yyyy.
+- [ ] Sorteer standaard op id of naam?
+- [ ] Count records met een count ipv `result.num_records()`.
 
 ## Setup
 Clone deze repository in de root van WaterWeb, het zit al in de gitignore, dus waterweb heeft hier geen last van.
