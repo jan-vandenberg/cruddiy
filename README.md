@@ -3,6 +3,7 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 (Geplande) nieuwe functionaliteiten t.o.v. cruddiy
 - [x] Laat colom comments zien bij velden
 - [ ] Comments van een tabel toevoegen aan de paginas.
+- [ ] Laat SQL errors zien op het scherm. 
 - [ ] Foreign key doorverwijzen naar dat record.
 - [ ] Vanuit de foreign key, laat records zien die deze key gebuiken.
 - [ ] Edit, delete knop maken op read pagina.
