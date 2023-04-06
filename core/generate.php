@@ -323,7 +323,7 @@ function generate($postdata) {
 
                         $columns_available [] = $columnname;
                         $index_table_headers .= 'echo "<th><a href=?search=$search&sort='.$sort.'&order='.$columnname.'&sort=$sort>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
-                        $index_table_rows .= 'echo "<td>" . htmlspecialchars($row['. "'" . $columnname . "'" . ']) . "</td>";';
+                        $index_table_rows .= 'echo "<td>" . htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "") . "</td>";';
                         $i++;
                     }
                 }
@@ -371,7 +371,7 @@ function generate($postdata) {
                         $columnname = $columns['columnname'];
                         $read_records .= '<div class="form-group">
                             <h4>'.$columndisplay.'</h4>
-                            <p class="form-control-static"><?php echo htmlspecialchars($row["'.$columnname.'"]); ?></p>
+                            <p class="form-control-static"><?php echo htmlspecialchars($row["'.$columnname.'"] ?? ""); ?></p>
                         </div>';
 
                         $create_records .= "\$$columnname = \"\";\n";
@@ -384,7 +384,7 @@ function generate($postdata) {
 
                         $update_sql_params [] = "$columnname".'=?';
                         $update_sql_id = "$column_id".'=?';
-                        $update_column_rows .= "$$columnname = htmlspecialchars(\$row[\"$columnname\"]);\n\t\t\t\t\t";
+                        $update_column_rows .= "$$columnname = htmlspecialchars(\$row[\"$columnname\"] ?? \"\");\n\t\t\t\t\t";
 
 
                         //Foreign Key
