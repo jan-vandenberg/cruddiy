@@ -255,8 +255,11 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                     </div>
 
                      {RECORDS_READ_FORM}
-
-                    <p><a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a></p>
+                    <p>
+                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
+                        <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Delete</a>
+                        <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
+                    </p>                    
                 </div>
             </div>
         </div>
@@ -566,8 +569,15 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                         {CREATE_HTML}
 
                         <input type="hidden" name="{COLUMN_ID}" value="<?php echo ${COLUMN_ID}; ?>"/>
-                        <input type="submit" class="btn btn-primary" value="Submit">
-                        <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
+                        <p>
+                            <input type="submit" class="btn btn-primary" value="Submit">
+                            <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
+                        </p>
+                        <p>
+                            <a href="{TABLE_NAME}-read.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-info">View</a>
+                            <a href="{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-warning">Delete</a>
+                            <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
+                        </p>
                     </form>
                 </div>
             </div>

@@ -6,11 +6,11 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [ ] Laat SQL errors zien op het scherm. 
 - [ ] Foreign key doorverwijzen naar dat record.
 - [ ] Vanuit de foreign key, laat records zien die deze key gebuiken.
-- [ ] Edit, delete knop maken op read pagina.
+- [x] Edit, delete knop maken op read pagina.
 - [ ] Boolean / tinyint goed weergegeven. 
 - [ ] SQL injections fixen.
 - [ ] Formateer datum -> dd-mm-yyyy.
-- [ ] Sorteer standaard op id of naam?
+- [x] Sorteer standaard op id?
 - [x] Count records met een count ipv `result.num_records()`.
 
 ## Setup
