@@ -73,11 +73,14 @@ $indexfile = <<<'EOT'
                     $orderBy = array('{COLUMNS}');
                     $order = '{COLUMN_ID}';
                     if (isset($_GET['order']) && in_array($_GET['order'], $orderBy)) {
-                            $order = $_GET['order'];
-                        }
+                        $order = $_GET['order'];
+                    } else {
+                    // Order by primary key on default
+                        $order = $orderBy[0];
+                    }
 
                     //Column sort order
-                    $sortBy = array('asc', 'desc'); $sort = 'desc';
+                    $sortBy = array('asc', 'desc'); $sort = 'asc';
                     if (isset($_GET['sort']) && in_array($_GET['sort'], $sortBy)) {
                           if($_GET['sort']=='asc') {
                             $sort='desc';
