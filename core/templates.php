@@ -89,7 +89,7 @@ $indexfile = <<<'EOT'
 
                     // Attempt select query execution
                     $sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
-                    $count_pages = "{INDEX_QUERY}";
+                    $count_pages = "SELECT COUNT(*) AS count FROM {TABLE_NAME}";
 
 
                     if(!empty($_GET['search'])) {
@@ -99,7 +99,7 @@ $indexfile = <<<'EOT'
                             LIKE '%$search%'
                             ORDER BY $order $sort
                             LIMIT $offset, $no_of_records_per_page";
-                        $count_pages = "SELECT * FROM {TABLE_NAME}
+                        $count_pages = "SELECT COUNT(*) AS count FROM {TABLE_NAME}
                             WHERE CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
                             LIKE '%$search%'
                             ORDER BY $order $sort";
@@ -110,10 +110,8 @@ $indexfile = <<<'EOT'
 
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
-                            if ($result_count = mysqli_query($link, $count_pages)) {
-                               $total_pages = ceil(mysqli_num_rows($result_count) / $no_of_records_per_page);
-                           }
-                            $number_of_results = mysqli_num_rows($result_count);
+                            $number_of_results = mysqli_fetch_assoc(mysqli_query($link, $count_pages))['count'];
+                            $total_pages = ceil($number_of_results / $no_of_records_per_page);
                             echo " " . $number_of_results . " results - Page " . $pageno . " of " . $total_pages;
 
                             echo "<table class='table table-bordered table-striped'>";

@@ -11,7 +11,7 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [ ] SQL injections fixen.
 - [ ] Formateer datum -> dd-mm-yyyy.
 - [ ] Sorteer standaard op id of naam?
-- [ ] Count records met een count ipv `result.num_records()`.
+- [x] Count records met een count ipv `result.num_records()`.
 
 ## Setup
 Clone deze repository in de root van WaterWeb, het zit al in de gitignore, dus waterweb heeft hier geen last van.
