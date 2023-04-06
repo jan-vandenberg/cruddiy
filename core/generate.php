@@ -342,10 +342,15 @@ function generate($postdata) {
                         $columndisplay = $columns['columnname'];
                     }
 
+                    if (!$columns['columnnullable'])
+                    {
+                        $columndisplay .= "*";
+                    }
+
                     if (!empty($columns['columncomment'])){
                         $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
                     }
-
+                    
                     if (!empty($columns['auto'])){
                         //Dont create html input field for auto-increment columns
                         $j++;
@@ -382,9 +387,12 @@ function generate($postdata) {
                         $create_sqlcolumns [] = $columnname;
                         $create_sql_params [] = "\$$columnname";
                         
-                        // Process POST vars that can be null
-                        // $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
-                        $create_postvars .= "$$columnname = \$_POST[\"$columnname\"] == \"\" ? null : trim(\$_POST[\"$columnname\"]);\n\t\t";
+                        // Process POST vars that can be null differently
+                        if ($columns['columnnullable']){
+                            $create_postvars .= "$$columnname = \$_POST[\"$columnname\"] == \"\" ? null : trim(\$_POST[\"$columnname\"]);\n\t\t";
+                        } else {
+                            $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
+                        }                        
                         
                         $update_sql_params [] = "$columnname".'=?';
                         $update_sql_id = "$column_id".'=?';

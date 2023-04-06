@@ -424,6 +424,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
                     </form>
+                    <p> * field can not be left empty </p>
                 </div>
             </div>
         </div>
@@ -559,6 +560,7 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
                             <a href="{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-warning">Delete</a>
                             <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
                         </p>
+                        <p> * field can not be left empty </p>
                     </form>
                 </div>
             </div>
