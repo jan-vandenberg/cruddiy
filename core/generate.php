@@ -197,7 +197,7 @@ function generate_delete($tablename, $column_id){
     echo "Generating $tablename Delete file<br><br>";
 }
 
-function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
+function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
     global $createfile;
     $step0 = str_replace("{TABLE_NAME}", $tablename, $createfile);
     $step1 = str_replace("{CREATE_RECORDS}", $create_records, $step0);
@@ -207,7 +207,8 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
     $step5 = str_replace("{CREATE_SQL_PARAMS}", $create_sql_params, $step4 );
     $step6 = str_replace("{CREATE_HTML}", $create_html, $step5);
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
-    if (!file_put_contents("app/".$tablename."-create.php", $step7, LOCK_EX)) {
+    $step8 = str_replace("{COLUMN_ID}", $column_id, $step7);
+    if (!file_put_contents("app/".$tablename."-create.php", $step8, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Create file<br>";
@@ -587,7 +588,7 @@ function generate($postdata) {
                     generate_error();
                     generate_startpage();
                     generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
-                    generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
+                    generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
                     generate_read($tablename,$column_id,$read_records);
                     generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
                     generate_delete($tablename,$column_id);
