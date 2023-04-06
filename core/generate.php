@@ -381,8 +381,11 @@ function generate($postdata) {
                         $create_err_record = "\$$columnname".'_err';
                         $create_sqlcolumns [] = $columnname;
                         $create_sql_params [] = "\$$columnname";
-                        $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
-
+                        
+                        // Process POST vars that can be null
+                        // $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
+                        $create_postvars .= "$$columnname = \$_POST[\"$columnname\"] == \"\" ? null : trim(\$_POST[\"$columnname\"]);\n\t\t";
+                        
                         $update_sql_params [] = "$columnname".'=?';
                         $update_sql_id = "$column_id".'=?';
                         $update_column_rows .= "$$columnname = htmlspecialchars(\$row[\"$columnname\"] ?? \"\");\n\t\t\t\t\t";

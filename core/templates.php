@@ -382,7 +382,6 @@ require_once "helpers.php";
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     {CREATE_POST_VARIABLES}
 
-    $vars = parse_columns('{TABLE_NAME}', $_POST);
     $stmt = $link->prepare("INSERT INTO {TABLE_NAME} ({CREATE_COLUMN_NAMES}) VALUES ({CREATE_QUESTIONMARK_PARAMS})");
 
     try {
@@ -461,7 +460,6 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 
     // Prepare an update statement
 
-    $vars = parse_columns('{TABLE_NAME}', $_POST);
     $stmt = $link->prepare("UPDATE {TABLE_NAME} SET {UPDATE_SQL_PARAMS} WHERE {UPDATE_SQL_ID}");
 
     try {
