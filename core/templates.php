@@ -70,13 +70,13 @@ $indexfile = <<<'EOT'
                     $total_pages = ceil($total_rows / $no_of_records_per_page);
 
                     //Column sorting on column name
-                    $orderBy = array('{COLUMNS}');
+                    $columns = array('{COLUMNS}');
                     $order = '{COLUMN_ID}';
-                    if (isset($_GET['order']) && in_array($_GET['order'], $orderBy)) {
+                    if (isset($_GET['order']) && in_array($_GET['order'], $columns)) {
                         $order = $_GET['order'];
                     } else {
                     // Order by primary key on default
-                        $order = $orderBy[0];
+                        $order = $columns[0];
                     }
 
                     //Column sort order
@@ -90,20 +90,27 @@ $indexfile = <<<'EOT'
                         }
                     }
 
+                    //Generate WHERE statements for param
+                    $where_columns = array_intersect_key($_GET, array_flip($columns));                    
+                    $where_statement = " WHERE 1=1 ";
+                    foreach ( $where_columns as $key => $val ) {
+                        $where_statement .= " AND $key = '$val' ";
+                    }
+
                     // Attempt select query execution
-                    $sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
-                    $count_pages = "SELECT COUNT(*) AS count FROM {TABLE_NAME}";
+                    $sql = "{INDEX_QUERY} $where_statement ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
+                    $count_pages = "SELECT COUNT(*) AS count FROM {TABLE_NAME} $where_statement";
 
 
                     if(!empty($_GET['search'])) {
                         $search = ($_GET['search']);
                         $sql = "SELECT * FROM {TABLE_NAME}
-                            WHERE CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
+                            $where_statement AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
                             LIKE '%$search%'
                             ORDER BY $order $sort
                             LIMIT $offset, $no_of_records_per_page";
                         $count_pages = "SELECT COUNT(*) AS count FROM {TABLE_NAME}
-                            WHERE CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
+                            $where_statement AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
                             LIKE '%$search%'
                             ORDER BY $order $sort";
                     }
@@ -259,7 +266,8 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                         <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
                         <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Delete</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
-                    </p>                    
+                    </p> 
+                    {FOREIGN_KEY_REFS}                   
                 </div>
             </div>
         </div>

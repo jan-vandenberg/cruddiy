@@ -173,12 +173,13 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     echo "Generating $tablename Index file<br>";
 }
 
-function generate_read($tablename, $column_id, $read_records){
+function generate_read($tablename, $column_id, $read_records, $foreign_key_references){
     global $readfile;
     $step0 = str_replace("{TABLE_NAME}", $tablename, $readfile);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
     $step2 = str_replace("{RECORDS_READ_FORM}", $read_records, $step1 );
-    if (!file_put_contents("app/".$tablename."-read.php", $step2, LOCK_EX)) {
+    $step3 = str_replace("{FOREIGN_KEY_REFS}", $foreign_key_references, $step2 );
+    if (!file_put_contents("app/".$tablename."-read.php", $step3, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Read file<br>";
@@ -294,7 +295,27 @@ function generate($postdata) {
             $max = count_index_colums($key)+1;
             $total_columns = count($_POST[$key]);
             $total_params = count($_POST[$key]);
-            
+            $tablename = $_POST[$key][0]['tablename'];
+
+            // Find foreign key references to this table
+            $foreign_key_references = "";
+            $sql_get_fk_ref = "SELECT i.TABLE_NAME as 'Table', k.COLUMN_NAME as 'Column',
+                                k.REFERENCED_TABLE_NAME as 'FK Table', k.REFERENCED_COLUMN_NAME as 'FK Column',
+                                i.CONSTRAINT_NAME as 'Constraint Name'
+                                FROM information_schema.TABLE_CONSTRAINTS i
+                                LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+                                WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND k.REFERENCED_TABLE_NAME = '$tablename'";
+            $result = mysqli_query($link, $sql_get_fk_ref);
+            if (mysqli_num_rows($result) > 0) {
+                while($row = mysqli_fetch_assoc($result)) {
+                    $table = $row["Table"];
+                    $fk_column = $row["FK Column"];
+                    $column = $row["Column"];
+                    $foreign_key_references .= '<a href="'. $table . '-index.php?'.$column.'=<?php echo $_GET["'.$fk_column.'"];?>" class="btn btn-info">View '. $table .' with '. $column .' = <?php echo $_GET["'.$fk_column.'"];?></a></p>';
+                }
+            }
+            $foreign_key_references = $foreign_key_references != "" ? "<h3>External references to this $tablename:</h3><p>$foreign_key_references</p>" : "";
+
             //Specific INDEX page variables
             foreach ( $_POST[$key] as $columns ) {
                 if (isset($columns['primary'])){
@@ -617,6 +638,7 @@ function generate($postdata) {
                         $j++;
                     }
                 }
+
                 if ($j == $total_columns) {
 
                     $update_sql_columns = $create_sql_params;
@@ -663,7 +685,7 @@ function generate($postdata) {
                     generate_startpage();
                     generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
                     generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
-                    generate_read($tablename,$column_id,$read_records);
+                    generate_read($tablename,$column_id,$read_records,$foreign_key_references);
                     generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
                     generate_delete($tablename,$column_id);
                 }
