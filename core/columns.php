@@ -139,9 +139,17 @@
                                             $fk = "";
                                         }
 
+                                        if ($column_nullable) {
+                                            $nb = "🫙";
+                                        }
+                                        else {
+                                            $nb = "";
+                                        }
+
+                                        echo "<span data-toggle='tooltip' data-placement='top' title='$column_comment'>";
                                         echo '<div class="row align-items-center mb-2">
                                     <div class="col-2 text-right"
-                                        <label class="col-form-label" for="'.$tablename.'">'. $primary . $auto . $fk . $column[0] . ' </label>
+                                        <label class="col-form-label" for="'.$tablename.'">'. $primary . $auto . $fk . $nb . $column[0] . ' </label>
                                     </div>
                                     <div class="col-md-6">
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][tablename]" value="'.$tablename.'"/>
@@ -155,7 +163,7 @@
                                     <div class="col-md-4">
                                         <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'" value="1">
                                 <label for="checkboxes-'.$checked_tables_counter.'-'.$i.'">Visible in overview?</label></div>
-                     </div>';
+                     </div></span>';
                                         $i++;
                                     }
                                     $checked_tables_counter++;
@@ -201,6 +209,9 @@ $(document).ready(function () {
         var chb = $('.form-horizontal').find('input[type="checkbox"]');
         chb.prop('checked', !chb.prop('checked'));
     });
+});
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
 </body>
