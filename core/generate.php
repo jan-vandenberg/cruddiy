@@ -37,11 +37,8 @@ function column_type($columnname){
         case (preg_match("/varchar/i", $columnname) ? true : false) :
             return 3;
         break;
-            //Tinyint needs work to be selectable from dropdown list
-            //So for now a tinyint will be just a input field (in Create)
-            //and a prefilled input field (in Update).
         case (preg_match("/tinyint\(1\)/i", $columnname) ? true : false) :
-            return 5;
+            return 4;
         break;
         case (preg_match("/int/i", $columnname) ? true : false) :
             return 5;
@@ -462,6 +459,10 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
+                            if ($columns['columnnullable'])
+                            {
+                                $create_html [] .= '<option value="">Null</option>';
+                            }
                             $create_html [] .=  '<?php
                                             $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
                                             FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '. "'$tablename'" .'  AND COLUMN_NAME = '."'$columnname'" .'";
@@ -494,19 +495,24 @@ function generate($postdata) {
                                 <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                             </div>';
                         break;
-                        //TINYINT - Will never hit. Needs work.
+                        //TINYINT (bool)
                         case 4:
                             $regex = "/'(.*?)'/";
                             preg_match_all( $regex , $columns['columntype'] , $enum_array );
-
-                            $create_html [] = '<div class="form-group">
+                            $html = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
-                                        $create_html [] .= '    <option value="0">0</option>';
-                                        $create_html [] .= '    <option value="1">1</option>';
-                            $create_html [] .= '</select>
+                                if ($columns['columnnullable'])
+                                {
+                                    $html .= '<option value="">Null</option>';
+                                }
+                            $html   .= '    <option value="0" <?php echo !' . $create_record . ' ? "selected": ""; ?> >False</option>';
+                            $html   .= '    <option value="1" <?php echo ' . $create_record . ' ? "selected": ""; ?> >True</option>';
+                            $html   .= '</select>
                                 <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                                 </div>';
+                            $create_html [] = $html;
+                            unset($html);
                         break;
                         //INT
                         case 5:
