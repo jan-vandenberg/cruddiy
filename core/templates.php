@@ -94,7 +94,7 @@ $indexfile = <<<'EOT'
                     $where_columns = array_intersect_key($_GET, array_flip($columns));                    
                     $where_statement = " WHERE 1=1 ";
                     foreach ( $where_columns as $key => $val ) {
-                        $where_statement .= " AND $key = '$val' ";
+                        $where_statement .= " AND $key = '" . mysqli_real_escape_string($link, $val) . "' ";
                     }
 
                     // Attempt select query execution
@@ -103,7 +103,7 @@ $indexfile = <<<'EOT'
 
 
                     if(!empty($_GET['search'])) {
-                        $search = ($_GET['search']);
+                        $search = mysqli_real_escape_string($link, $_GET['search']);
                         $sql = "SELECT * FROM {TABLE_NAME}
                             $where_statement AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
                             LIKE '%$search%'
