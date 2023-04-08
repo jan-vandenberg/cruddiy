@@ -301,6 +301,8 @@ function generate($postdata) {
                     $column_id =  $columns['columnname'];
                 }
 
+                $type = column_type($columns['columntype']);
+
                 //INDEXFILE VARIABLES
                 //Get the columns visible in the index file
                 if (isset($columns['columnvisible'])){
@@ -321,7 +323,20 @@ function generate($postdata) {
 
                         $columns_available [] = $columnname;
                         $index_table_headers .= 'echo "<th><a href=?search=$search&sort='.$sort.'&order='.$columnname.'&sort=$sort>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
-                        $index_table_rows .= 'echo "<td>" . htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "") . "</td>";';
+                        
+                        // Display date in locale format
+                        if ($type == 7) // Date
+                        {
+                            $index_table_rows .= 'echo "<td>" . convert_date($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
+                        else if ($type == 8) // Datetime
+                        {
+                            $index_table_rows .= 'echo "<td>" . convert_datetime($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
+                        else
+                        {
+                            $index_table_rows .= 'echo "<td>" . htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "") . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
                         $i++;
                     }
                 }
@@ -329,8 +344,9 @@ function generate($postdata) {
 
             //DETAIL CREATE UPDATE AND DELETE pages variables
             foreach ( $_POST[$key] as $columns ) {
-                //print_r($columns);
                 if ($j < $total_columns) {
+
+                    $type = column_type($columns['columntype']);
 
                     if (isset($columns['columndisplay'])){
                         $columndisplay = $columns['columndisplay'];
@@ -374,8 +390,21 @@ function generate($postdata) {
                         $columnname = $columns['columnname'];
                         $read_records .= '<div class="form-group">
                             <h4>'.$columndisplay.'</h4>
-                            <p class="form-control-static"><?php echo htmlspecialchars($row["'.$columnname.'"] ?? ""); ?></p>
-                        </div>';
+                            <p class="form-control-static">';
+                        // Display date in locale format
+                        if ($type == 7) // Date
+                        {
+                            $read_records .= '<?php echo convert_date($row["'.$columnname.'"]); ?>';
+                        }
+                        else if ($type == 8) // Datetime
+                        {
+                            $read_records .= '<?php echo convert_datetime($row["'.$columnname.'"]); ?>';
+                        }
+                        else
+                        {
+                            $read_records .= '<?php echo htmlspecialchars($row["'.$columnname.'"] ?? ""); ?>';
+                        }
+                        $read_records .= '</p></div>';
 
                         $create_records .= "\$$columnname = \"\";\n";
                         $create_record = "\$$columnname";
@@ -439,9 +468,9 @@ function generate($postdata) {
                         }
 
                 // No Foreign Keys, just regular columns from here on
-                } else {
+                } else {                        
 
-                        $type = column_type($columns['columntype']);
+                        //$type = column_type($columns['columntype']);
 
                         switch($type) {
                         //TEXT

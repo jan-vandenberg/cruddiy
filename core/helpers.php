@@ -84,4 +84,18 @@ function print_error_if_exists($error) {
         echo "<div class='alert alert-danger' role='alert'>$error</div>";
     }
 }
+
+function convert_date($date_str) {
+    if(isset($date_str)){
+        $date = date( 'd-m-Y', strtotime( $date_str ) );
+        return htmlspecialchars($date);
+    }
+}
+
+function convert_datetime($date_str){
+    if(isset($date_str)){
+        $date = date( 'd-m-Y H:i:s', strtotime( $date_str ) );
+        return htmlspecialchars($date);
+    }
+}
 ?>
