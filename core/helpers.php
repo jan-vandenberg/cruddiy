@@ -98,4 +98,14 @@ function convert_datetime($date_str){
         return htmlspecialchars($date);
     }
 }
+
+function get_fk_url($value, $fk_table, $fk_column)
+// Gets a URL to the foreign key parents read page
+{   
+    if(isset($value))
+    {
+        $value = htmlspecialchars($value);
+        return '<a href="' . $fk_table .'-read.php?' . $fk_column . '=' . $value .'">'. $value . '</a>';
+    }
+}
 ?>

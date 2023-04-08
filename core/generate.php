@@ -325,7 +325,26 @@ function generate($postdata) {
                         $index_table_headers .= 'echo "<th><a href=?search=$search&sort='.$sort.'&order='.$columnname.'&sort=$sort>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
                         
                         // Display date in locale format
-                        if ($type == 7) // Date
+                        if(!empty($columns['fk'])){
+                            //Get the Foreign Key
+                            $tablename = $columns['tablename'];
+                            $columnname = $columns['columnname'];
+                            $sql_getfk = "SELECT i.TABLE_NAME as 'Table', k.COLUMN_NAME as 'Column',
+                                    k.REFERENCED_TABLE_NAME as 'FK Table', k.REFERENCED_COLUMN_NAME as 'FK Column',
+                                    i.CONSTRAINT_NAME as 'Constraint Name'
+                                    FROM information_schema.TABLE_CONSTRAINTS i
+                                    LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+                                    WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND k.TABLE_NAME = '$tablename' AND k.COLUMN_NAME = '$columnname'";
+                            $result = mysqli_query($link, $sql_getfk);
+                            if (mysqli_num_rows($result) > 0) {
+                                while($row = mysqli_fetch_assoc($result)) {
+                                    $fk_table = $row["FK Table"];
+                                    $fk_column = $row["FK Column"];
+                                }
+                            $index_table_rows .= 'echo "<td>" . get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'") . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                            }
+                        }
+                        else if ($type == 7) // Date
                         {
                             $index_table_rows .= 'echo "<td>" . convert_date($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
                         }
@@ -391,20 +410,6 @@ function generate($postdata) {
                         $read_records .= '<div class="form-group">
                             <h4>'.$columndisplay.'</h4>
                             <p class="form-control-static">';
-                        // Display date in locale format
-                        if ($type == 7) // Date
-                        {
-                            $read_records .= '<?php echo convert_date($row["'.$columnname.'"]); ?>';
-                        }
-                        else if ($type == 8) // Datetime
-                        {
-                            $read_records .= '<?php echo convert_datetime($row["'.$columnname.'"]); ?>';
-                        }
-                        else
-                        {
-                            $read_records .= '<?php echo htmlspecialchars($row["'.$columnname.'"] ?? ""); ?>';
-                        }
-                        $read_records .= '</p></div>';
 
                         $create_records .= "\$$columnname = \"\";\n";
                         $create_record = "\$$columnname";
@@ -445,6 +450,8 @@ function generate($postdata) {
 
                             //Be careful code below is particular regarding single and double quotes.
 
+                            $read_records .= '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'"); ?>';
+                            
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                     <select class="form-control" id="'. $columnname .'" name="'. $columnname .'">
@@ -469,6 +476,20 @@ function generate($postdata) {
 
                 // No Foreign Keys, just regular columns from here on
                 } else {                        
+
+                        // Display date in locale format
+                        if ($type == 7) // Date
+                        {
+                            $read_records .= '<?php echo convert_date($row["'.$columnname.'"]); ?>';
+                        }
+                        else if ($type == 8) // Datetime
+                        {
+                            $read_records .= '<?php echo convert_datetime($row["'.$columnname.'"]); ?>';
+                        }
+                        else
+                        {
+                            $read_records .= '<?php echo htmlspecialchars($row["'.$columnname.'"] ?? ""); ?>';
+                        }
 
                         //$type = column_type($columns['columntype']);
 
@@ -586,6 +607,7 @@ function generate($postdata) {
                         break;
                         }
                     }
+                        $read_records .= '</p></div>';
                         $j++;
                     }
                 }
