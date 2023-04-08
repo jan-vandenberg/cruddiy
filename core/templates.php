@@ -279,11 +279,12 @@ EOT;
 
 $deletefile = <<<'EOT'
 <?php
+// Include config file
+require_once "config.php";
+require_once "helpers.php";
+
 // Process delete operation after confirmation
 if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
-    // Include config file
-    require_once "config.php";
-    require_once "helpers.php";
 
     // Prepare a delete statement
     $sql = "DELETE FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
@@ -299,13 +300,16 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
 		else $__vartype = "b"; // blob
         mysqli_stmt_bind_param($stmt, $__vartype, $param_id);
 
-        // Attempt to execute the prepared statement
-        if(mysqli_stmt_execute($stmt)){
+        try {
+            mysqli_stmt_execute($stmt);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $error = $e->getMessage();
+        }
+    
+        if (!isset($error)){
             // Records deleted successfully. Redirect to landing page
             header("location: {TABLE_NAME}-index.php");
-            exit();
-        } else{
-            echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
         }
     }
 
@@ -341,7 +345,8 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
                     <div class="page-header">
                         <h1>Delete Record</h1>
                     </div>
-                    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+                    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?{TABLE_ID}=" . $_GET["{TABLE_ID}"]; ?>" method="post">
+                    <?php print_error_if_exists($error); ?>
                         <div class="alert alert-danger fade-in">
                             <input type="hidden" name="{TABLE_ID}" value="<?php echo trim($_GET["{TABLE_ID}"]); ?>"/>
                             <p>Are you sure you want to delete this record?</p><br>
@@ -351,6 +356,11 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
                             </p>
                         </div>
                     </form>
+                    <p>
+                        <a href="{TABLE_NAME}-read.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-info">View</a>
+                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
+                        <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
+                    </p>
                 </div>
             </div>
         </div>
