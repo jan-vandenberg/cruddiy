@@ -452,10 +452,14 @@ function generate($postdata) {
 
                             $read_records .= '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'"); ?>';
                             
-                            $create_html [] = '<div class="form-group">
+                            $html = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
-                                    <select class="form-control" id="'. $columnname .'" name="'. $columnname .'">
-                                    <?php
+                                    <select class="form-control" id="'. $columnname .'" name="'. $columnname .'">';
+                            if ($columns['columnnullable'])
+                            {
+                                $html .= '<option value="">Null</option>';
+                            }
+                            $html .= ' <?php
                                         $sql = "SELECT *,'. $fk_column .' FROM '. $fk_table . '";
                                         $result = mysqli_query($link, $sql);
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
@@ -472,6 +476,8 @@ function generate($postdata) {
                                     </select>
                                 <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
                             </div>';
+                            $create_html [] = $html;
+                            unset($html);
                         }
 
                 // No Foreign Keys, just regular columns from here on
