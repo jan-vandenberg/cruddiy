@@ -311,10 +311,16 @@ function generate($postdata) {
                     $table = $row["Table"];
                     $fk_column = $row["FK Column"];
                     $column = $row["Column"];
-                    $foreign_key_references .= '<a href="'. $table . '-index.php?'.$column.'=<?php echo $_GET["'.$fk_column.'"];?>" class="btn btn-info">View '. $table .' with '. $column .' = <?php echo $_GET["'.$fk_column.'"];?></a></p>';
+                    $foreign_key_references .= '
+                    $sql = "SELECT COUNT(*) AS count FROM '. $table .' WHERE '. $column .' = ". $row["'.$fk_column.'"] . ";";
+                    $number_of_refs = mysqli_fetch_assoc(mysqli_query($link, $sql))["count"];
+                    if ($number_of_refs > 0)
+                    {
+                        $html .= \'<p><a href="'. $table . '-index.php?'. $column . '= \'. $row["'.$fk_column.'"]' . '.\'" class="btn btn-info">View \' . $number_of_refs . \' ' . $table . ' with '. $column . ' = \'. $row["'.$fk_column.'"] .\'</a></p></p>\';         
+                    }';
                 }
             }
-            $foreign_key_references = $foreign_key_references != "" ? "<h3>External references to this $tablename:</h3><p>$foreign_key_references</p>" : "";
+            $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this' . $tablename . ':</h3>" . $html;}' : "";
 
             //Specific INDEX page variables
             foreach ( $_POST[$key] as $columns ) {

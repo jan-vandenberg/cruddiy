@@ -235,8 +235,6 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     // Close statement
     mysqli_stmt_close($stmt);
 
-    // Close connection
-    mysqli_close($link);
 } else{
     // URL doesn't contain id parameter. Redirect to error page
     header("location: error.php");
@@ -267,7 +265,12 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                         <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Delete</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
                     </p> 
-                    {FOREIGN_KEY_REFS}                   
+                    <?php
+                    {FOREIGN_KEY_REFS}
+                    
+                    // Close connection
+                    mysqli_close($link);
+                    ?>
                 </div>
             </div>
         </div>
