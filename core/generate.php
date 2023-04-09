@@ -501,7 +501,7 @@ function generate($postdata) {
                                         }
                                     ?>
                                     </select>
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                             </div>';
                             $create_html [] = $html;
                             unset($html);
@@ -532,7 +532,7 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <input type="text" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                             </div>';
                         break;
 
@@ -564,7 +564,7 @@ function generate($postdata) {
                                             }?>';
 
                             $create_html [] .= '</select>
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                                 </div>';
                         break;
                         //VARCHAR
@@ -575,7 +575,7 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <input type="text" name="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                             </div>';
                         break;
                         //TINYINT (bool)
@@ -592,7 +592,7 @@ function generate($postdata) {
                             $html   .= '    <option value="0" <?php echo !' . $create_record . ' ? "selected": ""; ?> >False</option>';
                             $html   .= '    <option value="1" <?php echo ' . $create_record . ' ? "selected": ""; ?> >True</option>';
                             $html   .= '</select>
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                                 </div>';
                             $create_html [] = $html;
                             unset($html);
@@ -602,7 +602,7 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                             </div>';
                         break;
 
@@ -611,7 +611,7 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                             </div>';
                         break;
                         //DATE
@@ -619,7 +619,7 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <input type="date" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                             </div>';
                         break;
                         //DATETIME
@@ -627,7 +627,7 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                             </div>';
                         break;
 
@@ -635,7 +635,7 @@ function generate($postdata) {
                             $create_html [] = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <textarea name="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
+                                <span class="form-text"></span>
                             </div>';
                         break;
                         }

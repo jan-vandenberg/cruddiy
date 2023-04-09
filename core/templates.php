@@ -267,7 +267,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                     </p> 
                     <?php
                     {FOREIGN_KEY_REFS}
-                    
+
                     // Close connection
                     mysqli_close($link);
                     ?>
@@ -395,10 +395,6 @@ $createfile = <<<'EOT'
 require_once "config.php";
 require_once "helpers.php";
 
-// Define variables and initialize with empty values
-{CREATE_RECORDS}
-{CREATE_ERR_RECORDS}
-
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     {CREATE_POST_VARIABLES}
@@ -468,10 +464,6 @@ $updatefile = <<<'EOT'
 // Include config file
 require_once "config.php";
 require_once "helpers.php";
-
-// Define variables and initialize with empty values
-{CREATE_RECORDS}
-{CREATE_ERR_RECORDS}
 
 // Processing form data when form is submitted
 if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
