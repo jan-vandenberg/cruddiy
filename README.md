@@ -23,6 +23,7 @@ Clone deze repository in de root van WaterWeb, het zit al in de gitignore, dus w
 ```
 cp -r cruddiy/core/app/ cruddiy/core/temp/
 rm  cruddiy/core/temp/config.php cruddiy/core/temp/error.php cruddiy/core/temp/helpers.php cruddiy/core/temp/index.php cruddiy/core/temp/navbar.php
+docker-compose exec php var/www/public/cruddiy/vendor/bin/php-cs-fixer fix var/www/public/cruddiy/core/temp
 cp cruddiy/core/temp/* manager/modules/crud/
 rm -r cruddiy/core/temp
 ```
