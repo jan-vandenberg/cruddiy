@@ -30,7 +30,7 @@ $indexfile = <<<'EOT'
                         <h2 class="float-left">{TABLE_DISPLAY} Details</h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right">Add New Record</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2">Reset View</a>
-                        <a href="index.php" class="btn btn-secondary float-right mr-2">Back</a>
+                        <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2">Back</a>
                     </div>
 
                     <div class="form-row">
@@ -91,10 +91,12 @@ $indexfile = <<<'EOT'
                     }
 
                     //Generate WHERE statements for param
-                    $where_columns = array_intersect_key($_GET, array_flip($columns));                    
+                    $where_columns = array_intersect_key($_GET, array_flip($columns));
+                    $get_param = "";                    
                     $where_statement = " WHERE 1=1 ";
                     foreach ( $where_columns as $key => $val ) {
                         $where_statement .= " AND $key = '" . mysqli_real_escape_string($link, $val) . "' ";
+                        $get_param .= "&$key=$val";
                     }
 
                     // Attempt select query execution
@@ -263,7 +265,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                     <p>
                         <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
                         <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Delete</a>
-                        <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
+                        <a href="javascript:history.back()" class="btn btn-primary">Back</a>
                     </p> 
                     <?php
                     {FOREIGN_KEY_REFS}
@@ -363,14 +365,14 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
                             <p>Are you sure you want to delete this record?</p><br>
                             <p>
                                 <input type="submit" value="Yes" class="btn btn-danger">
-                                <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">No</a>
+                                <a href="javascript:history.back()" class="btn btn-secondary">No</a>
                             </p>
                         </div>
                     </form>
                     <p>
                         <a href="{TABLE_NAME}-read.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-info">View</a>
                         <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
-                        <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
+                        <a href="javascript:history.back()" class="btn btn-primary">Back</a>
                     </p>
                 </div>
             </div>
@@ -566,12 +568,12 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
                         <input type="hidden" name="{COLUMN_ID}" value="<?php echo ${COLUMN_ID}; ?>"/>
                         <p>
                             <input type="submit" class="btn btn-primary" value="Submit">
-                            <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
+                            <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
                         </p>
                         <p>
                             <a href="{TABLE_NAME}-read.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-info">View</a>
                             <a href="{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-warning">Delete</a>
-                            <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a>
+                            <a href="javascript:history.back()" class="btn btn-primary">Back</a>
                         </p>
                         <p> * field can not be left empty </p>
                     </form>
