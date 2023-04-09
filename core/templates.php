@@ -64,7 +64,7 @@ $indexfile = <<<'EOT'
                     //$no_of_records_per_page is set on the index page. Default is 10.
                     $offset = ($pageno-1) * $no_of_records_per_page;
 
-                    $total_pages_sql = "SELECT COUNT(*) FROM {TABLE_NAME}";
+                    $total_pages_sql = "SELECT COUNT(*) FROM `{TABLE_NAME}`";
                     $result = mysqli_query($link,$total_pages_sql);
                     $total_rows = mysqli_fetch_array($result)[0];
                     $total_pages = ceil($total_rows / $no_of_records_per_page);
@@ -95,26 +95,25 @@ $indexfile = <<<'EOT'
                     $get_param = "";                    
                     $where_statement = " WHERE 1=1 ";
                     foreach ( $where_columns as $key => $val ) {
-                        $where_statement .= " AND $key = '" . mysqli_real_escape_string($link, $val) . "' ";
+                        $where_statement .= " AND `$key` = '" . mysqli_real_escape_string($link, $val) . "' ";
                         $get_param .= "&$key=$val";
                     }
 
                     // Attempt select query execution
-                    $sql = "{INDEX_QUERY} $where_statement ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
-                    $count_pages = "SELECT COUNT(*) AS count FROM {TABLE_NAME} $where_statement";
+                    $sql = "{INDEX_QUERY} $where_statement ORDER BY `$order` $sort LIMIT $offset, $no_of_records_per_page";
+                    $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` $where_statement";
 
 
                     if(!empty($_GET['search'])) {
                         $search = mysqli_real_escape_string($link, $_GET['search']);
-                        $sql = "SELECT * FROM {TABLE_NAME}
+                        $sql = "SELECT * FROM `{TABLE_NAME}`
                             $where_statement AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
                             LIKE '%$search%'
-                            ORDER BY $order $sort
+                            ORDER BY `$order` $sort
                             LIMIT $offset, $no_of_records_per_page";
-                        $count_pages = "SELECT COUNT(*) AS count FROM {TABLE_NAME}
+                        $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}`
                             $where_statement AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
-                            LIKE '%$search%'
-                            ORDER BY $order $sort";
+                            LIKE '%$search%'";
                     }
                     else {
                         $search = "";
@@ -202,7 +201,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     require_once "helpers.php";
 
     // Prepare a select statement
-    $sql = "SELECT * FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
+    $sql = "SELECT * FROM `{TABLE_NAME}` WHERE `{TABLE_ID}` = ?";
 
     if($stmt = mysqli_prepare($link, $sql)){
         // Set parameters
@@ -300,7 +299,7 @@ require_once "helpers.php";
 if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
 
     // Prepare a delete statement
-    $sql = "DELETE FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
+    $sql = "DELETE FROM `{TABLE_NAME}` WHERE `{TABLE_ID}` = ?";
 
     if($stmt = mysqli_prepare($link, $sql)){
         // Set parameters
@@ -401,7 +400,7 @@ require_once "helpers.php";
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     {CREATE_POST_VARIABLES}
 
-    $stmt = $link->prepare("INSERT INTO {TABLE_NAME} ({CREATE_COLUMN_NAMES}) VALUES ({CREATE_QUESTIONMARK_PARAMS})");
+    $stmt = $link->prepare("INSERT INTO `{TABLE_NAME}` ({CREATE_COLUMN_NAMES}) VALUES ({CREATE_QUESTIONMARK_PARAMS})");
 
     try {
         $stmt->execute([ {CREATE_SQL_PARAMS} ]);
@@ -476,7 +475,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 
     // Prepare an update statement
 
-    $stmt = $link->prepare("UPDATE {TABLE_NAME} SET {UPDATE_SQL_PARAMS} WHERE {UPDATE_SQL_ID}");
+    $stmt = $link->prepare("UPDATE `{TABLE_NAME}` SET {UPDATE_SQL_PARAMS} WHERE {UPDATE_SQL_ID}");
 
     try {
         $stmt->execute([ {UPDATE_SQL_COLUMNS}  ]);
@@ -496,7 +495,7 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
     ${COLUMN_ID} =  trim($_GET["{COLUMN_ID}"]);
 
     // Prepare a select statement
-    $sql = "SELECT * FROM {TABLE_NAME} WHERE {COLUMN_ID} = ?";
+    $sql = "SELECT * FROM `{TABLE_NAME}` WHERE `{COLUMN_ID}` = ?";
     if($stmt = mysqli_prepare($link, $sql)){
         // Set parameters
         $param_id = ${COLUMN_ID};

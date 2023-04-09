@@ -159,7 +159,7 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $columns_available = implode("', '", $columns_available);
     $step0 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
     $step1 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step0);
-    $step2 = str_replace("{INDEX_QUERY}", "SELECT * FROM $tablename", $step1 );
+    $step2 = str_replace("{INDEX_QUERY}", "SELECT * FROM `$tablename`", $step1 );
     $step3 = str_replace("{INDEX_TABLE_HEADERS}", $index_table_headers, $step2 );
     $step4 = str_replace("{INDEX_TABLE_ROWS}", $index_table_rows, $step3 );
     $step5 = str_replace("{COLUMN_ID}", $column_id, $step4 );
@@ -266,6 +266,7 @@ function generate($postdata) {
         $columndisplay = '';
         $columnvisible = '';
         $columns_available = array();
+        $index_sql_search = array();
         $index_table_rows = '';
         $index_table_headers = '';
         $read_records = '';
@@ -312,7 +313,7 @@ function generate($postdata) {
                     $fk_column = $row["FK Column"];
                     $column = $row["Column"];
                     $foreign_key_references .= '
-                    $sql = "SELECT COUNT(*) AS count FROM '. $table .' WHERE '. $column .' = ". $row["'.$fk_column.'"] . ";";
+                    $sql = "SELECT COUNT(*) AS count FROM `'. $table .'` WHERE `'. $column .'` = ". $row["'.$fk_column.'"] . ";";
                     $number_of_refs = mysqli_fetch_assoc(mysqli_query($link, $sql))["count"];
                     if ($number_of_refs > 0)
                     {
@@ -320,7 +321,7 @@ function generate($postdata) {
                     }';
                 }
             }
-            $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this' . $tablename . ':</h3>" . $html;}' : "";
+            $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this ' . $tablename . ':</h3>" . $html;}' : "";
 
             //Specific INDEX page variables
             foreach ( $_POST[$key] as $columns ) {
@@ -348,7 +349,8 @@ function generate($postdata) {
                             $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
                         }
 
-                        $columns_available [] = $columnname;
+                        $columns_available [] = "$columnname";
+                        $index_sql_search [] = "`$columnname`";
                         $index_table_headers .= 'echo "<th><a href=?search=$search&order='.$columnname.'&sort=$sort$get_param>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
                         
                         // Display date in locale format
@@ -400,7 +402,7 @@ function generate($postdata) {
                     if (empty($columns['columndisplay'])){
                         $columndisplay = $columns['columnname'];
                     }
-
+                    
                     if (!$columns['columnnullable'])
                     {
                         $columndisplay .= "*";
@@ -434,27 +436,28 @@ function generate($postdata) {
                     if(empty($columns['auto'])) {
 
                         $columnname = $columns['columnname'];
+                        $columnname_var = preg_replace('/[^a-zA-Z0-9]+/', '_', $columnname);
                         $read_records .= '<div class="form-group">
                             <h4>'.$columndisplay.'</h4>
                             <p class="form-control-static">';
 
-                        $create_records .= "\$$columnname = \"\";\n";
-                        $create_record = "\$$columnname";
-                        $create_err_records .= "\$$columnname".'_err'." = \"\";\n";
-                        $create_err_record = "\$$columnname".'_err';
-                        $create_sqlcolumns [] = $columnname;
-                        $create_sql_params [] = "\$$columnname";
+                        $create_records .= "\$$columnname_var = \"\";\n";
+                        $create_record = "\$$columnname_var";
+                        $create_err_records .= "\$$columnname_var".'_err'." = \"\";\n";
+                        $create_err_record = "\$$columnname_var".'_err';
+                        $create_sqlcolumns [] = "`$columnname`";
+                        $create_sql_params [] = "\$$columnname_var";
                         
                         // Process POST vars that can be null differently
                         if ($columns['columnnullable']){
-                            $create_postvars .= "$$columnname = \$_POST[\"$columnname\"] == \"\" ? null : trim(\$_POST[\"$columnname\"]);\n\t\t";
+                            $create_postvars .= "$$columnname_var = \$_POST[\"$columnname\"] == \"\" ? null : trim(\$_POST[\"$columnname\"]);\n\t\t";
                         } else {
-                            $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
+                            $create_postvars .= "$$columnname_var = trim(\$_POST[\"$columnname\"]);\n\t\t";
                         }                        
                         
-                        $update_sql_params [] = "$columnname".'=?';
-                        $update_sql_id = "$column_id".'=?';
-                        $update_column_rows .= "$$columnname = htmlspecialchars(\$row[\"$columnname\"] ?? \"\");\n\t\t\t\t\t";
+                        $update_sql_params [] = "`$columnname`".'=?';
+                        $update_sql_id = "`$column_id`".'=?';
+                        $update_column_rows .= "$$columnname_var = htmlspecialchars(\$row[\"$columnname\"] ?? \"\");\n\t\t\t\t\t";
 
 
                         //Foreign Key
@@ -493,7 +496,7 @@ function generate($postdata) {
                                             $duprow = $row;
                                             unset($duprow["' . $fk_column . '"]);
                                             $value = implode(" | ", $duprow);
-                                            if ($row["' . $fk_column . '"] == $' . $columnname . '){
+                                            if ($row["' . $fk_column . '"] == $' . $columnname_var . '){
                                             echo \'<option value="\' . "$row['. $fk_column. ']" . \'"selected="selected">\' . "$value" . \'</option>\';
                                             } else {
                                                 echo \'<option value="\' . "$row['. $fk_column. ']" . \'">\' . "$value" . \'</option>\';
@@ -651,7 +654,7 @@ function generate($postdata) {
                     $update_sql_columns [] = "\$$column_id";
                     $update_sql_columns = implode(",", $update_sql_columns);
 
-                    $index_sql_search = implode(",", $columns_available);
+                    $index_sql_search = implode(",", $index_sql_search);
                     $create_numberofparams = array_fill(0, $total_params, '?');
                     $create_numberofparams = implode(",", $create_numberofparams);
                     $create_sqlcolumns = implode(",", $create_sqlcolumns);
