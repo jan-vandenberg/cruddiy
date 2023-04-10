@@ -48,11 +48,9 @@ $indexfile = <<<'EOT'
                     require_once "helpers.php";
 
                     //Get current URL and parameters for correct pagination
-                    $domain   = $_SERVER['HTTP_HOST'];
                     $script   = $_SERVER['SCRIPT_NAME'];
                     $parameters   = $_GET ? $_SERVER['QUERY_STRING'] : "" ;
-                    $protocol=($_SERVER['HTTPS'] == "on" ? "https" : "http");
-                    $currenturl = $protocol . '://' . $domain. $script . '?' . $parameters;
+                    $currenturl = $domain. $script . '?' . $parameters;
 
                     //Pagination
                     if (isset($_GET['pageno'])) {
