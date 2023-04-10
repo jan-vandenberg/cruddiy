@@ -15,6 +15,8 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [x] Kolommen in SQL met een (-) kunnen niet direct omgezet worden naar PHP variabelen.
 - [ ] Gebruik valuelist/datalist ipv select bij grote tabellen
 - [ ] Fix (lege) datums
+- [ ] Make css/js files choosable
+- [ ] Generate enum select statically at creation.
 
 ## Setup
 Clone deze repository in de root van WaterWeb, het zit al in de gitignore, dus waterweb heeft hier geen last van.
