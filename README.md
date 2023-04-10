@@ -13,6 +13,8 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [x] Sorteer standaard op id?
 - [x] Count records met een count ipv `result.num_records()`.
 - [x] Kolommen in SQL met een (-) kunnen niet direct omgezet worden naar PHP variabelen.
+- [ ] Gebruik valuelist/datalist ipv select bij grote tabellen
+- [ ] Fix (lege) datums
 
 ## Setup
 Clone deze repository in de root van WaterWeb, het zit al in de gitignore, dus waterweb heeft hier geen last van.

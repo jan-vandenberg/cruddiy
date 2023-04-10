@@ -1,8 +1,0 @@
-{
-    "config": {
-        "vendor-dir": "vendor"
-    },
-    "require": {
-        "friendsofphp/php-cs-fixer": "^3.16"
-    }
-}
