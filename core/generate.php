@@ -58,6 +58,15 @@ function column_type($columnname){
     }
 }
 
+function get_sql_select($copy_columns){
+    $array = $copy_columns;
+    foreach($array as $key => $c)
+    {
+        $array[$key] = '`'.$array[$key].'`'; 
+    }
+    return implode(', ', $array);
+}
+
 function generate_error(){
     global $errorfile;
     if (!file_put_contents("app/error.php", $errorfile, LOCK_EX)) {
@@ -258,6 +267,21 @@ function generate($postdata) {
     // echo "</pre>";
     // Go trough the POST array
     // Every table is a key
+    global $excluded_keys;
+    
+    // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that 
+    // are selected to be include in previews, such as select foreign keys and foreign key preview.
+    $preview_columns = array();
+    foreach ($postdata as $key => $value){
+        if (!in_array($key, $excluded_keys)) {
+            foreach ($_POST[$key] as $columns ) {
+                if (isset($columns['columninpreview'])){
+                    $preview_columns[$columns['tablename']][] = $columns['columnname'];
+                }
+            }
+        }
+    }
+
     foreach ($postdata as $key => $value) {
         $tables = array();
         $tablename = '';
@@ -285,7 +309,6 @@ function generate($postdata) {
         $update_sql_id = '';
         $update_column_rows = '';
 
-        global $excluded_keys;
         global $sort;
         global $link;
         global $forced_deletion;
@@ -323,7 +346,7 @@ function generate($postdata) {
             }
             $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this ' . $tablename . ':</h3>" . $html;}' : "";
 
-            //Specific INDEX page variables
+            //Specific INDEX page variables            
             foreach ( $_POST[$key] as $columns ) {
                 if (isset($columns['primary'])){
                     $column_id =  $columns['columnname'];
@@ -489,17 +512,21 @@ function generate($postdata) {
                             {
                                 $html .= '<option value="">Null</option>';
                             }
+                            
+                            
+                            $fk_columns_select = get_sql_select($preview_columns[$fk_table]);
+                            
                             $html .= ' <?php
-                                        $sql = "SELECT *,'. $fk_column .' FROM '. $fk_table . '";
+                                        $sql = "SELECT '. $fk_columns_select .', `'. $fk_column .'` FROM `'. $fk_table . '` ORDER BY '. $fk_columns_select .'";
                                         $result = mysqli_query($link, $sql);
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                                             $duprow = $row;
                                             unset($duprow["' . $fk_column . '"]);
                                             $value = implode(" | ", $duprow);
                                             if ($row["' . $fk_column . '"] == $' . $columnname_var . '){
-                                            echo \'<option value="\' . "$row['. $fk_column. ']" . \'"selected="selected">\' . "$value" . \'</option>\';
+                                            echo \'<option value="\' . $row["'. $fk_column. '"] . \'"selected="selected">\' . $value . \'</option>\';
                                             } else {
-                                                echo \'<option value="\' . "$row['. $fk_column. ']" . \'">\' . "$value" . \'</option>\';
+                                                echo \'<option value="\' . $row["'. $fk_column. '"] . \'">\' . $value . \'</option>\';
                                         }
                                         }
                                     ?>

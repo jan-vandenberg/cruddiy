@@ -16,10 +16,15 @@
                 </div>
 
                 <div class="col-md-10 mx-atuo text-right pr-5 ml-4">
-                    <input type="checkbox" id="checkall">
-                    <label for="checkall">Check/uncheck all</label>
                 </div>
 
+                <div class="mx-atuo text-right ml-4">
+                    <input type="checkbox" id="checkall-1" checked>
+                    <label for="checkall-1">Check/uncheck all</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="checkbox" id="checkall-2" checked>
+                    <label for="checkall-2">Check/uncheck all</label>
+                </div>
 
                 <form class="form-horizontal" action="generate.php" method="post">
                     <fieldset>
@@ -160,9 +165,12 @@
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columnnullable]" value="'.$column_nullable.'"/>
                                         <input id="textinput_'.$tablename. '-'.$i.'"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control rounded-0">
                                     </div>
-                                    <div class="col-md-4">
-                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'" value="1">
+                                    <div class="col-md-2">
+                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'" value="1" checked>
                                 <label for="checkboxes-'.$checked_tables_counter.'-'.$i.'">Visible in overview?</label></div>
+                                    <div class="col-md-2">
+                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columninpreview]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'-2" value="1" checked>
+                                <label for="checkboxes-'.$checked_tables_counter.'-'.$i.'-2">Visible in preview?</label></div>
                      </div></span>';
                                         $i++;
                                     }
@@ -205,8 +213,14 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script>
 $(document).ready(function () {
-    $('#checkall').click(function(e) {
-        var chb = $('.form-horizontal').find('input[type="checkbox"]');
+    $('#checkall-1').click(function(e) {
+        var chb = $('.form-horizontal').find('input[name$="[columnvisible]"]');
+        chb.prop('checked', !chb.prop('checked'));
+    });
+});
+$(document).ready(function () {
+    $('#checkall-2').click(function(e) {
+        var chb = $('.form-horizontal').find('input[name$="[columninpreview]"]');
         chb.prop('checked', !chb.prop('checked'));
     });
 });
