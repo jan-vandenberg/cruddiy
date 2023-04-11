@@ -514,7 +514,11 @@ function generate($postdata) {
                 } else {                        
 
                         // Display date in locale format
-                        if ($type == 7) // Date
+                        if ($type == 4) // TinyInt / Bool
+                        {
+                            $read_records .= '<?php echo convert_bool($row["'.$columnname.'"]); ?>';
+                        }
+                        else if ($type == 7) // Date
                         {
                             $read_records .= '<?php echo convert_date($row["'.$columnname.'"]); ?>';
                         }

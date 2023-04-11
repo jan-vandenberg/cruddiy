@@ -99,6 +99,13 @@ function convert_datetime($date_str){
     }
 }
 
+function convert_bool($var){
+    if(isset($var))
+    {
+        return $var ? "True" : "False";
+    }
+}
+
 function get_fk_url($value, $fk_table, $fk_column)
 // Gets a URL to the foreign key parents read page
 {   
