@@ -15,7 +15,7 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [ ] Gebruik valuelist/datalist ipv select bij grote tabellen
 - [ ] Fix (lege) datums
 - [ ] Make css/js files choosable
-- [ ] Generate enum select statically at creation.
+- [x] Generate enum select statically at creation.
 - [ ] Replace 0/1 with True False?
 - [ ] Create an abstraction for the html syntax of columns in the read, edit and create pages.
 

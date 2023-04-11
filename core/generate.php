@@ -542,33 +542,34 @@ function generate($postdata) {
                         //ENUM types
                         case 2:
                         //Make sure on the update form that the previously selected type is also selected from the list
-                            $create_html [] = '<div class="form-group">
+                         
+                            $html = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
                                 <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
                             if ($columns['columnnullable'])
                             {
-                                $create_html [] .= '<option value="">Null</option>';
+                                $html .= '<option value="">Null</option>';
                             }
-                            $create_html [] .=  '<?php
-                                            $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
-                                            FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '. "'$tablename'" .'  AND COLUMN_NAME = '."'$columnname'" .'";
-                                            $result = mysqli_query($link, $sql_enum);
-                                            while($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
-                                            preg_match(\'/enum\((.*)\)$/\', $row[0], $matches);
-                                            $vals = explode("," , $matches[1]);
-                                            foreach ($vals as $val){
-                                                $val = substr($val, 1);
-                                                $val = rtrim($val, "\'");
-                                                if ($val == $'.$columnname.'){
-                                                echo \'<option value="\' . $val . \'" selected="selected">\' . $val . \'</option>\';
-                                                } else
-                                                echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
-                                                        }
-                                            }?>';
 
-                            $create_html [] .= '</select>
+                            $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
+                            FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$tablename' AND COLUMN_NAME = '$columnname';";
+                            $result = mysqli_query($link, $sql_enum);
+                            $row = mysqli_fetch_array($result, MYSQLI_NUM);
+                            preg_match('/enum\((.*)\)$/', $row[0], $matches);
+                            $html .= "<?php \n\t\t\t\t\t\t\t \$enum_$columnname = array(" . $matches[1] . ");";
+                            $html .= "
+                                foreach (\$enum_$columnname as " . ' $val){
+                                    if ($val == $'.$columnname.'){
+                                    echo \'<option value="\' . $val . \'" selected="selected">\' . $val . \'</option>\';
+                                    } else
+                                    echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
+                                            }
+                            ?>';
+                            $html .= '</select>
                                 <span class="form-text"></span>
                                 </div>';
+                            $create_html [] = $html;
+                            unset($html);
                         break;
                         //VARCHAR
                         case 3:
