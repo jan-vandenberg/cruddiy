@@ -58,6 +58,15 @@ function column_type($columnname){
     }
 }
 
+function get_sql_concat_select($copy_columns, $table, $name){
+    $array = $copy_columns;
+    foreach($array as $key => $c)
+    {
+        $array[$key] = '`'. $table .'`.`'. $array[$key] .'`'; 
+    }
+    return "\n\t\t\t, CONCAT_WS(' | ',". implode(', ', $array) .') AS `'. $name .'`';
+}
+
 function get_sql_select($copy_columns){
     $array = $copy_columns;
     foreach($array as $key => $c)
@@ -161,14 +170,13 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
 }
 
 
-function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search) {
+function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search, $join_columns, $join_clauses) {
     global $indexfile;
     global $appname;
 
     $columns_available = implode("', '", $columns_available);
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
-    $step1 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step0);
-    $step2 = str_replace("{INDEX_QUERY}", "SELECT * FROM `$tablename`", $step1 );
+    $step1 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
+    $step2 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step1);
     $step3 = str_replace("{INDEX_TABLE_HEADERS}", $index_table_headers, $step2 );
     $step4 = str_replace("{INDEX_TABLE_ROWS}", $index_table_rows, $step3 );
     $step5 = str_replace("{COLUMN_ID}", $column_id, $step4 );
@@ -176,19 +184,23 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
     $step8 = str_replace("{INDEX_CONCAT_SEARCH_FIELDS}", $index_sql_search, $step7 );
     $step9 = str_replace("{APP_NAME}", $appname, $step8 );
-    if (!file_put_contents("app/".$tablename."-index.php", $step9, LOCK_EX)) {
+    $step10 = str_replace("{JOIN_COLUMNS}", $join_columns, $step9 );
+    $step11 = str_replace("{JOIN_CLAUSES}", $join_clauses, $step10 );
+    if (!file_put_contents("app/".$tablename."-index.php", $step11, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Index file<br>";
 }
 
-function generate_read($tablename, $column_id, $read_records, $foreign_key_references){
+function generate_read($tablename, $column_id, $read_records, $foreign_key_references, $join_columns, $join_clauses){
     global $readfile;
     $step0 = str_replace("{TABLE_NAME}", $tablename, $readfile);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
     $step2 = str_replace("{RECORDS_READ_FORM}", $read_records, $step1 );
     $step3 = str_replace("{FOREIGN_KEY_REFS}", $foreign_key_references, $step2 );
-    if (!file_put_contents("app/".$tablename."-read.php", $step3, LOCK_EX)) {
+    $step4 = str_replace("{JOIN_COLUMNS}", $join_columns, $step3 );
+    $step5 = str_replace("{JOIN_CLAUSES}", $join_clauses, $step4 );
+    if (!file_put_contents("app/".$tablename."-read.php", $step5, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Read file<br>";
@@ -309,6 +321,9 @@ function generate($postdata) {
         $update_sql_id = '';
         $update_column_rows = '';
 
+        $join_columns = '';
+        $join_clauses = '';
+
         global $sort;
         global $link;
         global $forced_deletion;
@@ -373,7 +388,7 @@ function generate($postdata) {
                         }
 
                         $columns_available [] = "$columnname";
-                        $index_sql_search [] = "`$columnname`";
+                        $index_sql_search [] = "`$tablename`.`$columnname`";
                         $index_table_headers .= 'echo "<th><a href=?search=$search&order='.$columnname.'&sort=$sort$get_param>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
                         
                         // Display date in locale format
@@ -393,7 +408,8 @@ function generate($postdata) {
                                     $fk_table = $row["FK Table"];
                                     $fk_column = $row["FK Column"];
                                 }
-                            $index_table_rows .= 'echo "<td>" . get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'") . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                            $join_column_name = $columnname . $fk_table . $fk_column;
+                            $index_table_rows .= 'echo "<td>" . get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"]) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
                             }
                         }
                         else if ($type == 7) // Date
@@ -502,8 +518,6 @@ function generate($postdata) {
 
 
                             //Be careful code below is particular regarding single and double quotes.
-
-                            $read_records .= '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'"); ?>';
                             
                             $html = '<div class="form-group">
                                 <label>'.$columndisplay.'</label>
@@ -516,6 +530,14 @@ function generate($postdata) {
                             
                             $fk_columns_select = get_sql_select($preview_columns[$fk_table]);
                             
+                            $join_name = $columnname .$fk_table;
+                            $join_column_name = $columnname . $fk_table . $fk_column;
+
+                            $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
+                            $join_columns .= get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name);
+                            
+                            $read_records .= '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"]); ?>';
+
                             $html .= ' <?php
                                         $sql = "SELECT '. $fk_columns_select .', `'. $fk_column .'` FROM `'. $fk_table . '` ORDER BY '. $fk_columns_select .'";
                                         $result = mysqli_query($link, $sql);
@@ -724,9 +746,9 @@ function generate($postdata) {
                     generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay);
                     generate_error();
                     generate_startpage();
-                    generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
+                    generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search, $join_columns, $join_clauses);
                     generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
-                    generate_read($tablename,$column_id,$read_records,$foreign_key_references);
+                    generate_read($tablename,$column_id,$read_records,$foreign_key_references, $join_columns, $join_clauses);
                     generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
                     generate_delete($tablename,$column_id);
                 }

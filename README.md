@@ -5,7 +5,7 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [ ] Show SQL Table comments
 - [x] Show SQL errors when updating, creating or deleting. 
 - [x] Make foreign key references clickable.
-- [ ] Preview foreign key references (using a tooltip?), also make it selectable (on creation) which columns appear in this reference.
+- [x] Preview foreign key references (using a tooltip?), also make it selectable (on creation) which columns appear in this reference.
 - [x] For a record that is referenced by other records, provide a link to these other table records.
 - [x] Add an update, delete and read button to the update, delete and read pages.
 - [x] Properly show Boolean / tinyint.
@@ -16,7 +16,7 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [ ] Fix (lege) datums
 - [ ] Make css/js files choosable
 - [x] Generate enum select statically at creation.
-- [ ] Replace 0/1 with True False?
+- [x] Replace 0/1 with True False?
 - [ ] Create an abstraction for the html syntax of columns in the read, edit and create pages.
 
 

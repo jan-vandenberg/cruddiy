@@ -97,25 +97,21 @@ $indexfile = <<<'EOT'
                         $get_param .= "&$key=$val";
                     }
 
-                    // Attempt select query execution
-                    $sql = "{INDEX_QUERY} $where_statement ORDER BY `$order` $sort LIMIT $offset, $no_of_records_per_page";
-                    $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` $where_statement";
-
-
-                    if(!empty($_GET['search'])) {
+                    if (!empty($_GET['search'])) {
                         $search = mysqli_real_escape_string($link, $_GET['search']);
-                        $sql = "SELECT * FROM `{TABLE_NAME}`
-                            $where_statement AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
-                            LIKE '%$search%'
-                            ORDER BY `$order` $sort
-                            LIMIT $offset, $no_of_records_per_page";
-                        $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}`
-                            $where_statement AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
-                            LIKE '%$search%'";
-                    }
-                    else {
+                        $where_statement .= " AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS}) LIKE '%$search%'";
+                    } else {
                         $search = "";
                     }
+
+                    // Prepare SQL queries
+                    $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
+                            FROM `{TABLE_NAME}` {JOIN_CLAUSES}
+                            $where_statement
+                            GROUP BY `{TABLE_NAME}`.`{COLUMN_ID}`
+                            ORDER BY `$order` $sort
+                            LIMIT $offset, $no_of_records_per_page;";
+                    $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` $where_statement";
 
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
@@ -199,7 +195,10 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     require_once "helpers.php";
 
     // Prepare a select statement
-    $sql = "SELECT * FROM `{TABLE_NAME}` WHERE `{TABLE_ID}` = ?";
+    $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
+            FROM `{TABLE_NAME}` {JOIN_CLAUSES}
+            WHERE `{TABLE_NAME}`.`{TABLE_ID}` = ?
+            GROUP BY `{TABLE_NAME}`.`{TABLE_ID}`;";
 
     if($stmt = mysqli_prepare($link, $sql)){
         // Set parameters
