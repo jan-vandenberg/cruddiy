@@ -58,6 +58,16 @@ function column_type($columnname){
     }
 }
 
+function is_primary_key($t, $c){
+    $cols = $_POST[$t . 'columns'];
+    foreach($cols as $col) {
+        if (isset($col['primary']) && $col['columnname'] == $c){
+            return 1;
+        }
+    }
+    return 0;
+}
+
 function get_sql_concat_select($copy_columns, $table, $name){
     $array = $copy_columns;
     foreach($array as $key => $c)
@@ -409,7 +419,8 @@ function generate($postdata) {
                                     $fk_column = $row["FK Column"];
                                 }
                             $join_column_name = $columnname . $fk_table . $fk_column;
-                            $index_table_rows .= 'echo "<td>" . get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"]) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                            $is_primary_ref = is_primary_key($fk_table, $fk_column);
+                            $index_table_rows .= 'echo "<td>" . get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', true) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
                             }
                         }
                         else if ($type == 7) // Date
@@ -536,7 +547,10 @@ function generate($postdata) {
                             $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
                             $join_columns .= get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name);
                             
-                            $read_records .= '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"]); ?>';
+
+                            $is_primary_ref = is_primary_key($fk_table, $fk_column);
+
+                            $read_records .= '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', false); ?>';
 
                             $html .= ' <?php
                                         $sql = "SELECT '. $fk_columns_select .', `'. $fk_column .'` FROM `'. $fk_table . '` ORDER BY '. $fk_columns_select .'";
