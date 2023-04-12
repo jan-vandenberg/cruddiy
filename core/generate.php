@@ -377,6 +377,12 @@ function generate($postdata) {
                     $column_id =  $columns['columnname'];
                 }
 
+                // These variables contain the generated names, labels, input field and values for column.
+                // They are used at the end of this loop to create the {RECORDS_READ_FORM} and the {CREATE_HTML}
+                // $columndisplay contains the name of the column
+                $column_value = "";
+                $column_input = "";
+
                 $type = column_type($columns['columntype']);
 
                 //INDEXFILE VARIABLES
@@ -487,10 +493,7 @@ function generate($postdata) {
 
                         $columnname = $columns['columnname'];
                         $columnname_var = preg_replace('/[^a-zA-Z0-9]+/', '_', $columnname);
-                        $read_records .= '<div class="form-group">
-                            <h4>'.$columndisplay.'</h4>
-                            <p class="form-control-static">';
-
+                        
                         $create_records .= "\$$columnname_var = \"\";\n";
                         $create_record = "\$$columnname_var";
                         $create_err_records .= "\$$columnname_var".'_err'." = \"\";\n";
@@ -530,9 +533,7 @@ function generate($postdata) {
 
                             //Be careful code below is particular regarding single and double quotes.
                             
-                            $html = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                    <select class="form-control" id="'. $columnname .'" name="'. $columnname .'">';
+                            $html = '<select class="form-control" id="'. $columnname .'" name="'. $columnname .'">';
                             if ($columns['columnnullable'])
                             {
                                 $html .= '<option value="">Null</option>';
@@ -550,7 +551,7 @@ function generate($postdata) {
 
                             $is_primary_ref = is_primary_key($fk_table, $fk_column);
 
-                            $read_records .= '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', false); ?>';
+                            $column_value = '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', false); ?>';
 
                             $html .= ' <?php
                                         $sql = "SELECT '. $fk_columns_select .', `'. $fk_column .'` FROM `'. $fk_table . '` ORDER BY '. $fk_columns_select .'";
@@ -566,10 +567,8 @@ function generate($postdata) {
                                         }
                                         }
                                     ?>
-                                    </select>
-                                <span class="form-text"></span>
-                            </div>';
-                            $create_html [] = $html;
+                                    </select>';
+                            $column_input = $html;
                             unset($html);
                         }
 
@@ -579,19 +578,19 @@ function generate($postdata) {
                         // Display date in locale format
                         if ($type == 4) // TinyInt / Bool
                         {
-                            $read_records .= '<?php echo convert_bool($row["'.$columnname.'"]); ?>';
+                            $column_value = '<?php echo convert_bool($row["'.$columnname.'"]); ?>';
                         }
                         else if ($type == 7) // Date
                         {
-                            $read_records .= '<?php echo convert_date($row["'.$columnname.'"]); ?>';
+                            $column_value = '<?php echo convert_date($row["'.$columnname.'"]); ?>';
                         }
                         else if ($type == 8) // Datetime
                         {
-                            $read_records .= '<?php echo convert_datetime($row["'.$columnname.'"]); ?>';
+                            $column_value = '<?php echo convert_datetime($row["'.$columnname.'"]); ?>';
                         }
                         else
                         {
-                            $read_records .= '<?php echo htmlspecialchars($row["'.$columnname.'"] ?? ""); ?>';
+                            $column_value = '<?php echo htmlspecialchars($row["'.$columnname.'"] ?? ""); ?>';
                         }
 
                         //$type = column_type($columns['columntype']);
@@ -599,20 +598,14 @@ function generate($postdata) {
                         switch($type) {
                         //TEXT
                         case 0:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="text" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"></span>
-                            </div>';
+                            $column_input = '<input type="text" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
 
                         //ENUM types
                         case 2:
                         //Make sure on the update form that the previously selected type is also selected from the list
                          
-                            $html = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
+                            $html = '<select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
                             if ($columns['columnnullable'])
                             {
                                 $html .= '<option value="">Null</option>';
@@ -631,87 +624,65 @@ function generate($postdata) {
                                     } else
                                     echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
                                             }
-                            ?>';
-                            $html .= '</select>
-                                <span class="form-text"></span>
-                                </div>';
-                            $create_html [] = $html;
+                            ?></select>';
+
+                            $column_input = $html;
                             unset($html);
                         break;
                         //VARCHAR
                         case 3:
                             preg_match('#\((.*?)\)#', $columns['columntype'], $match);
                             $maxlength = $match[1];
-
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="text" name="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"></span>
-                            </div>';
+                            $column_input = '<input type="text" name="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
+
                         //TINYINT (bool)
                         case 4:
                             $regex = "/'(.*?)'/";
                             preg_match_all( $regex , $columns['columntype'] , $enum_array );
-                            $html = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
+                            $html = '<select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
                                 if ($columns['columnnullable'])
                                 {
                                     $html .= '<option value="">Null</option>';
                                 }
                             $html   .= '    <option value="0" <?php echo !' . $create_record . ' ? "selected": ""; ?> >False</option>';
                             $html   .= '    <option value="1" <?php echo ' . $create_record . ' ? "selected": ""; ?> >True</option>';
-                            $html   .= '</select>
-                                <span class="form-text"></span>
-                                </div>';
-                            $create_html [] = $html;
+                            $html   .= '</select>';
+                                $column_input = $html;
                             unset($html);
                         break;
                         //INT
                         case 5:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"></span>
-                            </div>';
+                            $column_input = '<input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
 
                         //DECIMAL
                         case 6:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">
-                                <span class="form-text"></span>
-                            </div>';
+                            $column_input = '<input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">';
                         break;
                         //DATE
                         case 7:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="date" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"></span>
-                            </div>';
+                            $column_input = '<input type="date" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
                         //DATETIME
                         case 8:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">
-                                <span class="form-text"></span>
-                            </div>';
+                            $column_input = '<input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">';
                         break;
 
                         default:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <textarea name="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>
-                                <span class="form-text"></span>
-                            </div>';
+                            $column_input = '<textarea name="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>';
                         break;
                         }
                     }
-                        $read_records .= '</p></div>';
+
+                        $create_html [] = '<div class="form-group">
+                        <label>'.$columndisplay.'</label>
+                        '. $column_input .'
+                        <span class="form-text"></span>
+                    </div>';
+                        $read_records .= '<div class="form-group">
+                            <h4>'.$columndisplay.'</h4>
+                            <p class="form-control-static">' . $column_value .'</p></div>';
                         $j++;
                     }
                 }
