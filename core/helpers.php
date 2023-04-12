@@ -1,6 +1,7 @@
 <?php
 // retrieves and enhances postdata table keys and values on CREATE and UPDATE events
-function parse_columns($table_name, $postdata) {
+function parse_columns($table_name, $postdata)
+{
     global $link;
     $vars = array();
 
@@ -10,10 +11,9 @@ function parse_columns($table_name, $postdata) {
     // get all columns, including the ones not sent by the CRUD form
     $sql = "SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE, COLUMN_DEFAULT, EXTRA
             FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE table_name = '".$table_name."'";
-    $result = mysqli_query($link,$sql);
-    while($row = mysqli_fetch_assoc($result))
-    {
+            WHERE table_name = '" . $table_name . "'";
+    $result = mysqli_query($link, $sql);
+    while ($row = mysqli_fetch_assoc($result)) {
 
         $debug = 0;
         if ($debug) {
@@ -28,7 +28,7 @@ function parse_columns($table_name, $postdata) {
             echo "</pre>";
         }
 
-        switch($row['DATA_TYPE']) {
+        switch ($row['DATA_TYPE']) {
 
             // fix "Incorrect decimal value: '' error in STRICT_MODE or STRICT_TRANS_TABLE
             // @see https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html
@@ -43,10 +43,10 @@ function parse_columns($table_name, $postdata) {
                 if ($row['COLUMN_DEFAULT'] != 'CURRENT_TIMESTAMP' && $row['IS_NULLABLE'] == 'YES') {
                     $default = null;
                 } else {
-                    $default =  date('Y-m-d H:i:s');
+                    $default = date('Y-m-d H:i:s');
                 }
                 if ($postdata[$row['COLUMN_NAME']] == 'CURRENT_TIMESTAMP') {
-                    $_POST[$row['COLUMN_NAME']] =  date('Y-m-d H:i:s');
+                    $_POST[$row['COLUMN_NAME']] = date('Y-m-d H:i:s');
                 }
                 break;
         }
@@ -60,15 +60,15 @@ function parse_columns($table_name, $postdata) {
 
 
 // get extra attributes for  table keys on CREATE and UPDATE events
-function get_columns_attributes($table_name, $column) {
+function get_columns_attributes($table_name, $column)
+{
     global $link;
     $sql = "SELECT COLUMN_DEFAULT, COLUMN_COMMENT
             FROM INFORMATION_SCHEMA.COLUMNS
-            WHERE table_name = '".$table_name."'
-            AND column_name = '".$column."'";
-    $result = mysqli_query($link,$sql);
-    while($row = mysqli_fetch_assoc($result))
-    {
+            WHERE table_name = '" . $table_name . "'
+            AND column_name = '" . $column . "'";
+    $result = mysqli_query($link, $sql);
+    while ($row = mysqli_fetch_assoc($result)) {
         $debug = 0;
         if ($debug) {
             echo "<pre>";
@@ -79,40 +79,50 @@ function get_columns_attributes($table_name, $column) {
     }
 }
 
-function print_error_if_exists($error) {
-    if(isset($error)){
+function print_error_if_exists($error)
+{
+    if (isset($error)) {
         echo "<div class='alert alert-danger' role='alert'>$error</div>";
     }
 }
 
-function convert_date($date_str) {
-    if(isset($date_str)){
-        $date = date( 'd-m-Y', strtotime( $date_str ) );
+function convert_date($date_str)
+{
+    if (isset($date_str)) {
+        $date = date('d-m-Y', strtotime($date_str));
         return htmlspecialchars($date);
     }
 }
 
-function convert_datetime($date_str){
-    if(isset($date_str)){
-        $date = date( 'd-m-Y H:i:s', strtotime( $date_str ) );
+function convert_datetime($date_str)
+{
+    if (isset($date_str)) {
+        $date = date('d-m-Y H:i:s', strtotime($date_str));
         return htmlspecialchars($date);
     }
 }
 
-function convert_bool($var){
-    if(isset($var))
-    {
+function convert_bool($var)
+{
+    if (isset($var)) {
         return $var ? "True" : "False";
     }
 }
 
-function get_fk_url($value, $fk_table, $fk_column)
+function get_fk_url($value, $fk_table, $fk_column, $representation, bool $pk=false, bool $index=false)
 // Gets a URL to the foreign key parents read page
-{   
-    if(isset($value))
-    {
+{
+    if (isset($value)) {
         $value = htmlspecialchars($value);
-        return '<a href="' . $fk_table .'-read.php?' . $fk_column . '=' . $value .'">'. $value . '</a>';
+        if($pk)
+        {
+            return '<a href="' . $fk_table . '-read.php?' . $fk_column . '=' . $value . '">' . $representation . '</a>';
+        }
+        else
+        {
+            return '<a href="' . $fk_table . '-index.php?' . $fk_column . '=' . $value . '">' . $representation . '</a>';
+        }
+        
     }
 }
 ?>
