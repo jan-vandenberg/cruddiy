@@ -111,7 +111,8 @@ $indexfile = <<<'EOT'
                             GROUP BY `{TABLE_NAME}`.`{COLUMN_ID}`
                             ORDER BY `$order` $sort
                             LIMIT $offset, $no_of_records_per_page;";
-                    $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` $where_statement";
+                    $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
+                            $where_statement";
 
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){

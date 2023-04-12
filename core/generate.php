@@ -482,6 +482,10 @@ function generate($postdata) {
                             $index_table_rows .= 'echo "<td>" . get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', true) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
                             }
                         }
+                        else if ($type == 4) // TinyInt / Bool
+                        {
+                            $index_table_rows .= 'echo "<td>" . convert_bool($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
                         else if ($type == 7) // Date
                         {
                             $index_table_rows .= 'echo "<td>" . convert_date($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
@@ -601,6 +605,11 @@ function generate($postdata) {
                             $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
                             $join_columns .= get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name);
                             
+                            // Add the new columns to the search concat
+                            foreach($preview_columns[$fk_table] as $key => $c)
+                            {
+                                $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`'; 
+                            }
 
                             $is_primary_ref = is_primary_key($fk_table, $fk_column);
 
@@ -751,13 +760,13 @@ function generate($postdata) {
 
                     $update_sql_columns = $create_sql_params;
                     $update_sql_columns [] = "\$$column_id";
-                    $update_sql_columns = implode(",", $update_sql_columns);
+                    $update_sql_columns = implode(", ", $update_sql_columns);
 
-                    $index_sql_search = implode(",", $index_sql_search);
+                    $index_sql_search = implode(", ", $index_sql_search);
                     $create_numberofparams = array_fill(0, $total_params, '?');
-                    $create_numberofparams = implode(",", $create_numberofparams);
-                    $create_sqlcolumns = implode(",", $create_sqlcolumns);
-                    $create_sql_params = implode(",", $create_sql_params);
+                    $create_numberofparams = implode(", ", $create_numberofparams);
+                    $create_sqlcolumns = implode(", ", $create_sqlcolumns);
+                    $create_sql_params = implode(", ", $create_sql_params);
                     $create_html = implode("\n\t\t\t\t\t\t", $create_html);
 
                     $update_sql_params = implode(",", $update_sql_params);
