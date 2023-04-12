@@ -26,6 +26,15 @@ $startpage_filename = "app/navbar.php";
 $forced_deletion = false;
 $buttons_delimiter = '<!-- TABLE_BUTTONS -->';
 
+//$CSS_REFS = '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">';
+$CSS_REFS = '<link rel="stylesheet" href="css/style.css" type="text/css"/>
+<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>';
+
+$JS_REFS = '<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>';
+    
+
 function column_type($columnname){
     switch ($columnname) {
         case (preg_match("/text/i", $columnname) ? true : false) :
@@ -88,15 +97,27 @@ function get_sql_select($copy_columns){
 
 function generate_error(){
     global $errorfile;
-    if (!file_put_contents("app/error.php", $errorfile, LOCK_EX)) {
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $errorfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    if (!file_put_contents("app/error.php", $prestep2, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating Error file<br>";
 }
 
 function generate_startpage(){
-    global $startfile; 
-    if (!file_put_contents("app/index.php", $startfile, LOCK_EX)) {
+    global $startfile;
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $startfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    if (!file_put_contents("app/index.php", $prestep2, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating main index file.<br>";
@@ -183,9 +204,14 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
 function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search, $join_columns, $join_clauses) {
     global $indexfile;
     global $appname;
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $indexfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
 
     $columns_available = implode("', '", $columns_available);
-    $step1 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
+    $step1 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step2 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step1);
     $step3 = str_replace("{INDEX_TABLE_HEADERS}", $index_table_headers, $step2 );
     $step4 = str_replace("{INDEX_TABLE_ROWS}", $index_table_rows, $step3 );
@@ -204,7 +230,13 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
 
 function generate_read($tablename, $column_id, $read_records, $foreign_key_references, $join_columns, $join_clauses){
     global $readfile;
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $readfile);
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $readfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
     $step2 = str_replace("{RECORDS_READ_FORM}", $read_records, $step1 );
     $step3 = str_replace("{FOREIGN_KEY_REFS}", $foreign_key_references, $step2 );
@@ -218,7 +250,13 @@ function generate_read($tablename, $column_id, $read_records, $foreign_key_refer
 
 function generate_delete($tablename, $column_id){
     global $deletefile;
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $deletefile);
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $deletefile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
     if (!file_put_contents("app/".$tablename."-delete.php", $step1, LOCK_EX)) {
         die("Unable to open file!");
@@ -228,7 +266,13 @@ function generate_delete($tablename, $column_id){
 
 function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
     global $createfile;
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $createfile);
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $createfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{CREATE_RECORDS}", $create_records, $step0);
     $step2 = str_replace("{CREATE_ERR_RECORDS}", $create_err_records, $step1);
     $step3 = str_replace("{CREATE_COLUMN_NAMES}", $create_sqlcolumns, $step2);
@@ -245,7 +289,13 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
 
 function generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns){
     global $updatefile;
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $updatefile);
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $updatefile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{CREATE_RECORDS}", $create_records, $step0);
     $step2 = str_replace("{CREATE_ERR_RECORDS}", $create_err_records, $step1);
     $step3 = str_replace("{COLUMN_ID}", $column_id, $step2);

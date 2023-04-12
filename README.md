@@ -14,10 +14,10 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [x] Add support for nullable columns.
 - [ ] Gebruik valuelist/datalist ipv select bij grote tabellen
 - [ ] Fix (lege) datums
-- [ ] Make css/js files choosable
+- [x] Make css/js files choosable
 - [x] Generate enum select statically at creation.
 - [x] Replace 0/1 with True False?
-- [ ] Create an abstraction for the html syntax of columns in the read, edit and create pages.
+- [x] Create an abstraction for the html syntax of columns in the read, edit and create pages.
 
 
 ## Setup
