@@ -121,7 +121,7 @@ $indexfile = <<<'EOT'
                             echo " " . $number_of_results . " results - Page " . $pageno . " of " . $total_pages;
 
                             echo "<table class='table table-bordered table-striped'>";
-                                echo "<thead>";
+                                echo "<thead class='thead-light'>";
                                     echo "<tr>";
                                         {INDEX_TABLE_HEADERS}
                                         echo "<th>Action</th>";
@@ -141,7 +141,7 @@ $indexfile = <<<'EOT'
                                 echo "</tbody>";
                             echo "</table>";
 ?>
-                                <ul class="pagination" align-right>
+                                <ul class="pagination fixed-bottom" align-right>
                                 <?php
                                     $new_url = preg_replace('/&?pageno=[^&]*/', '', $currenturl);
                                  ?>
