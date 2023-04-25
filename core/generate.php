@@ -482,6 +482,10 @@ function generate($postdata) {
                             $index_table_rows .= 'echo "<td>" . get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', true) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
                             }
                         }
+                        else if ($type == 1) // Text
+                        {
+                            $index_table_rows .= 'echo "<td>" . nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "")) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
                         else if ($type == 4) // TinyInt / Bool
                         {
                             $index_table_rows .= 'echo "<td>" . convert_bool($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
@@ -638,7 +642,11 @@ function generate($postdata) {
                 } else {                        
 
                         // Display date in locale format
-                        if ($type == 4) // TinyInt / Bool
+                        if ($type == 1) // Text
+                        {
+                            $column_value = '<?php echo nl2br(htmlspecialchars($row["'.$columnname.'"] ?? "")); ?>';
+                        }
+                        else if ($type == 4) // TinyInt / Bool
                         {
                             $column_value = '<?php echo convert_bool($row["'.$columnname.'"]); ?>';
                         }
@@ -659,8 +667,8 @@ function generate($postdata) {
 
                         switch($type) {
                         //TEXT
-                        case 0:
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                        case 1:
+                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo '. $create_record. '; ?></textarea>';
                         break;
 
                         //ENUM types
@@ -732,7 +740,7 @@ function generate($postdata) {
                         break;
 
                         default:
-                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
                         }
                     }
