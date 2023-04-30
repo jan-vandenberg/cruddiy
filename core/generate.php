@@ -26,16 +26,16 @@ $startpage_filename = "app/navbar.php";
 $forced_deletion = false;
 $buttons_delimiter = '<!-- TABLE_BUTTONS -->';
 
-//$CSS_REFS = '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">';
-$CSS_REFS = '<link rel="stylesheet" href="css/style.css" type="text/css"/>
-<link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>';
+$CSS_REFS = '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">';
+// $CSS_REFS = '<link rel="stylesheet" href="css/style.css" type="text/css"/>
+// <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>';
 
-// $JS_REFS = '<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-// <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-// <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>';
-$JS_REFS = '<script src="js/jquery-3.5.1.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>';
+$JS_REFS = '<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>';
+// $JS_REFS = '<script src="js/jquery-3.5.1.min.js"></script>
+// <script src="js/popper.min.js"></script>
+// <script src="js/bootstrap.min.js"></script>';
     
 
 function column_type($columnname){
@@ -424,7 +424,7 @@ function generate($postdata) {
             }
             $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this ' . $tablename . ':</h3>" . $html;}' : "";
 
-            //Specific INDEX page variables            
+            //Specific INDEX page variables
             foreach ( $_POST[$key] as $columns ) {
                 if (isset($columns['primary'])){
                     $column_id =  $columns['columnname'];
@@ -639,7 +639,7 @@ function generate($postdata) {
                         }
 
                 // No Foreign Keys, just regular columns from here on
-                } else {                        
+                } else {
 
                         // Display date in locale format
                         if ($type == 1) // Text
@@ -745,21 +745,21 @@ function generate($postdata) {
                         }
                     }
 
-                    $create_html [] = '<div class="form-group row">
-                    <label class="col-sm-4 col-form-label" for="'.$columnname.'">'.$columndisplay.'</label>
-                    <div class="col-sm-7">'. $column_input .'</div></div>';
-                    $read_records .= '<div class="form-group row">
-                        <div class="col-sm-3 font-weight-bold">'.$columndisplay.'</div>
-                        <div class="col-sm-7">'. $column_value .'</div></div>';
-                     
-                    // OLD LAYOUT    
-                    // $create_html [] = '<div class="form-group">
-                    // <label for="'.$columnname.'">'.$columndisplay.'</label>
-                    // '. $column_input .'</div>';
-                    // $read_records .= '<div class="form-group">
-                    //     <h4>'.$columndisplay.'</h4>
-                    //     <p class="form-control-static">' . $column_value .'</p></div>';
+                    // Regular layout
+                    $create_html [] = '<div class="form-group">
+                    <label for="'.$columnname.'">'.$columndisplay.'</label>
+                    '. $column_input .'</div>';
+                    $read_records .= '<div class="form-group">
+                        <h4>'.$columndisplay.'</h4>
+                        <p class="form-control-static">' . $column_value .'</p></div>';
                     
+                    // Different Layout
+                    // $create_html [] = '<div class="form-group row">
+                    // <label class="col-sm-4 col-form-label" for="'.$columnname.'">'.$columndisplay.'</label>
+                    // <div class="col-sm-7">'. $column_input .'</div></div>';
+                    // $read_records .= '<div class="form-group row">
+                    //     <div class="col-sm-3 font-weight-bold">'.$columndisplay.'</div>
+                    //     <div class="col-sm-7">'. $column_value .'</div></div>';
                     $j++;
                     }
                 }
