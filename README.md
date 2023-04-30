@@ -13,10 +13,9 @@ Cruddy kan php forms genereren voor Database operator (Create, Read, Update en D
 - [x] Fix PHP variables names with invalid characters, also escape SQL queries with `` to allow for all possible names.
 - [x] Add support for nullable columns.
 - [ ] Gebruik valuelist/datalist ipv select bij grote tabellen
-- [ ] Fix (lege) datums
 - [x] Make css/js files choosable
 - [x] Generate enum select statically at creation.
-- [x] Replace 0/1 with True False?
+- [x] Replace 0/1 with True False
 - [x] Create an abstraction for the html syntax of columns in the read, edit and create pages.
 
 
