@@ -141,7 +141,7 @@ $indexfile = <<<'EOT'
                                 echo "</tbody>";
                             echo "</table>";
 ?>
-                                <ul class="pagination fixed-bottom" align-right>
+                                <ul class="pagination" align-right>
                                 <?php
                                     $new_url = preg_replace('/&?pageno=[^&]*/', '', $currenturl);
                                  ?>
