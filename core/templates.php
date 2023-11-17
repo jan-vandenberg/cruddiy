@@ -6,7 +6,7 @@ $indexfile = <<<'EOT'
 <head>
     <meta charset="UTF-8">
     <title>{APP_NAME}</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    {CSS_REFS}
     <script src="https://kit.fontawesome.com/6b773fe9e4.js" crossorigin="anonymous"></script>
     <style type="text/css">
         .page-header h2{
@@ -30,7 +30,7 @@ $indexfile = <<<'EOT'
                         <h2 class="float-left">{TABLE_DISPLAY} Details</h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right">Add New Record</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2">Reset View</a>
-                        <a href="index.php" class="btn btn-secondary float-right mr-2">Back</a>
+                        <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2">Back</a>
                     </div>
 
                     <div class="form-row">
@@ -48,11 +48,9 @@ $indexfile = <<<'EOT'
                     require_once "helpers.php";
 
                     //Get current URL and parameters for correct pagination
-                    $domain   = $_SERVER['HTTP_HOST'];
                     $script   = $_SERVER['SCRIPT_NAME'];
                     $parameters   = $_GET ? $_SERVER['QUERY_STRING'] : "" ;
-                    $protocol=($_SERVER['HTTPS'] == "on" ? "https" : "http");
-                    $currenturl = $protocol . '://' . $domain. $script . '?' . $parameters;
+                    $currenturl = $domain. $script . '?' . $parameters;
 
                     //Pagination
                     if (isset($_GET['pageno'])) {
@@ -64,20 +62,23 @@ $indexfile = <<<'EOT'
                     //$no_of_records_per_page is set on the index page. Default is 10.
                     $offset = ($pageno-1) * $no_of_records_per_page;
 
-                    $total_pages_sql = "SELECT COUNT(*) FROM {TABLE_NAME}";
+                    $total_pages_sql = "SELECT COUNT(*) FROM `{TABLE_NAME}`";
                     $result = mysqli_query($link,$total_pages_sql);
                     $total_rows = mysqli_fetch_array($result)[0];
                     $total_pages = ceil($total_rows / $no_of_records_per_page);
 
                     //Column sorting on column name
-                    $orderBy = array('{COLUMNS}');
+                    $columns = array('{COLUMNS}');
                     $order = '{COLUMN_ID}';
-                    if (isset($_GET['order']) && in_array($_GET['order'], $orderBy)) {
-                            $order = $_GET['order'];
-                        }
+                    if (isset($_GET['order']) && in_array($_GET['order'], $columns)) {
+                        $order = $_GET['order'];
+                    } else {
+                    // Order by primary key on default
+                        $order = $columns[0];
+                    }
 
                     //Column sort order
-                    $sortBy = array('asc', 'desc'); $sort = 'desc';
+                    $sortBy = array('asc', 'desc'); $sort = 'asc';
                     if (isset($_GET['sort']) && in_array($_GET['sort'], $sortBy)) {
                           if($_GET['sort']=='asc') {
                             $sort='desc';
@@ -87,37 +88,40 @@ $indexfile = <<<'EOT'
                         }
                     }
 
-                    // Attempt select query execution
-                    $sql = "{INDEX_QUERY} ORDER BY $order $sort LIMIT $offset, $no_of_records_per_page";
-                    $count_pages = "{INDEX_QUERY}";
-
-
-                    if(!empty($_GET['search'])) {
-                        $search = ($_GET['search']);
-                        $sql = "SELECT * FROM {TABLE_NAME}
-                            WHERE CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
-                            LIKE '%$search%'
-                            ORDER BY $order $sort
-                            LIMIT $offset, $no_of_records_per_page";
-                        $count_pages = "SELECT * FROM {TABLE_NAME}
-                            WHERE CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS})
-                            LIKE '%$search%'
-                            ORDER BY $order $sort";
+                    //Generate WHERE statements for param
+                    $where_columns = array_intersect_key($_GET, array_flip($columns));
+                    $get_param = "";                    
+                    $where_statement = " WHERE 1=1 ";
+                    foreach ( $where_columns as $key => $val ) {
+                        $where_statement .= " AND `$key` = '" . mysqli_real_escape_string($link, $val) . "' ";
+                        $get_param .= "&$key=$val";
                     }
-                    else {
+
+                    if (!empty($_GET['search'])) {
+                        $search = mysqli_real_escape_string($link, $_GET['search']);
+                        $where_statement .= " AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS}) LIKE '%$search%'";
+                    } else {
                         $search = "";
                     }
 
+                    // Prepare SQL queries
+                    $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
+                            FROM `{TABLE_NAME}` {JOIN_CLAUSES}
+                            $where_statement
+                            GROUP BY `{TABLE_NAME}`.`{COLUMN_ID}`
+                            ORDER BY `$order` $sort
+                            LIMIT $offset, $no_of_records_per_page;";
+                    $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
+                            $where_statement";
+
                     if($result = mysqli_query($link, $sql)){
                         if(mysqli_num_rows($result) > 0){
-                            if ($result_count = mysqli_query($link, $count_pages)) {
-                               $total_pages = ceil(mysqli_num_rows($result_count) / $no_of_records_per_page);
-                           }
-                            $number_of_results = mysqli_num_rows($result_count);
+                            $number_of_results = mysqli_fetch_assoc(mysqli_query($link, $count_pages))['count'];
+                            $total_pages = ceil($number_of_results / $no_of_records_per_page);
                             echo " " . $number_of_results . " results - Page " . $pageno . " of " . $total_pages;
 
                             echo "<table class='table table-bordered table-striped'>";
-                                echo "<thead>";
+                                echo "<thead class='thead-light'>";
                                     echo "<tr>";
                                         {INDEX_TABLE_HEADERS}
                                         echo "<th>Action</th>";
@@ -169,9 +173,7 @@ $indexfile = <<<'EOT'
             </div>
         </div>
     </section>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+{JS_REFS}
     <script type="text/javascript">
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
@@ -192,7 +194,10 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     require_once "helpers.php";
 
     // Prepare a select statement
-    $sql = "SELECT * FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
+    $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
+            FROM `{TABLE_NAME}` {JOIN_CLAUSES}
+            WHERE `{TABLE_NAME}`.`{TABLE_ID}` = ?
+            GROUP BY `{TABLE_NAME}`.`{TABLE_ID}`;";
 
     if($stmt = mysqli_prepare($link, $sql)){
         // Set parameters
@@ -227,8 +232,6 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     // Close statement
     mysqli_stmt_close($stmt);
 
-    // Close connection
-    mysqli_close($link);
 } else{
     // URL doesn't contain id parameter. Redirect to error page
     header("location: error.php");
@@ -240,7 +243,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
 <head>
     <meta charset="UTF-8">
     <title>View Record</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    {CSS_REFS}
 </head>
 <?php require_once('navbar.php'); ?>
 <body>
@@ -253,30 +256,43 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                     </div>
 
                      {RECORDS_READ_FORM}
+                    <p>
+                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
+                        <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Delete</a>
+                        <a href="javascript:history.back()" class="btn btn-primary">Back</a>
+                    </p> 
+                    <?php
+                    {FOREIGN_KEY_REFS}
 
-                    <p><a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back</a></p>
+                    // Close connection
+                    mysqli_close($link);
+                    ?>
                 </div>
             </div>
         </div>
     </section>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-</body>
+    {JS_REFS}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
+    </body>
 </html>
 EOT;
 
 
 $deletefile = <<<'EOT'
 <?php
+// Include config file
+require_once "config.php";
+require_once "helpers.php";
+
 // Process delete operation after confirmation
 if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
-    // Include config file
-    require_once "config.php";
-    require_once "helpers.php";
 
     // Prepare a delete statement
-    $sql = "DELETE FROM {TABLE_NAME} WHERE {TABLE_ID} = ?";
+    $sql = "DELETE FROM `{TABLE_NAME}` WHERE `{TABLE_ID}` = ?";
 
     if($stmt = mysqli_prepare($link, $sql)){
         // Set parameters
@@ -289,13 +305,16 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
 		else $__vartype = "b"; // blob
         mysqli_stmt_bind_param($stmt, $__vartype, $param_id);
 
-        // Attempt to execute the prepared statement
-        if(mysqli_stmt_execute($stmt)){
+        try {
+            mysqli_stmt_execute($stmt);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            $error = $e->getMessage();
+        }
+    
+        if (!isset($error)){
             // Records deleted successfully. Redirect to landing page
             header("location: {TABLE_NAME}-index.php");
-            exit();
-        } else{
-            echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
         }
     }
 
@@ -319,7 +338,7 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
 <head>
     <meta charset="UTF-8">
     <title>View Record</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    {CSS_REFS}
 </head>
 <?php require_once('navbar.php'); ?>
 <body>
@@ -330,23 +349,32 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
                     <div class="page-header">
                         <h1>Delete Record</h1>
                     </div>
-                    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" method="post">
+                    <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?{TABLE_ID}=" . $_GET["{TABLE_ID}"]; ?>" method="post">
+                    <?php print_error_if_exists($error); ?>
                         <div class="alert alert-danger fade-in">
                             <input type="hidden" name="{TABLE_ID}" value="<?php echo trim($_GET["{TABLE_ID}"]); ?>"/>
                             <p>Are you sure you want to delete this record?</p><br>
                             <p>
                                 <input type="submit" value="Yes" class="btn btn-danger">
-                                <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">No</a>
+                                <a href="javascript:history.back()" class="btn btn-secondary">No</a>
                             </p>
                         </div>
                     </form>
+                    <p>
+                        <a href="{TABLE_NAME}-read.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-info">View</a>
+                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
+                        <a href="javascript:history.back()" class="btn btn-primary">Back</a>
+                    </p>
                 </div>
             </div>
         </div>
     </section>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+{JS_REFS}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 </body>
 </html>
 
@@ -358,37 +386,23 @@ $createfile = <<<'EOT'
 require_once "config.php";
 require_once "helpers.php";
 
-// Define variables and initialize with empty values
-{CREATE_RECORDS}
-{CREATE_ERR_RECORDS}
-
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
-        {CREATE_POST_VARIABLES}
+    {CREATE_POST_VARIABLES}
 
-        $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
-        $options = [
-          PDO::ATTR_EMULATE_PREPARES   => false, // turn off emulation mode for "real" prepared statements
-          PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, //turn on errors in the form of exceptions
-          PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //make the default fetch be an associative array
-        ];
-        try {
-          $pdo = new PDO($dsn, $db_user, $db_password, $options);
-        } catch (Exception $e) {
-          error_log($e->getMessage());
-          exit('Something weird happened'); //something a user can understand
-        }
+    $stmt = $link->prepare("INSERT INTO `{TABLE_NAME}` ({CREATE_COLUMN_NAMES}) VALUES ({CREATE_QUESTIONMARK_PARAMS})");
 
-        $vars = parse_columns('{TABLE_NAME}', $_POST);
-        $stmt = $pdo->prepare("INSERT INTO {TABLE_NAME} ({CREATE_COLUMN_NAMES}) VALUES ({CREATE_QUESTIONMARK_PARAMS})");
+    try {
+        $stmt->execute([ {CREATE_SQL_PARAMS} ]);
+    } catch (Exception $e) {
+        error_log($e->getMessage());
+        $error = $e->getMessage();
+    }
 
-        if($stmt->execute([ {CREATE_SQL_PARAMS}  ])) {
-                $stmt = null;
-                header("location: {TABLE_NAME}-index.php");
-            } else{
-                echo "Something went wrong. Please try again later.";
-            }
-
+    if (!isset($error)){
+        $new_id = mysqli_insert_id($link);
+        header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=$new_id");
+    }
 }
 ?>
 
@@ -397,7 +411,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <head>
     <meta charset="UTF-8">
     <title>Create Record</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    {CSS_REFS}
 </head>
 <?php require_once('navbar.php'); ?>
 <body>
@@ -408,6 +422,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     <div class="page-header">
                         <h2>Create Record</h2>
                     </div>
+                    <?php print_error_if_exists($error); ?>
                     <p>Please fill this form and submit to add a record to the database.</p>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 
@@ -416,13 +431,17 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
                     </form>
+                    <p> * field can not be left empty </p>
                 </div>
             </div>
         </div>
     </section>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+{JS_REFS}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 </body>
 </html>
 EOT;
@@ -434,10 +453,6 @@ $updatefile = <<<'EOT'
 require_once "config.php";
 require_once "helpers.php";
 
-// Define variables and initialize with empty values
-{CREATE_RECORDS}
-{CREATE_ERR_RECORDS}
-
 // Processing form data when form is submitted
 if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     // Get hidden input value
@@ -446,81 +461,70 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     {CREATE_POST_VARIABLES}
 
     // Prepare an update statement
-    $dsn = "mysql:host=$db_server;dbname=$db_name;charset=utf8mb4";
-    $options = [
-        PDO::ATTR_EMULATE_PREPARES   => false, // turn off emulation mode for "real" prepared statements
-        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION, //turn on errors in the form of exceptions
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, //make the default fetch be an associative array
-    ];
+
+    $stmt = $link->prepare("UPDATE `{TABLE_NAME}` SET {UPDATE_SQL_PARAMS} WHERE {UPDATE_SQL_ID}");
+
     try {
-        $pdo = new PDO($dsn, $db_user, $db_password, $options);
+        $stmt->execute([ {UPDATE_SQL_COLUMNS}  ]);
     } catch (Exception $e) {
         error_log($e->getMessage());
-        exit('Something weird happened');
+        $error = $e->getMessage();
     }
 
-    $vars = parse_columns('{TABLE_NAME}', $_POST);
-    $stmt = $pdo->prepare("UPDATE {TABLE_NAME} SET {UPDATE_SQL_PARAMS} WHERE {UPDATE_SQL_ID}");
-
-    if(!$stmt->execute([ {UPDATE_SQL_COLUMNS}  ])) {
-        echo "Something went wrong. Please try again later.";
-        header("location: error.php");
-    } else {
-        $stmt = null;
+    if (!isset($error)){
         header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=${COLUMN_ID}");
     }
-} else {
-    // Check existence of id parameter before processing further
-	$_GET["{COLUMN_ID}"] = trim($_GET["{COLUMN_ID}"]);
-    if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
-        // Get URL parameter
-        ${COLUMN_ID} =  trim($_GET["{COLUMN_ID}"]);
+} 
+// Check existence of id parameter before processing further
+$_GET["{COLUMN_ID}"] = trim($_GET["{COLUMN_ID}"]);
+if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
+    // Get URL parameter
+    ${COLUMN_ID} =  trim($_GET["{COLUMN_ID}"]);
 
-        // Prepare a select statement
-        $sql = "SELECT * FROM {TABLE_NAME} WHERE {COLUMN_ID} = ?";
-        if($stmt = mysqli_prepare($link, $sql)){
-            // Set parameters
-            $param_id = ${COLUMN_ID};
+    // Prepare a select statement
+    $sql = "SELECT * FROM `{TABLE_NAME}` WHERE `{COLUMN_ID}` = ?";
+    if($stmt = mysqli_prepare($link, $sql)){
+        // Set parameters
+        $param_id = ${COLUMN_ID};
 
-            // Bind variables to the prepared statement as parameters
-			if (is_int($param_id)) $__vartype = "i";
-			elseif (is_string($param_id)) $__vartype = "s";
-			elseif (is_numeric($param_id)) $__vartype = "d";
-			else $__vartype = "b"; // blob
-			mysqli_stmt_bind_param($stmt, $__vartype, $param_id);
+        // Bind variables to the prepared statement as parameters
+        if (is_int($param_id)) $__vartype = "i";
+        elseif (is_string($param_id)) $__vartype = "s";
+        elseif (is_numeric($param_id)) $__vartype = "d";
+        else $__vartype = "b"; // blob
+        mysqli_stmt_bind_param($stmt, $__vartype, $param_id);
 
-            // Attempt to execute the prepared statement
-            if(mysqli_stmt_execute($stmt)){
-                $result = mysqli_stmt_get_result($stmt);
+        // Attempt to execute the prepared statement
+        if(mysqli_stmt_execute($stmt)){
+            $result = mysqli_stmt_get_result($stmt);
 
-                if(mysqli_num_rows($result) == 1){
-                    /* Fetch result row as an associative array. Since the result set
-                    contains only one row, we don't need to use while loop */
-                    $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+            if(mysqli_num_rows($result) == 1){
+                /* Fetch result row as an associative array. Since the result set
+                contains only one row, we don't need to use while loop */
+                $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
 
-                    // Retrieve individual field value
+                // Retrieve individual field value
 
-                    {UPDATE_COLUMN_ROWS}
-
-                } else{
-                    // URL doesn't contain valid id. Redirect to error page
-                    header("location: error.php");
-                    exit();
-                }
+                {UPDATE_COLUMN_ROWS}
 
             } else{
-                echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
+                // URL doesn't contain valid id. Redirect to error page
+                header("location: error.php");
+                exit();
             }
+
+        } else{
+            echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
         }
-
-        // Close statement
-        mysqli_stmt_close($stmt);
-
-    }  else{
-        // URL doesn't contain id parameter. Redirect to error page
-        header("location: error.php");
-        exit();
     }
+
+    // Close statement
+    mysqli_stmt_close($stmt);
+
+}  else{
+    // URL doesn't contain id parameter. Redirect to error page
+    header("location: error.php");
+    exit();
 }
 ?>
 
@@ -529,7 +533,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 <head>
     <meta charset="UTF-8">
     <title>Update Record</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    {CSS_REFS}
 </head>
 <?php require_once('navbar.php'); ?>
 <body>
@@ -540,19 +544,35 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                     <div class="page-header">
                         <h2>Update Record</h2>
                     </div>
+                    <?php print_error_if_exists($error); ?>
                     <p>Please edit the input values and submit to update the record.</p>
                     <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
 
                         {CREATE_HTML}
 
                         <input type="hidden" name="{COLUMN_ID}" value="<?php echo ${COLUMN_ID}; ?>"/>
-                        <input type="submit" class="btn btn-primary" value="Submit">
-                        <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
+                        <p>
+                            <input type="submit" class="btn btn-primary" value="Submit">
+                            <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+                        </p>
+                        <p>
+                            <a href="{TABLE_NAME}-read.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-info">View</a>
+                            <a href="{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-warning">Delete</a>
+                            <a href="javascript:history.back()" class="btn btn-primary">Back</a>
+                        </p>
+                        <p> * field can not be left empty </p>
                     </form>
                 </div>
             </div>
         </div>
     </section>
+</body>
+{JS_REFS}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
 </body>
 </html>
 
@@ -564,7 +584,7 @@ $errorfile = <<<'EOT'
 <head>
     <meta charset="UTF-8">
     <title>Error</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    {CSS_REFS}
 </head>
 <body>
     <section class="pt-5">
@@ -581,9 +601,7 @@ $errorfile = <<<'EOT'
             </div>
         </div>
     </section>
-<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    {JS_REFS}
 </body>
 </html>
 EOT;
@@ -592,12 +610,9 @@ $startfile = <<<'EOT'
 <html lang="en">                                                                                                                                                                                                   
 <head>                                                                                                                                                                                                             
     <meta charset="UTF-8">                                                                                                                                                                                         
-    <title>{APP_NAME}</title>                                                                                                                                                                               
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <title>{APP_NAME}</title>
+    {CSS_REFS}
+    {JS_REFS}
 
     <style type="text/css">                                                                                                                                                                                        
         .page-header h2{                                                                                                                                                                                           

@@ -50,6 +50,8 @@ if(isset($_POST['index'])) {
 	$txt .= "\$db_password = '$password'; \n";
 	$txt .= "\$no_of_records_per_page = $numrecordsperpage; \n";
 	$txt .= "\$appname = '$appname'; \n\n";
+    $txt .= "\$protocol=(\$_SERVER['HTTPS'] == 'on' ? 'https' : 'http');\n";
+    $txt .= "\$domain = \$protocol . '://' . \$_SERVER['SCRIPT_NAME']; //Replace domain with your domain name. (Locally typically something like localhost)\n\n";
 	$txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n";
 
     $txt .= '$query = "SHOW VARIABLES LIKE \'character_set_database\'";' ."\n";

@@ -26,6 +26,18 @@ $startpage_filename = "app/navbar.php";
 $forced_deletion = false;
 $buttons_delimiter = '<!-- TABLE_BUTTONS -->';
 
+$CSS_REFS = '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">';
+// $CSS_REFS = '<link rel="stylesheet" href="css/style.css" type="text/css"/>
+// <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>';
+
+$JS_REFS = '<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>';
+// $JS_REFS = '<script src="js/jquery-3.5.1.min.js"></script>
+// <script src="js/popper.min.js"></script>
+// <script src="js/bootstrap.min.js"></script>';
+    
+
 function column_type($columnname){
     switch ($columnname) {
         case (preg_match("/text/i", $columnname) ? true : false) :
@@ -37,11 +49,8 @@ function column_type($columnname){
         case (preg_match("/varchar/i", $columnname) ? true : false) :
             return 3;
         break;
-            //Tinyint needs work to be selectable from dropdown list
-            //So for now a tinyint will be just a input field (in Create)
-            //and a prefilled input field (in Update).
         case (preg_match("/tinyint\(1\)/i", $columnname) ? true : false) :
-            return 5;
+            return 4;
         break;
         case (preg_match("/int/i", $columnname) ? true : false) :
             return 5;
@@ -61,17 +70,57 @@ function column_type($columnname){
     }
 }
 
+function is_primary_key($t, $c){
+    $cols = $_POST[$t . 'columns'];
+    foreach($cols as $col) {
+        if (isset($col['primary']) && $col['columnname'] == $c){
+            return 1;
+        }
+    }
+    return 0;
+}
+
+function get_sql_concat_select($copy_columns, $table, $name){
+    $array = $copy_columns;
+    foreach($array as $key => $c)
+    {
+        $array[$key] = '`'. $table .'`.`'. $array[$key] .'`'; 
+    }
+    return "\n\t\t\t, CONCAT_WS(' | ',". implode(', ', $array) .') AS `'. $name .'`';
+}
+
+function get_sql_select($copy_columns){
+    $array = $copy_columns;
+    foreach($array as $key => $c)
+    {
+        $array[$key] = '`'.$array[$key].'`'; 
+    }
+    return implode(', ', $array);
+}
+
 function generate_error(){
     global $errorfile;
-    if (!file_put_contents("app/error.php", $errorfile, LOCK_EX)) {
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $errorfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    if (!file_put_contents("app/error.php", $prestep2, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating Error file<br>";
 }
 
 function generate_startpage(){
-    global $startfile; 
-    if (!file_put_contents("app/index.php", $startfile, LOCK_EX)) {
+    global $startfile;
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $startfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    if (!file_put_contents("app/index.php", $prestep2, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating main index file.<br>";
@@ -155,14 +204,18 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
 }
 
 
-function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search) {
+function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search, $join_columns, $join_clauses) {
     global $indexfile;
     global $appname;
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $indexfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
 
     $columns_available = implode("', '", $columns_available);
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $indexfile);
-    $step1 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step0);
-    $step2 = str_replace("{INDEX_QUERY}", "SELECT * FROM $tablename", $step1 );
+    $step1 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
+    $step2 = str_replace("{TABLE_DISPLAY}", $tabledisplay, $step1);
     $step3 = str_replace("{INDEX_TABLE_HEADERS}", $index_table_headers, $step2 );
     $step4 = str_replace("{INDEX_TABLE_ROWS}", $index_table_rows, $step3 );
     $step5 = str_replace("{COLUMN_ID}", $column_id, $step4 );
@@ -170,18 +223,29 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $step7 = str_replace("{COLUMNS}", $columns_available, $step6 );
     $step8 = str_replace("{INDEX_CONCAT_SEARCH_FIELDS}", $index_sql_search, $step7 );
     $step9 = str_replace("{APP_NAME}", $appname, $step8 );
-    if (!file_put_contents("app/".$tablename."-index.php", $step9, LOCK_EX)) {
+    $step10 = str_replace("{JOIN_COLUMNS}", $join_columns, $step9 );
+    $step11 = str_replace("{JOIN_CLAUSES}", $join_clauses, $step10 );
+    if (!file_put_contents("app/".$tablename."-index.php", $step11, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Index file<br>";
 }
 
-function generate_read($tablename, $column_id, $read_records){
+function generate_read($tablename, $column_id, $read_records, $foreign_key_references, $join_columns, $join_clauses){
     global $readfile;
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $readfile);
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $readfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
     $step2 = str_replace("{RECORDS_READ_FORM}", $read_records, $step1 );
-    if (!file_put_contents("app/".$tablename."-read.php", $step2, LOCK_EX)) {
+    $step3 = str_replace("{FOREIGN_KEY_REFS}", $foreign_key_references, $step2 );
+    $step4 = str_replace("{JOIN_COLUMNS}", $join_columns, $step3 );
+    $step5 = str_replace("{JOIN_CLAUSES}", $join_clauses, $step4 );
+    if (!file_put_contents("app/".$tablename."-read.php", $step5, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Read file<br>";
@@ -189,7 +253,13 @@ function generate_read($tablename, $column_id, $read_records){
 
 function generate_delete($tablename, $column_id){
     global $deletefile;
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $deletefile);
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $deletefile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
     if (!file_put_contents("app/".$tablename."-delete.php", $step1, LOCK_EX)) {
         die("Unable to open file!");
@@ -197,9 +267,15 @@ function generate_delete($tablename, $column_id){
     echo "Generating $tablename Delete file<br><br>";
 }
 
-function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
+function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
     global $createfile;
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $createfile);
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $createfile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{CREATE_RECORDS}", $create_records, $step0);
     $step2 = str_replace("{CREATE_ERR_RECORDS}", $create_err_records, $step1);
     $step3 = str_replace("{CREATE_COLUMN_NAMES}", $create_sqlcolumns, $step2);
@@ -207,7 +283,8 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
     $step5 = str_replace("{CREATE_SQL_PARAMS}", $create_sql_params, $step4 );
     $step6 = str_replace("{CREATE_HTML}", $create_html, $step5);
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
-    if (!file_put_contents("app/".$tablename."-create.php", $step7, LOCK_EX)) {
+    $step8 = str_replace("{COLUMN_ID}", $column_id, $step7);
+    if (!file_put_contents("app/".$tablename."-create.php", $step8, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Create file<br>";
@@ -215,7 +292,13 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
 
 function generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns){
     global $updatefile;
-    $step0 = str_replace("{TABLE_NAME}", $tablename, $updatefile);
+    global $CSS_REFS;
+    global $JS_REFS;
+
+    $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $updatefile);
+    $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+
+    $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{CREATE_RECORDS}", $create_records, $step0);
     $step2 = str_replace("{CREATE_ERR_RECORDS}", $create_err_records, $step1);
     $step3 = str_replace("{COLUMN_ID}", $column_id, $step2);
@@ -259,6 +342,21 @@ function generate($postdata) {
     // echo "</pre>";
     // Go trough the POST array
     // Every table is a key
+    global $excluded_keys;
+    
+    // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that 
+    // are selected to be include in previews, such as select foreign keys and foreign key preview.
+    $preview_columns = array();
+    foreach ($postdata as $key => $value){
+        if (!in_array($key, $excluded_keys)) {
+            foreach ($_POST[$key] as $columns ) {
+                if (isset($columns['columninpreview'])){
+                    $preview_columns[$columns['tablename']][] = $columns['columnname'];
+                }
+            }
+        }
+    }
+
     foreach ($postdata as $key => $value) {
         $tables = array();
         $tablename = '';
@@ -267,6 +365,7 @@ function generate($postdata) {
         $columndisplay = '';
         $columnvisible = '';
         $columns_available = array();
+        $index_sql_search = array();
         $index_table_rows = '';
         $index_table_headers = '';
         $read_records = '';
@@ -285,7 +384,9 @@ function generate($postdata) {
         $update_sql_id = '';
         $update_column_rows = '';
 
-        global $excluded_keys;
+        $join_columns = '';
+        $join_clauses = '';
+
         global $sort;
         global $link;
         global $forced_deletion;
@@ -296,12 +397,46 @@ function generate($postdata) {
             $max = count_index_colums($key)+1;
             $total_columns = count($_POST[$key]);
             $total_params = count($_POST[$key]);
+            $tablename = $_POST[$key][0]['tablename'];
+
+            // Find foreign key references to this table
+            $foreign_key_references = "";
+            $sql_get_fk_ref = "SELECT i.TABLE_NAME as 'Table', k.COLUMN_NAME as 'Column',
+                                k.REFERENCED_TABLE_NAME as 'FK Table', k.REFERENCED_COLUMN_NAME as 'FK Column',
+                                i.CONSTRAINT_NAME as 'Constraint Name'
+                                FROM information_schema.TABLE_CONSTRAINTS i
+                                LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+                                WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND k.REFERENCED_TABLE_NAME = '$tablename'";
+            $result = mysqli_query($link, $sql_get_fk_ref);
+            if (mysqli_num_rows($result) > 0) {
+                while($row = mysqli_fetch_assoc($result)) {
+                    $table = $row["Table"];
+                    $fk_column = $row["FK Column"];
+                    $column = $row["Column"];
+                    $foreign_key_references .= '
+                    $sql = "SELECT COUNT(*) AS count FROM `'. $table .'` WHERE `'. $column .'` = ". $row["'.$fk_column.'"] . ";";
+                    $number_of_refs = mysqli_fetch_assoc(mysqli_query($link, $sql))["count"];
+                    if ($number_of_refs > 0)
+                    {
+                        $html .= \'<p><a href="'. $table . '-index.php?'. $column . '=\'. $row["'.$fk_column.'"]' . '.\'" class="btn btn-info">View \' . $number_of_refs . \' ' . $table . ' with '. $column . ' = \'. $row["'.$fk_column.'"] .\'</a></p></p>\';         
+                    }';
+                }
+            }
+            $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this ' . $tablename . ':</h3>" . $html;}' : "";
 
             //Specific INDEX page variables
             foreach ( $_POST[$key] as $columns ) {
                 if (isset($columns['primary'])){
                     $column_id =  $columns['columnname'];
                 }
+
+                // These variables contain the generated names, labels, input field and values for column.
+                // They are used at the end of this loop to create the {RECORDS_READ_FORM} and the {CREATE_HTML}
+                // $columndisplay contains the name of the column
+                $column_value = "";
+                $column_input = "";
+
+                $type = column_type($columns['columntype']);
 
                 //INDEXFILE VARIABLES
                 //Get the columns visible in the index file
@@ -317,9 +452,56 @@ function generate($postdata) {
                             $columndisplay = $columns['columnname'];
                         }
 
-                        $columns_available [] = $columnname;
-                        $index_table_headers .= 'echo "<th><a href=?search=$search&sort='.$sort.'&order='.$columnname.'&sort=$sort>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
-                        $index_table_rows .= 'echo "<td>" . htmlspecialchars($row['. "'" . $columnname . "'" . ']) . "</td>";';
+                        if (!empty($columns['columncomment'])){
+                            $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
+                        }
+
+                        $columns_available [] = "$columnname";
+                        $index_sql_search [] = "`$tablename`.`$columnname`";
+                        $index_table_headers .= 'echo "<th><a href=?search=$search&order='.$columnname.'&sort=$sort$get_param>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        
+                        // Display date in locale format
+                        if(!empty($columns['fk'])){
+                            //Get the Foreign Key
+                            $tablename = $columns['tablename'];
+                            $columnname = $columns['columnname'];
+                            $sql_getfk = "SELECT i.TABLE_NAME as 'Table', k.COLUMN_NAME as 'Column',
+                                    k.REFERENCED_TABLE_NAME as 'FK Table', k.REFERENCED_COLUMN_NAME as 'FK Column',
+                                    i.CONSTRAINT_NAME as 'Constraint Name'
+                                    FROM information_schema.TABLE_CONSTRAINTS i
+                                    LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+                                    WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND k.TABLE_NAME = '$tablename' AND k.COLUMN_NAME = '$columnname'";
+                            $result = mysqli_query($link, $sql_getfk);
+                            if (mysqli_num_rows($result) > 0) {
+                                while($row = mysqli_fetch_assoc($result)) {
+                                    $fk_table = $row["FK Table"];
+                                    $fk_column = $row["FK Column"];
+                                }
+                            $join_column_name = $columnname . $fk_table . $fk_column;
+                            $is_primary_ref = is_primary_key($fk_table, $fk_column);
+                            $index_table_rows .= 'echo "<td>" . get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', true) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                            }
+                        }
+                        else if ($type == 1) // Text
+                        {
+                            $index_table_rows .= 'echo "<td>" . nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "")) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
+                        else if ($type == 4) // TinyInt / Bool
+                        {
+                            $index_table_rows .= 'echo "<td>" . convert_bool($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
+                        else if ($type == 7) // Date
+                        {
+                            $index_table_rows .= 'echo "<td>" . convert_date($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
+                        else if ($type == 8) // Datetime
+                        {
+                            $index_table_rows .= 'echo "<td>" . convert_datetime($row['. "'" . $columnname . "'" . ']) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
+                        else
+                        {
+                            $index_table_rows .= 'echo "<td>" . htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "") . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        }
                         $i++;
                     }
                 }
@@ -327,8 +509,9 @@ function generate($postdata) {
 
             //DETAIL CREATE UPDATE AND DELETE pages variables
             foreach ( $_POST[$key] as $columns ) {
-                //print_r($columns);
                 if ($j < $total_columns) {
+
+                    $type = column_type($columns['columntype']);
 
                     if (isset($columns['columndisplay'])){
                         $columndisplay = $columns['columndisplay'];
@@ -336,7 +519,16 @@ function generate($postdata) {
                     if (empty($columns['columndisplay'])){
                         $columndisplay = $columns['columnname'];
                     }
+                    
+                    if (!$columns['columnnullable'])
+                    {
+                        $columndisplay .= "*";
+                    }
 
+                    if (!empty($columns['columncomment'])){
+                        $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
+                    }
+                    
                     if (!empty($columns['auto'])){
                         //Dont create html input field for auto-increment columns
                         $j++;
@@ -361,22 +553,25 @@ function generate($postdata) {
                     if(empty($columns['auto'])) {
 
                         $columnname = $columns['columnname'];
-                        $read_records .= '<div class="form-group">
-                            <h4>'.$columndisplay.'</h4>
-                            <p class="form-control-static"><?php echo htmlspecialchars($row["'.$columnname.'"]); ?></p>
-                        </div>';
-
-                        $create_records .= "\$$columnname = \"\";\n";
-                        $create_record = "\$$columnname";
-                        $create_err_records .= "\$$columnname".'_err'." = \"\";\n";
-                        $create_err_record = "\$$columnname".'_err';
-                        $create_sqlcolumns [] = $columnname;
-                        $create_sql_params [] = "\$$columnname";
-                        $create_postvars .= "$$columnname = trim(\$_POST[\"$columnname\"]);\n\t\t";
-
-                        $update_sql_params [] = "$columnname".'=?';
-                        $update_sql_id = "$column_id".'=?';
-                        $update_column_rows .= "$$columnname = htmlspecialchars(\$row[\"$columnname\"]);\n\t\t\t\t\t";
+                        $columnname_var = preg_replace('/[^a-zA-Z0-9]+/', '_', $columnname);
+                        
+                        $create_records .= "\$$columnname_var = \"\";\n";
+                        $create_record = "\$$columnname_var";
+                        $create_err_records .= "\$$columnname_var".'_err'." = \"\";\n";
+                        $create_err_record = "\$$columnname_var".'_err';
+                        $create_sqlcolumns [] = "`$columnname`";
+                        $create_sql_params [] = "\$$columnname_var";
+                        
+                        // Process POST vars that can be null differently
+                        if ($columns['columnnullable']){
+                            $create_postvars .= "$$columnname_var = \$_POST[\"$columnname\"] == \"\" ? null : trim(\$_POST[\"$columnname\"]);\n\t\t";
+                        } else {
+                            $create_postvars .= "$$columnname_var = trim(\$_POST[\"$columnname\"]);\n\t\t";
+                        }                        
+                        
+                        $update_sql_params [] = "`$columnname`".'=?';
+                        $update_sql_id = "`$column_id`".'=?';
+                        $update_column_rows .= "$$columnname_var = htmlspecialchars(\$row[\"$columnname\"] ?? \"\");\n\t\t\t\t\t";
 
 
                         //Foreign Key
@@ -398,153 +593,188 @@ function generate($postdata) {
 
 
                             //Be careful code below is particular regarding single and double quotes.
+                            
+                            $html = '<select class="form-control" id="'. $columnname .'" name="'. $columnname .'">';
+                            if ($columns['columnnullable'])
+                            {
+                                $html .= '<option value="">Null</option>';
+                            }
+                            
+                            
+                            $fk_columns_select = get_sql_select($preview_columns[$fk_table]);
+                            
+                            $join_name = $columnname .$fk_table;
+                            $join_column_name = $columnname . $fk_table . $fk_column;
 
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                    <select class="form-control" id="'. $columnname .'" name="'. $columnname .'">
-                                    <?php
-                                        $sql = "SELECT *,'. $fk_column .' FROM '. $fk_table . '";
+                            $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
+                            $join_columns .= get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name);
+                            
+                            // Add the new columns to the search concat
+                            foreach($preview_columns[$fk_table] as $key => $c)
+                            {
+                                $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`'; 
+                            }
+
+                            $is_primary_ref = is_primary_key($fk_table, $fk_column);
+
+                            $column_value = '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', false); ?>';
+
+                            $html .= ' <?php
+                                        $sql = "SELECT '. $fk_columns_select .', `'. $fk_column .'` FROM `'. $fk_table . '` ORDER BY '. $fk_columns_select .'";
                                         $result = mysqli_query($link, $sql);
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                                             $duprow = $row;
                                             unset($duprow["' . $fk_column . '"]);
                                             $value = implode(" | ", $duprow);
-                                            if ($row["' . $fk_column . '"] == $' . $columnname . '){
-                                            echo \'<option value="\' . "$row['. $fk_column. ']" . \'"selected="selected">\' . "$value" . \'</option>\';
+                                            if ($row["' . $fk_column . '"] == $' . $columnname_var . '){
+                                            echo \'<option value="\' . $row["'. $fk_column. '"] . \'"selected="selected">\' . $value . \'</option>\';
                                             } else {
-                                                echo \'<option value="\' . "$row['. $fk_column. ']" . \'">\' . "$value" . \'</option>\';
+                                                echo \'<option value="\' . $row["'. $fk_column. '"] . \'">\' . $value . \'</option>\';
                                         }
                                         }
                                     ?>
-                                    </select>
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                            </div>';
+                                    </select>';
+                            $column_input = $html;
+                            unset($html);
                         }
 
                 // No Foreign Keys, just regular columns from here on
                 } else {
 
-                        $type = column_type($columns['columntype']);
+                        // Display date in locale format
+                        if ($type == 1) // Text
+                        {
+                            $column_value = '<?php echo nl2br(htmlspecialchars($row["'.$columnname.'"] ?? "")); ?>';
+                        }
+                        else if ($type == 4) // TinyInt / Bool
+                        {
+                            $column_value = '<?php echo convert_bool($row["'.$columnname.'"]); ?>';
+                        }
+                        else if ($type == 7) // Date
+                        {
+                            $column_value = '<?php echo convert_date($row["'.$columnname.'"]); ?>';
+                        }
+                        else if ($type == 8) // Datetime
+                        {
+                            $column_value = '<?php echo convert_datetime($row["'.$columnname.'"]); ?>';
+                        }
+                        else
+                        {
+                            $column_value = '<?php echo htmlspecialchars($row["'.$columnname.'"] ?? ""); ?>';
+                        }
+
+                        //$type = column_type($columns['columntype']);
 
                         switch($type) {
                         //TEXT
-                        case 0:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="text" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                            </div>';
+                        case 1:
+                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo '. $create_record. '; ?></textarea>';
                         break;
 
                         //ENUM types
                         case 2:
                         //Make sure on the update form that the previously selected type is also selected from the list
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
-                            $create_html [] .=  '<?php
-                                            $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
-                                            FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '. "'$tablename'" .'  AND COLUMN_NAME = '."'$columnname'" .'";
-                                            $result = mysqli_query($link, $sql_enum);
-                                            while($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
-                                            preg_match(\'/enum\((.*)\)$/\', $row[0], $matches);
-                                            $vals = explode("," , $matches[1]);
-                                            foreach ($vals as $val){
-                                                $val = substr($val, 1);
-                                                $val = rtrim($val, "\'");
-                                                if ($val == $'.$columnname.'){
-                                                echo \'<option value="\' . $val . \'" selected="selected">\' . $val . \'</option>\';
-                                                } else
-                                                echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
-                                                        }
-                                            }?>';
+                         
+                            $html = '<select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
+                            if ($columns['columnnullable'])
+                            {
+                                $html .= '<option value="">Null</option>';
+                            }
 
-                            $create_html [] .= '</select>
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                                </div>';
+                            $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
+                            FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$tablename' AND COLUMN_NAME = '$columnname';";
+                            $result = mysqli_query($link, $sql_enum);
+                            $row = mysqli_fetch_array($result, MYSQLI_NUM);
+                            preg_match('/enum\((.*)\)$/', $row[0], $matches);
+                            $html .= "<?php \n\t\t\t\t\t\t\t \$enum_$columnname = array(" . $matches[1] . ");";
+                            $html .= "
+                                foreach (\$enum_$columnname as " . ' $val){
+                                    if ($val == $'.$columnname.'){
+                                    echo \'<option value="\' . $val . \'" selected="selected">\' . $val . \'</option>\';
+                                    } else
+                                    echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
+                                            }
+                            ?></select>';
+
+                            $column_input = $html;
+                            unset($html);
                         break;
                         //VARCHAR
                         case 3:
                             preg_match('#\((.*?)\)#', $columns['columntype'], $match);
                             $maxlength = $match[1];
-
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="text" name="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                            </div>';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
-                        //TINYINT - Will never hit. Needs work.
+
+                        //TINYINT (bool)
                         case 4:
                             $regex = "/'(.*?)'/";
                             preg_match_all( $regex , $columns['columntype'] , $enum_array );
-
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
-                                        $create_html [] .= '    <option value="0">0</option>';
-                                        $create_html [] .= '    <option value="1">1</option>';
-                            $create_html [] .= '</select>
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                                </div>';
+                            $html = '<select name="'.$columnname.'" id="'. $columnname .'" class="form-control" id="'.$columnname .'">';
+                                if ($columns['columnnullable'])
+                                {
+                                    $html .= '<option value="">Null</option>';
+                                }
+                            $html   .= '    <option value="0" <?php echo !' . $create_record . ' ? "selected": ""; ?> >False</option>';
+                            $html   .= '    <option value="1" <?php echo ' . $create_record . ' ? "selected": ""; ?> >True</option>';
+                            $html   .= '</select>';
+                                $column_input = $html;
+                            unset($html);
                         break;
                         //INT
                         case 5:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                            </div>';
+                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
 
                         //DECIMAL
                         case 6:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="number" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                            </div>';
+                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">';
                         break;
                         //DATE
                         case 7:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="date" name="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                            </div>';
+                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
                         //DATETIME
                         case 8:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <input type="datetime-local" name="'. $columnname .'" class="form-control" value="<?php echo date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                            </div>';
+                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">';
                         break;
 
                         default:
-                            $create_html [] = '<div class="form-group">
-                                <label>'.$columndisplay.'</label>
-                                <textarea name="'. $columnname .'" class="form-control"><?php echo '. $create_record. ' ; ?></textarea>
-                                <span class="form-text"><?php echo ' . $create_err_record . '; ?></span>
-                            </div>';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
                         break;
                         }
                     }
-                        $j++;
+
+                    // Regular layout
+                    $create_html [] = '<div class="form-group">
+                    <label for="'.$columnname.'">'.$columndisplay.'</label>
+                    '. $column_input .'</div>';
+                    $read_records .= '<div class="form-group">
+                        <h4>'.$columndisplay.'</h4>
+                        <p class="form-control-static">' . $column_value .'</p></div>';
+                    
+                    // Different Layout
+                    // $create_html [] = '<div class="form-group row">
+                    // <label class="col-sm-4 col-form-label" for="'.$columnname.'">'.$columndisplay.'</label>
+                    // <div class="col-sm-7">'. $column_input .'</div></div>';
+                    // $read_records .= '<div class="form-group row">
+                    //     <div class="col-sm-3 font-weight-bold">'.$columndisplay.'</div>
+                    //     <div class="col-sm-7">'. $column_value .'</div></div>';
+                    $j++;
                     }
                 }
+
                 if ($j == $total_columns) {
 
                     $update_sql_columns = $create_sql_params;
                     $update_sql_columns [] = "\$$column_id";
-                    $update_sql_columns = implode(",", $update_sql_columns);
+                    $update_sql_columns = implode(", ", $update_sql_columns);
 
-                    $index_sql_search = implode(",", $columns_available);
+                    $index_sql_search = implode(", ", $index_sql_search);
                     $create_numberofparams = array_fill(0, $total_params, '?');
-                    $create_numberofparams = implode(",", $create_numberofparams);
-                    $create_sqlcolumns = implode(",", $create_sqlcolumns);
-                    $create_sql_params = implode(",", $create_sql_params);
+                    $create_numberofparams = implode(", ", $create_numberofparams);
+                    $create_sqlcolumns = implode(", ", $create_sqlcolumns);
+                    $create_sql_params = implode(", ", $create_sql_params);
                     $create_html = implode("\n\t\t\t\t\t\t", $create_html);
 
                     $update_sql_params = implode(",", $update_sql_params);
@@ -578,9 +808,9 @@ function generate($postdata) {
                     generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay);
                     generate_error();
                     generate_startpage();
-                    generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search);
-                    generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
-                    generate_read($tablename,$column_id,$read_records);
+                    generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search, $join_columns, $join_clauses);
+                    generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
+                    generate_read($tablename,$column_id,$read_records,$foreign_key_references, $join_columns, $join_clauses);
                     generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
                     generate_delete($tablename,$column_id);
                 }

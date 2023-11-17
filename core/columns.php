@@ -16,10 +16,15 @@
                 </div>
 
                 <div class="col-md-10 mx-atuo text-right pr-5 ml-4">
-                    <input type="checkbox" id="checkall">
-                    <label for="checkall">Check/uncheck all</label>
                 </div>
 
+                <div class="mx-atuo text-right ml-4">
+                    <input type="checkbox" id="checkall-1" checked>
+                    <label for="checkall-1">Check/uncheck all</label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="checkbox" id="checkall-2" checked>
+                    <label for="checkall-2">Check/uncheck all</label>
+                </div>
 
                 <form class="form-horizontal" action="generate.php" method="post">
                     <fieldset>
@@ -59,7 +64,22 @@
                             $result = mysqli_query($link,$sql);
                             $row = mysqli_fetch_assoc($result);
                             return $row['Type'] ;
-                            mysqli_free_result($result);
+                        }
+
+                        function get_col_comments($table,$column){
+                            global $link; 
+                            $sql = "SHOW FULL FIELDS FROM $table where FIELD ="."'".$column."'";
+                            $result = mysqli_query($link,$sql);
+                            $row = mysqli_fetch_assoc($result);
+                            return $row['Comment'] ;
+                        }
+
+                        function get_col_nullable($table,$column){
+                            global $link; 
+                            $sql = "SHOW FULL FIELDS FROM $table where FIELD ="."'".$column."'";
+                            $result = mysqli_query($link,$sql);
+                            $row = mysqli_fetch_assoc($result);
+                            return ($row['Null'] == "YES") ? true : 0;
                         }
 
                         function get_foreign_keys($table){
@@ -76,7 +96,6 @@
                                 $fks[] = $row['Foreign Key'];
                             }
                             return $fks;
-                            mysqli_free_result($result);
                         }
 
                         $checked_tables_counter=0;
@@ -98,6 +117,8 @@
                                     while ($column = mysqli_fetch_array($result)) {
 
                                         $column_type = get_col_types($tablename,$column[0]);
+                                        $column_comment = get_col_comments($tablename,$column[0]);
+                                        $column_nullable = get_col_nullable($tablename,$column[0]);
 
                                         if (in_array ("$column[0]", $primary_keys)) {
                                             $primary = "🔑";
@@ -123,21 +144,34 @@
                                             $fk = "";
                                         }
 
+                                        if ($column_nullable) {
+                                            $nb = "🫙";
+                                        }
+                                        else {
+                                            $nb = "";
+                                        }
+
+                                        echo "<span data-toggle='tooltip' data-placement='top' title='$column_comment'>";
                                         echo '<div class="row align-items-center mb-2">
                                     <div class="col-2 text-right"
-                                        <label class="col-form-label" for="'.$tablename.'">'. $primary . $auto . $fk . $column[0] . ' </label>
+                                        <label class="col-form-label" for="'.$tablename.'">'. $primary . $auto . $fk . $nb . $column[0] . ' </label>
                                     </div>
                                     <div class="col-md-6">
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][tablename]" value="'.$tablename.'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][tabledisplay]" value="'.$tabledisplay.'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columnname]" value="'.$column[0].'"/>
                                         <input type="hidden" name="'.$tablename.'columns['.$i.'][columntype]" value="'.$column_type.'"/>
+                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][columncomment]" value="'.$column_comment.'"/>
+                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][columnnullable]" value="'.$column_nullable.'"/>
                                         <input id="textinput_'.$tablename. '-'.$i.'"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control rounded-0">
                                     </div>
-                                    <div class="col-md-4">
-                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'" value="1">
+                                    <div class="col-md-2">
+                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'" value="1" checked>
                                 <label for="checkboxes-'.$checked_tables_counter.'-'.$i.'">Visible in overview?</label></div>
-                     </div>';
+                                    <div class="col-md-2">
+                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columninpreview]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'-2" value="1" checked>
+                                <label for="checkboxes-'.$checked_tables_counter.'-'.$i.'-2">Visible in preview?</label></div>
+                     </div></span>';
                                         $i++;
                                     }
                                     $checked_tables_counter++;
@@ -179,10 +213,19 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 <script>
 $(document).ready(function () {
-    $('#checkall').click(function(e) {
-        var chb = $('.form-horizontal').find('input[type="checkbox"]');
+    $('#checkall-1').click(function(e) {
+        var chb = $('.form-horizontal').find('input[name$="[columnvisible]"]');
         chb.prop('checked', !chb.prop('checked'));
     });
+});
+$(document).ready(function () {
+    $('#checkall-2').click(function(e) {
+        var chb = $('.form-horizontal').find('input[name$="[columninpreview]"]');
+        chb.prop('checked', !chb.prop('checked'));
+    });
+});
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
 });
 </script>
 </body>
