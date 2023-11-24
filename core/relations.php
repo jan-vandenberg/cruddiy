@@ -1,7 +1,7 @@
 <?php
 
 if(isset($_POST['index'])) {
-    
+
     if((isset($_POST['server'])) && $_POST['server'] <> '') {
         $server=trim($_POST['server']);
     } else {
@@ -42,36 +42,35 @@ if(isset($_POST['index'])) {
     fwrite($helpersfile, $helpers);
 	fclose($helpersfile);
 
-	$configfile = fopen("app/config.php", "w") or die("Unable to open Config file!");
-	$txt  = "<?php \n";
-	$txt .= "\$db_server = '$server'; \n";
-	$txt .= "\$db_name = '$database'; \n";
-	$txt .= "\$db_user = '$username'; \n";
-	$txt .= "\$db_password = '$password'; \n";
-	$txt .= "\$no_of_records_per_page = $numrecordsperpage; \n";
-	$txt .= "\$appname = '$appname'; \n\n";
-    $txt .= "\$protocol=(\$_SERVER['HTTPS'] == 'on' ? 'https' : 'http');\n";
-    $txt .= "\$domain = \$protocol . '://' . \$_SERVER['SCRIPT_NAME']; //Replace domain with your domain name. (Locally typically something like localhost)\n\n";
-	$txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n";
+    $configfilePath = 'app/config.php';
+    $configfile = fopen($configfilePath, "w") or die("Unable to open Config file!");
 
-    $txt .= '$query = "SHOW VARIABLES LIKE \'character_set_database\'";' ."\n";
-    $txt .= 'if ($result = mysqli_query($link, $query)) {' ."\n";
-    $txt .= '    while ($row = mysqli_fetch_row($result)) {' ."\n";
-    $txt .= '        if (!$link->set_charset($row[1])) {' ."\n";
-    $txt .= '            printf("Error loading character set $row[1]: %s\n", $link->error);' ."\n";
-    $txt .= '            exit();' ."\n";
-    $txt .= '        } else {' ."\n";
-    $txt .= '            // printf("Current character set: %s", $link->character_set_name());' ."\n";
-    $txt .= '        }' ."\n";
-    $txt .= '    }' ."\n";
-    $txt .= '}' ."\n";
+    $configfileTemplatePath = 'templates/config.php';
+    fopen($configfileTemplatePath, "r") or die("Unable to open Config template file!");
 
-	$txt .= "\n?>";
-	fwrite($configfile, $txt);
-	fclose($configfile);
+    // Read config file template
+    $templateContent = file_get_contents($configfileTemplatePath);
+
+    // Replace placeholders with actual values
+    $replacements = [
+        '{{db_server}}' => $server,
+        '{{db_name}}' => $database,
+        '{{db_user}}' => $username,
+        '{{db_password}}' => $password,
+        '{{no_of_records_per_page}}' => $numrecordsperpage,
+        '{{appname}}' => $appname,
+    ];
+
+    foreach ($replacements as $placeholder => $realValue) {
+        $templateContent = str_replace($placeholder, $realValue, $templateContent);
+    }
+
+    $configfile = fopen($configfilePath, "w") or die("Unable to open Config file!");
+    if (fwrite($configfile, $templateContent) === false) die("Error writing Config file!");
+    fclose($configfile);
 
 }
-require "app/config.php";
+require $configfilePath;
 
 if(isset($_POST['submit'])){
     $tablename = $_POST['tablename'];
@@ -86,7 +85,7 @@ if(isset($_POST['submit'])){
 }
 
 if(isset($_POST['addkey'])){
-    $primary = $_POST['primary'];  
+    $primary = $_POST['primary'];
     $fk = $_POST['fk'];
 
     $split_primary=explode('|', $primary);
@@ -155,9 +154,9 @@ if(isset($_POST['addkey'])){
                           <thead>
                             <tr>
                               <?php
-                                $sql = "SELECT i.TABLE_NAME as 'Table Name', k.COLUMN_NAME as 'Foreign Key', 
+                                $sql = "SELECT i.TABLE_NAME as 'Table Name', k.COLUMN_NAME as 'Foreign Key',
                                     k.REFERENCED_TABLE_NAME as 'Primary Table', k.REFERENCED_COLUMN_NAME as 'Primary Key',
-                                    i.CONSTRAINT_NAME as 'Constraint Name', 'Delete' as 'Delete' 
+                                    i.CONSTRAINT_NAME as 'Constraint Name', 'Delete' as 'Delete'
                                         FROM information_schema.TABLE_CONSTRAINTS i
                                         LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
                                         WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND i.TABLE_SCHEMA = DATABASE()";
@@ -166,7 +165,7 @@ if(isset($_POST['addkey'])){
                                     foreach ($row as $col => $value) {
                                         echo "<th>";
                                         echo $col;
-                                        echo "</th>"; 
+                                        echo "</th>";
 									}
 									echo "</thead><tbody>";
 									mysqli_data_seek($result, 0);
@@ -185,14 +184,14 @@ if(isset($_POST['addkey'])){
 												echo $row['Table Name'] .'">';
 												echo '<input type="hidden" name="fkname" value="';
 												echo $row['Constraint Name'] . '">';
-												echo "<button type='submit' id='singlebutton' name='submit' class='btn btn-danger'>Delete</button>"; 
+												echo "<button type='submit' id='singlebutton' name='submit' class='btn btn-danger'>Delete</button>";
 												echo "</form></td>";
 												echo "</tr>";
 									}
 								} else echo "</thead><tbody><tr><td>No relations found</td></tr>";
                             ?>
                                 </tbody>
-                                </table> 
+                                </table>
                 <div class="text-center">
                     <h4 class="mb-0">Add New Table Relation</h4><br>
                       <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -241,7 +240,7 @@ On this page you can add new or delete existing table relations i.e. foreign key
 <hr>
 <form method="post" action="tables.php">
     <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success">Continue CRUD Creation Process</button>
-</form>     
+</form>
 </section>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
