@@ -1,7 +1,7 @@
 <?php
 
 if(isset($_POST['index'])) {
-    
+
     if((isset($_POST['server'])) && $_POST['server'] <> '') {
         $server=trim($_POST['server']);
     } else {
@@ -86,7 +86,7 @@ if(isset($_POST['submit'])){
 }
 
 if(isset($_POST['addkey'])){
-    $primary = $_POST['primary'];  
+    $primary = $_POST['primary'];
     $fk = $_POST['fk'];
 
     $split_primary=explode('|', $primary);
@@ -107,6 +107,9 @@ if(isset($_POST['addkey'])){
        case "restrict":
            $ondel = "ON DELETE RESTRICT";
            break;
+        case "noaction":
+            $ondel = "ON DELETE NO ACTION";
+            break;
        default:
            $ondel = "";
     }
@@ -120,6 +123,9 @@ if(isset($_POST['addkey'])){
             break;
        case "restrict":
             $onupd = "ON UPDATE RESTRICT";
+            break;
+        case "noaction":
+            $onupd = "ON UPDATE NO ACTION";
             break;
        default:
             $onupd = "";
@@ -155,9 +161,9 @@ if(isset($_POST['addkey'])){
                           <thead>
                             <tr>
                               <?php
-                                $sql = "SELECT i.TABLE_NAME as 'Table Name', k.COLUMN_NAME as 'Foreign Key', 
+                                $sql = "SELECT i.TABLE_NAME as 'Table Name', k.COLUMN_NAME as 'Foreign Key',
                                     k.REFERENCED_TABLE_NAME as 'Primary Table', k.REFERENCED_COLUMN_NAME as 'Primary Key',
-                                    i.CONSTRAINT_NAME as 'Constraint Name', 'Delete' as 'Delete' 
+                                    i.CONSTRAINT_NAME as 'Constraint Name', 'Delete' as 'Delete'
                                         FROM information_schema.TABLE_CONSTRAINTS i
                                         LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
                                         WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND i.TABLE_SCHEMA = DATABASE()";
@@ -166,7 +172,7 @@ if(isset($_POST['addkey'])){
                                     foreach ($row as $col => $value) {
                                         echo "<th>";
                                         echo $col;
-                                        echo "</th>"; 
+                                        echo "</th>";
 									}
 									echo "</thead><tbody>";
 									mysqli_data_seek($result, 0);
@@ -185,14 +191,14 @@ if(isset($_POST['addkey'])){
 												echo $row['Table Name'] .'">';
 												echo '<input type="hidden" name="fkname" value="';
 												echo $row['Constraint Name'] . '">';
-												echo "<button type='submit' id='singlebutton' name='submit' class='btn btn-danger'>Delete</button>"; 
+												echo "<button type='submit' id='singlebutton' name='submit' class='btn btn-danger'>Delete</button>";
 												echo "</form></td>";
 												echo "</tr>";
 									}
 								} else echo "</thead><tbody><tr><td>No relations found</td></tr>";
                             ?>
                                 </tbody>
-                                </table> 
+                                </table>
                 <div class="text-center">
                     <h4 class="mb-0">Add New Table Relation</h4><br>
                       <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -221,6 +227,7 @@ if(isset($_POST['addkey'])){
                             <option name="ondelete_cascade" value="cascade">On Delete: Cascade</option>
                             <option name="ondelete_setnull" value="setnull">On Delete: Set Null</option>
                             <option name="ondelete_restrict" value="restrict">On Delete: Restrict</option>
+                            <option name="ondelete_noaction" value="noaction">On Delete: No Action</option>
                        </select>
 
                        <select name='onupdate' id='onupdate' style='max-width:15%'>";
@@ -228,6 +235,7 @@ if(isset($_POST['addkey'])){
                             <option name="onupdate_cascade" value="cascade">On Update: Cascade</option>
                             <option name="onupdate_setnull" value="setnull">On Update: Set Null</option>
                             <option name="onupdate_restrict" value="restrict">On Update: Restrict</option>
+                            <option name="onupdate_noaction" value="noaction">On Update: No Action</option>
                        </select>
                                 <label class="col-form-label mt-3" for="singlebutton"></label>
                                 <button type="submit" id="singlebutton" name="addkey" class="btn btn-primary">Create relation</button>
@@ -241,7 +249,7 @@ On this page you can add new or delete existing table relations i.e. foreign key
 <hr>
 <form method="post" action="tables.php">
     <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success">Continue CRUD Creation Process</button>
-</form>     
+</form>
 </section>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
