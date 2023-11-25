@@ -2,13 +2,41 @@
 include "app/config.php";
 $errors = [];
 
+
+
+function extractTableNames($schema) {
+    $pattern = '/CREATE TABLE `?(\w+)`?/i';
+    preg_match_all($pattern, $schema, $matches);
+    return $matches[1] ?? [];
+}
+
+
+
 if(isset($_POST['submit'])){
     $schema = $_POST['schema'];
+    $deleteExisting = isset($_POST['deleteExisting']) ? true : false;
 
     // Turn off default exception throwing
     mysqli_report(MYSQLI_REPORT_OFF);
 
     try {
+        // Delete existing tables from schema if checkbox is checked
+        if ($deleteExisting) {
+            $tablesToDelete = extractTableNames($schema);
+
+            mysqli_query($link, "SET FOREIGN_KEY_CHECKS=0;");
+            foreach ($tablesToDelete as $tableName) {
+                $dropTableSql = "DROP TABLE IF EXISTS `$tableName`;";
+                echo $dropTableSql;
+                mysqli_query($link, $dropTableSql);
+                if (!mysqli_query($link, $dropTableSql)) {
+                    $errors['schema'][] = "Something went wrong. Error description: " . mysqli_error($link);
+                }
+            }
+            mysqli_query($link, "SET FOREIGN_KEY_CHECKS=1;");
+        }
+
+        // Import new schema
         if (mysqli_multi_query($link, $schema)) {
             do {
                 // Store and then free the result set if there is one
@@ -33,7 +61,6 @@ if(isset($_POST['submit'])){
         header('location:relations.php');
         exit();
     }
-
 }
 ?>
 <!doctype html>
@@ -50,7 +77,7 @@ if(isset($_POST['submit'])){
         <div class="row">
         <div class="col-md-12 mx-auto">
             <div class="text-center">
-                <h4 class="mb-0">Import schema</h4>
+                <h4>Import schema</h4>
 
                 <?php if (isset($errors['schema'])) : ?>
                     <?php foreach ($errors['schema'] as $error) : ?>
@@ -63,8 +90,15 @@ if(isset($_POST['submit'])){
                 <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
                     <div class="form-group">
                         <label for="schema">If you have an existing schema, copy/paste it below:</label>
-                        <textarea class="form-control" name="schema" id="schema" rows="3"></textarea>
+                        <textarea class="form-control" name="schema" id="schema" rows="3"><?php echo isset($_POST['schema']) ? htmlspecialchars($_POST['schema']) : '' ?></textarea>
                     </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="1" id="deleteExisting" name="deleteExisting" <?php echo isset($_POST['deleteExisting']) ? 'checked="checked"' : '' ?>>
+                        <label class="form-check-label" for="deleteExisting">
+                            Disable foreign key checks and drop existing tables?
+                        </label>
+                    </div>
+                    <br>
                     <button type="submit" class="btn btn-primary" name="submit">Import schema</button>
                 </form>
             </div>
