@@ -1,4 +1,5 @@
 <?php
+$configfilePath = 'app/config.php';
 
 if(isset($_POST['index'])) {
 
@@ -42,36 +43,34 @@ if(isset($_POST['index'])) {
     fwrite($helpersfile, $helpers);
 	fclose($helpersfile);
 
-	$configfile = fopen("app/config.php", "w") or die("Unable to open Config file!");
-	$txt  = "<?php \n";
-	$txt .= "\$db_server = '$server'; \n";
-	$txt .= "\$db_name = '$database'; \n";
-	$txt .= "\$db_user = '$username'; \n";
-	$txt .= "\$db_password = '$password'; \n";
-	$txt .= "\$no_of_records_per_page = $numrecordsperpage; \n";
-	$txt .= "\$appname = '$appname'; \n\n";
-    $txt .= "\$protocol = (isset(\$_SERVER['HTTPS']) && \$_SERVER['HTTPS'] == 'on') ? 'https' : 'http';\n";
-    $txt .= "\$domain = \$protocol . '://' . \$_SERVER['SCRIPT_NAME']; //Replace domain with your domain name. (Locally typically something like localhost)\n\n";
-	$txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n";
+    $configfile = fopen($configfilePath, "w") or die("Unable to open Config file!");
 
-    $txt .= '$query = "SHOW VARIABLES LIKE \'character_set_database\'";' ."\n";
-    $txt .= 'if ($result = mysqli_query($link, $query)) {' ."\n";
-    $txt .= '    while ($row = mysqli_fetch_row($result)) {' ."\n";
-    $txt .= '        if (!$link->set_charset($row[1])) {' ."\n";
-    $txt .= '            printf("Error loading character set $row[1]: %s\n", $link->error);' ."\n";
-    $txt .= '            exit();' ."\n";
-    $txt .= '        } else {' ."\n";
-    $txt .= '            // printf("Current character set: %s", $link->character_set_name());' ."\n";
-    $txt .= '        }' ."\n";
-    $txt .= '    }' ."\n";
-    $txt .= '}' ."\n";
+    $configfileTemplatePath = 'templates/config.php';
+    fopen($configfileTemplatePath, "r") or die("Unable to open Config template file!");
 
-	$txt .= "\n?>";
-	fwrite($configfile, $txt);
-	fclose($configfile);
+    // Read config file template
+    $templateContent = file_get_contents($configfileTemplatePath);
+
+    // Replace placeholders with actual values
+    $replacements = [
+        '{{db_server}}' => $server,
+        '{{db_name}}' => $database,
+        '{{db_user}}' => $username,
+        '{{db_password}}' => $password,
+        '{{no_of_records_per_page}}' => $numrecordsperpage,
+        '{{appname}}' => $appname,
+    ];
+
+    foreach ($replacements as $placeholder => $realValue) {
+        $templateContent = str_replace($placeholder, $realValue, $templateContent);
+    }
+
+    $configfile = fopen($configfilePath, "w") or die("Unable to open Config file!");
+    if (fwrite($configfile, $templateContent) === false) die("Error writing Config file!");
+    fclose($configfile);
 
 }
-require "app/config.php";
+require $configfilePath;
 
 if(isset($_POST['submit'])){
     $tablename = $_POST['tablename'];
