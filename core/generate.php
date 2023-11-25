@@ -355,7 +355,7 @@ function generate($postdata) {
     $preview_columns = array();
     foreach ($postdata as $key => $value){
         if (!in_array($key, $excluded_keys)) {
-            $table_names[$key] = $value[0]['tabledisplay']; // Extract table name
+            $table_names[extractTableName($key)] = $value[0]['tabledisplay'];
             foreach ($_POST[$key] as $columns ) {
                 if (isset($columns['columninpreview'])){
                     $preview_columns[$columns['tablename']][] = $columns['columnname'];
@@ -834,6 +834,23 @@ function generate($postdata) {
     updateTableNames($table_names);
 }
 
+
+
+// Extract table name
+function extractTableName($post_key) {
+    // Find the position of the last occurrence of 'columns'
+    $lastPos = strrpos($post_key, "columns");
+
+    if ($lastPos !== false) {
+        // Remove the last occurrence of 'columns'
+        $table_name = substr_replace($post_key, "", $lastPos, strlen("columns"));
+    }
+
+    return $table_name;
+}
+
+
+
 // Save table names to config
 function updateTableNames($table_names) {
 
@@ -853,8 +870,6 @@ function updateTableNames($table_names) {
     ];
 
     foreach ($replacements as $placeholder => $realValue) {
-        echo $placeholder;
-        echo $realValue;
         $templateContent = str_replace($placeholder, $realValue, $templateContent);
     }
 
