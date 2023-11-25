@@ -210,6 +210,11 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     global $CSS_REFS;
     global $JS_REFS;
 
+    echo '<pre>';
+    print_r($columns_available);
+    echo '</pre>';
+    
+
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $indexfile);
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
 
@@ -601,41 +606,44 @@ function generate($postdata) {
                             }
                             
                             
-                            $fk_columns_select = get_sql_select($preview_columns[$fk_table]);
+                            $fk_columns_select = isset($preview_columns[$fk_table]) ? get_sql_select($preview_columns[$fk_table]) : null;
                             
                             $join_name = $columnname .$fk_table;
                             $join_column_name = $columnname . $fk_table . $fk_column;
 
                             $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
-                            $join_columns .= get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name);
+                            $join_columns .= isset($preview_columns[$fk_table]) ? get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name) : null;
                             
                             // Add the new columns to the search concat
-                            foreach($preview_columns[$fk_table] as $key => $c)
-                            {
-                                $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`'; 
+                            if (isset($preview_columns[$fk_table])) {
+                                foreach ($preview_columns[$fk_table] as $key => $c) {
+                                    $index_sql_search[] = '`' . $join_name . '`.`' . $preview_columns[$fk_table][$key] . '`';
+                                }
                             }
 
                             $is_primary_ref = is_primary_key($fk_table, $fk_column);
 
                             $column_value = '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', false); ?>';
 
-                            $html .= ' <?php
-                                        $sql = "SELECT '. $fk_columns_select .', `'. $fk_column .'` FROM `'. $fk_table . '` ORDER BY '. $fk_columns_select .'";
+                            if ($fk_columns_select) {
+                                $html .= ' <?php
+                                        $sql = "SELECT ' . $fk_columns_select . ', `' . $fk_column . '` FROM `' . $fk_table . '` ORDER BY ' . $fk_columns_select . '";
                                         $result = mysqli_query($link, $sql);
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                                             $duprow = $row;
                                             unset($duprow["' . $fk_column . '"]);
                                             $value = implode(" | ", $duprow);
                                             if ($row["' . $fk_column . '"] == $' . $columnname_var . '){
-                                            echo \'<option value="\' . $row["'. $fk_column. '"] . \'"selected="selected">\' . $value . \'</option>\';
+                                            echo \'<option value="\' . $row["' . $fk_column . '"] . \'"selected="selected">\' . $value . \'</option>\';
                                             } else {
-                                                echo \'<option value="\' . $row["'. $fk_column. '"] . \'">\' . $value . \'</option>\';
+                                                echo \'<option value="\' . $row["' . $fk_column . '"] . \'">\' . $value . \'</option>\';
                                         }
                                         }
                                     ?>
                                     </select>';
-                            $column_input = $html;
-                            unset($html);
+                                $column_input = $html;
+                                unset($html);
+                            }
                         }
 
                 // No Foreign Keys, just regular columns from here on
@@ -809,10 +817,10 @@ function generate($postdata) {
                     generate_error();
                     generate_startpage();
                     generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search, $join_columns, $join_clauses);
-                    generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
-                    generate_read($tablename,$column_id,$read_records,$foreign_key_references, $join_columns, $join_clauses);
-                    generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
-                    generate_delete($tablename,$column_id);
+                    // generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
+                    // generate_read($tablename,$column_id,$read_records,$foreign_key_references, $join_columns, $join_clauses);
+                    // generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
+                    // generate_delete($tablename,$column_id);
                 }
             }
 
