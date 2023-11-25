@@ -1,6 +1,8 @@
 <?php
 include "app/config.php";
+
 $errors = [];
+$schemaFiles = glob('../schema/*.sql');
 
 
 
@@ -13,7 +15,9 @@ function extractTableNames($schema) {
 
 
 if(isset($_POST['submit'])){
-    $schema = $_POST['schema'];
+    $schemaFile = $_POST['schemaFile'] ?? '';
+    $schema = $schemaFile ? file_get_contents($schemaFile) : ($_POST['schema'] ?? '');
+
     $deleteExisting = isset($_POST['deleteExisting']) ? true : false;
 
     // Turn off default exception throwing
@@ -75,34 +79,54 @@ if(isset($_POST['submit'])){
 <section class="pt-5">
     <div class="container bg-white shadow py-5">
         <div class="row">
-        <div class="col-md-12 mx-auto">
-            <div class="text-center">
-                <h4>Import schema</h4>
+            <div class="col-md-12 mx-auto">
+                <div class="text-center">
+                    <h4>Import schema</h4>
 
-                <?php if (isset($errors['schema'])) : ?>
-                    <?php foreach ($errors['schema'] as $error) : ?>
-                        <div class="alert alert-danger my-3" role="alert">
-                            <?php echo $error ?>
+                    <?php if (isset($errors['schema'])) : ?>
+                        <?php foreach ($errors['schema'] as $error) : ?>
+                            <div class="alert alert-danger my-3" role="alert">
+                                <?php echo $error ?>
+                            </div>
+                        <?php endforeach ?>
+                    <?php endif ?>
+
+
+                    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+
+                        <!-- Dropdown for selecting a schema file -->
+                        <div class="form-group my-5">
+                            <label for="schemaFile">Select a <code>.sql</code> schema file:</label>
+                            <select class="form-control" name="schemaFile" id="schemaFile">
+                                <option value=""></option>
+                                <?php foreach ($schemaFiles as $file): ?>
+                                    <option value="<?php echo htmlspecialchars($file); ?>" <?php echo (isset($_POST['schemaFile']) && $_POST['schemaFile'] == $file) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars(basename($file)); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <small id="schemaFile" class="form-text text-muted">
+                                Place your .sql files in the <code>schema/</code> folder in the project root.
+                            </small>
                         </div>
-                    <?php endforeach ?>
-                <?php endif ?>
 
-                <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-                    <div class="form-group">
-                        <label for="schema">If you have an existing schema, copy/paste it below:</label>
-                        <textarea class="form-control" name="schema" id="schema" rows="3"><?php echo isset($_POST['schema']) ? htmlspecialchars($_POST['schema']) : '' ?></textarea>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="1" id="deleteExisting" name="deleteExisting" <?php echo isset($_POST['deleteExisting']) ? 'checked="checked"' : '' ?>>
-                        <label class="form-check-label" for="deleteExisting">
-                            Disable foreign key checks and drop existing tables?
-                        </label>
-                    </div>
-                    <br>
-                    <button type="submit" class="btn btn-primary" name="submit">Import schema</button>
-                </form>
+                        <!-- Textarea for manual schema copy/paste -->
+                        <div class="form-group my-5">
+                            <label for="schema">Or copy/paste schema here:</label>
+                            <textarea class="form-control" name="schema" id="schema" rows="3"><?php echo isset($_POST['schema']) ? htmlspecialchars($_POST['schema']) : '' ?></textarea>
+                        </div>
+
+                        <div class="form-check my-5">
+                            <input class="form-check-input" type="checkbox" value="1" id="deleteExisting" name="deleteExisting" <?php echo isset($_POST['deleteExisting']) ? 'checked="checked"' : '' ?>>
+                            <label class="form-check-label" for="deleteExisting">
+                                Disable foreign key checks and drop existing tables?
+                            </label>
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary" name="submit">Import schema</button>
+                    </form>
+                </div>
             </div>
-        </div>
         </div>
     </div>
 </section>
