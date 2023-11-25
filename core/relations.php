@@ -1,4 +1,5 @@
 <?php
+$configfilePath = 'app/config.php';
 
 if(isset($_POST['index'])) {
 
@@ -42,7 +43,6 @@ if(isset($_POST['index'])) {
     fwrite($helpersfile, $helpers);
 	fclose($helpersfile);
 
-    $configfilePath = 'app/config.php';
     $configfile = fopen($configfilePath, "w") or die("Unable to open Config file!");
 
     $configfileTemplatePath = 'templates/config.php';
