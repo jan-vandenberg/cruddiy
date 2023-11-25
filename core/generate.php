@@ -130,7 +130,7 @@ function generate_startpage(){
 
 }
 
-function generate_navbar($tablename, $start_page, $keep_startpage, $append_links, $td){
+function generate_navbar($tablename, $start_page, $keep_startpage, $append_links, $tabledisplay, $key){
     global $navbarfile;
     global $generate_start_checked_links;
     global $startpage_filename;
@@ -153,7 +153,7 @@ function generate_navbar($tablename, $start_page, $keep_startpage, $append_links
             if (!$navbarfile) {
                 die("Unable to open existing startpage file!");
             }
-            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
+            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $key);
         }
     } else {
         if ($append_links) {
@@ -163,12 +163,13 @@ function generate_navbar($tablename, $start_page, $keep_startpage, $append_links
             if (!$navbarfile) {
                 die("Unable to open existing startpage file!");
             }
-            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
+            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $key);
         }
     }
 }
 
-function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $td) {
+function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $key) {
+
     global $buttons_delimiter;
     global $appname;
 
@@ -193,7 +194,7 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
                 } else {
                     echo '- Appending '.$start_page_link.'<br>';
                     array_push($navbarfile_links[1], $start_page_link);
-                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'">'.$td.'</a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $table_names["'.$key.'"] ?></a>'."\n\t".$buttons_delimiter;
                     $step0 = str_replace($buttons_delimiter, $button_string, $navbarfile);
                     $step1 = str_replace("{APP_NAME}", $appname, $step0 );
                     if (!file_put_contents($startpage_filename, $step1, LOCK_EX)) {
@@ -814,7 +815,7 @@ function generate($postdata) {
                         echo '<br>';
                     }
 
-                    generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay);
+                    generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay, $key);
                     generate_error();
                     generate_startpage();
                     generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search, $join_columns, $join_clauses);

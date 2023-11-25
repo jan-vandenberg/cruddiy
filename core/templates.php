@@ -28,7 +28,6 @@ $indexfile = <<<'EOT'
                 <div class="col-md-12">
                     <div class="page-header clearfix">
                         <!-- {TABLE_DISPLAY} -->
-                        <?php require_once 'config-table_names.php' ?>
                         <h2 class="float-left"><?php echo $table_names['{TABLE_NAME}'] ?> Details</h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right">Add New Record</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2">Reset View</a>
@@ -630,6 +629,7 @@ $startfile = <<<'EOT'
 EOT;
 
 $navbarfile = <<<'EOT'
+<?php require_once('config-table_names.php'); ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand nav-link disabled" href="#">{APP_NAME}</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
