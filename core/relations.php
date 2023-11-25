@@ -107,6 +107,9 @@ if(isset($_POST['addkey'])){
        case "restrict":
            $ondel = "ON DELETE RESTRICT";
            break;
+        case "noaction":
+            $ondel = "ON DELETE NO ACTION";
+            break;
        default:
            $ondel = "";
     }
@@ -120,6 +123,9 @@ if(isset($_POST['addkey'])){
             break;
        case "restrict":
             $onupd = "ON UPDATE RESTRICT";
+            break;
+        case "noaction":
+            $onupd = "ON UPDATE NO ACTION";
             break;
        default:
             $onupd = "";
@@ -221,6 +227,7 @@ if(isset($_POST['addkey'])){
                             <option name="ondelete_cascade" value="cascade">On Delete: Cascade</option>
                             <option name="ondelete_setnull" value="setnull">On Delete: Set Null</option>
                             <option name="ondelete_restrict" value="restrict">On Delete: Restrict</option>
+                            <option name="ondelete_noaction" value="noaction">On Delete: No Action</option>
                        </select>
 
                        <select name='onupdate' id='onupdate' style='max-width:15%'>";
@@ -228,6 +235,7 @@ if(isset($_POST['addkey'])){
                             <option name="onupdate_cascade" value="cascade">On Update: Cascade</option>
                             <option name="onupdate_setnull" value="setnull">On Update: Set Null</option>
                             <option name="onupdate_restrict" value="restrict">On Update: Restrict</option>
+                            <option name="onupdate_noaction" value="noaction">On Update: No Action</option>
                        </select>
                                 <label class="col-form-label mt-3" for="singlebutton"></label>
                                 <button type="submit" id="singlebutton" name="addkey" class="btn btn-primary">Create relation</button>
