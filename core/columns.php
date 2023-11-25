@@ -1,4 +1,112 @@
-<!doctype html>
+<?php
+include "app/config.php";
+
+function get_primary_keys($table){
+    global $link;
+    $sql = "SHOW KEYS FROM $table WHERE Key_name = 'PRIMARY'";
+    $result = mysqli_query($link,$sql);
+    $primary_keys = Array();
+    while($row = mysqli_fetch_assoc($result))
+    {
+        $primary_keys[] = $row['Column_name'];
+    }
+    return $primary_keys;
+}
+
+function get_autoincrement_cols($table){
+    global $link;
+    $sql = "DESCRIBE $table";
+    $result = mysqli_query($link,$sql);
+    $auto_keys = Array();
+    while($row = mysqli_fetch_assoc($result))
+    {
+        if ($row['Extra'] == 'auto_increment') {
+            $auto_keys[] = $row['Field'];
+        }
+    }
+    return $auto_keys;
+}
+
+function get_col_types($table,$column){
+    global $link;
+    $sql = "SHOW FIELDS FROM $table where FIELD ="."'".$column."'";
+    $result = mysqli_query($link,$sql);
+    $row = mysqli_fetch_assoc($result);
+    return $row['Type'] ;
+}
+
+function get_col_comments($table,$column){
+    global $link;
+    $sql = "SHOW FULL FIELDS FROM $table where FIELD ="."'".$column."'";
+    $result = mysqli_query($link,$sql);
+    $row = mysqli_fetch_assoc($result);
+    return $row['Comment'] ;
+}
+
+function get_col_nullable($table,$column){
+    global $link;
+    $sql = "SHOW FULL FIELDS FROM $table where FIELD ="."'".$column."'";
+    $result = mysqli_query($link,$sql);
+    $row = mysqli_fetch_assoc($result);
+    return ($row['Null'] == "YES") ? true : 0;
+}
+
+function get_foreign_keys($table){
+    global $link;
+    global $db_name;
+    $fks[] = "";
+    $sql = "SELECT k.COLUMN_NAME as 'Foreign Key'
+            FROM information_schema.TABLE_CONSTRAINTS i
+            LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
+            WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND i.TABLE_NAME = '$table'";
+    $result = mysqli_query($link,$sql);
+    while($row = mysqli_fetch_assoc($result))
+    {
+        $fks[] = $row['Foreign Key'];
+    }
+    return $fks;
+}
+
+$tablesData = [];
+$checked_tables_counter=0;
+
+if (isset($_POST['table'])) {
+    foreach ($_POST['table'] as $table) {
+        if (isset($table['tablecheckbox']) && $table['tablecheckbox'] == 1) {
+            $checked_tables_counter++;
+
+            $tableName    = $table['tablename'];
+            $tableDisplay = $table['tabledisplay'];
+            $primaryKeys  = get_primary_keys($tableName);
+            $autoKeys     = get_autoincrement_cols($tableName);
+            $foreignKeys  = get_foreign_keys($tableName);
+
+            $sql          = "SHOW columns FROM $tableName";
+            $result       = mysqli_query($link, $sql);
+            $columns      = [];
+
+            while ($column = mysqli_fetch_array($result)) {
+                $columns[] = [
+                    'type'         => get_col_types($tableName, $column[0]),
+                    'comment'      => get_col_comments($tableName, $column[0]),
+                    'nullable'     => get_col_nullable($tableName, $column[0]),
+                    'name'         => $column[0],
+                    'isPrimary'    => in_array($column[0], $primaryKeys),
+                    'isAuto'       => in_array($column[0], $autoKeys),
+                    'isForeignKey' => in_array($column[0], $foreignKeys),
+                ];
+            }
+
+            $tablesData[] = [
+                'name'    => $tableName,
+                'display' => $tableDisplay,
+                'columns' => $columns,
+            ];
+        }
+    }
+}
+
+?><!doctype html>
 <html lang="en">
 <head>
     <title>Select Columns</title>
@@ -11,108 +119,86 @@
     <div class="container bg-white shadow py-5">
         <div class="row">
             <div class="col-md-12 mx-auto">
-                <div class="text-center">
-                    <h4 class="h1 border-bottom pb-2">All Available Columns</h4>
+
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h4 class="h1 border-bottom pb-2">All Available Columns</h4>
+                    </div>
                 </div>
 
-                <div class="col-md-10 mx-atuo text-right pr-5 ml-4">
-                </div>
-
-                <div class="mx-atuo text-right ml-4">
-                    <input type="checkbox" id="checkall-1" checked>
-                    <label for="checkall-1">Check/uncheck all</label>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <input type="checkbox" id="checkall-2" checked>
-                    <label for="checkall-2">Check/uncheck all</label>
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkall-1" checked>
+                        <label for="checkall-1">Check/uncheck all</label>
+                    </div>
+                    <div class="col-2">
+                        <input type="checkbox" id="checkall-2" checked>
+                        <label for="checkall-2">Check/uncheck all</label>
+                    </div>
                 </div>
 
                 <form class="form-horizontal" action="generate.php" method="post">
                     <fieldset>
-                        <?php
 
+                        <?php foreach ($tablesData as $table): ?>
+                            <div class="row">
+                                <div class="col-3"></div>
+                                <div class="col-9 my-4">
+                                    <strong>Table: <?= htmlspecialchars($table['display']) ?> (<?= htmlspecialchars($table['name']) ?>)</strong>
+                                </div>
+                            </div>
 
-
-                        $checked_tables_counter=0;
-                        if ( isset( $_POST['table'] ) )
-                        {
-                            foreach ( $_POST['table'] as $table )
-                            {
-                                $i=0;
-                                if (isset($table['tablecheckbox']) && $table['tablecheckbox'] == 1) {
-                                    $tablename = $table['tablename'];
-                                    $tabledisplay = $table['tabledisplay'];
-                                    echo "<div class='text-center mb-4'><b>Table: " . $tabledisplay . " (". $tablename .")</b></div>";
-                                    $sql = "SHOW columns FROM $tablename";
-                                    $primary_keys = get_primary_keys($tablename);
-                                    $auto_keys = get_autoincrement_cols($tablename);
-                                    $foreign_keys = get_foreign_keys($tablename);
-
-                                    $result = mysqli_query($link,$sql);
-                                    while ($column = mysqli_fetch_array($result)) {
-
-                                        $column_type = get_col_types($tablename,$column[0]);
-                                        $column_comment = get_col_comments($tablename,$column[0]);
-                                        $column_nullable = get_col_nullable($tablename,$column[0]);
-
-                                        if (in_array ("$column[0]", $primary_keys)) {
-                                            $primary = "🔑";
-                                            echo '<input type="hidden" name="'.$tablename.'columns['.$i.'][primary]" value="'.$primary.'"/>';
-                                        }
-                                        else {
-                                            $primary = "";
-                                        }
-
-                                        if (in_array ("$column[0]", $auto_keys)) {
-                                            $auto = "🔒";
-                                            echo '<input type="hidden" name="'.$tablename.'columns['.$i.'][auto]" value="'.$auto.'"/>';
-                                        }
-                                        else {
-                                            $auto = "";
-                                        }
-
-                                        if (in_array ("$column[0]", $foreign_keys)) {
-                                            $fk = "🛅";
-                                            echo '<input type="hidden" name="'.$tablename.'columns['.$i.'][fk]" value="'.$fk.'"/>';
-                                        }
-                                        else {
-                                            $fk = "";
-                                        }
-
-                                        if ($column_nullable) {
-                                            $nb = "🫙";
-                                        }
-                                        else {
-                                            $nb = "";
-                                        }
-
-                                        echo "<span data-toggle='tooltip' data-placement='top' title='$column_comment'>";
-                                        echo '<div class="row align-items-center mb-2">
-                                    <div class="col-2 text-right"
-                                        <label class="col-form-label" for="'.$tablename.'">'. $primary . $auto . $fk . $nb . $column[0] . ' </label>
+                            <?php foreach ($table['columns'] as $i => $column): ?>
+                                <div class="row align-items-center mb-2">
+                                    <div class="col-3 text-right">
+                                        <label class="col-form-label" for="<?= htmlspecialchars($table['name']) . '-' . $i ?>">
+                                            <?= htmlspecialchars($column['name']) ?>
+                                            <?= $column['isPrimary'] ? '🔑' : '' ?>
+                                            <?= $column['isAuto'] ? '🔒' : '' ?>
+                                            <?= $column['isForeignKey'] ? '🛅' : '' ?>
+                                            <?= $column['nullable'] ? '🫙' : '' ?>
+                                        </label>
                                     </div>
-                                    <div class="col-md-6">
-                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][tablename]" value="'.$tablename.'"/>
-                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][tabledisplay]" value="'.$tabledisplay.'"/>
-                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][columnname]" value="'.$column[0].'"/>
-                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][columntype]" value="'.$column_type.'"/>
-                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][columncomment]" value="'.$column_comment.'"/>
-                                        <input type="hidden" name="'.$tablename.'columns['.$i.'][columnnullable]" value="'.$column_nullable.'"/>
-                                        <input id="textinput_'.$tablename. '-'.$i.'"name="'. $tablename. 'columns['.$i.'][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control rounded-0">
+                                    <div class="col-md-5">
+                                        <!-- Hidden inputs and text input for column display name -->
+                                        <?php if ($column['isForeignKey']) : ?>
+                                            <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][fk]" value="1"/>
+                                        <?php endif ?>
+
+                                        <?php if ($column['isPrimary']) : ?>
+                                            <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][primary]" value="1"/>
+                                        <?php endif ?>
+
+                                        <?php if ($column['isAuto']) : ?>
+                                            <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][auto]" value="1"/>
+                                        <?php endif ?>
+
+                                        <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][tablename]" value="<?= htmlspecialchars($table['name']) ?>"/>
+                                        <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][tabledisplay]" value="<?= htmlspecialchars($table['display']) ?>"/>
+
+                                        <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnname]" value="<?= htmlspecialchars($column['name']) ?>"/>
+                                        <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columntype]" value="<?= htmlspecialchars($column['type']) ?>"/>
+                                        <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columncomment]" value="<?= htmlspecialchars($column['comment']) ?>"/>
+                                        <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnnullable]" value="<?php echo $column['nullable'] ?>"/>
+
+                                        <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control rounded-0">
                                     </div>
                                     <div class="col-md-2">
-                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columnvisible]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'" value="1" checked>
-                                <label for="checkboxes-'.$checked_tables_counter.'-'.$i.'">Visible in overview?</label></div>
+                                        <!-- Visible in overview checkbox -->
+                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="checkboxes-<?= $i ?>" value="1" checked>
+                                        <label for="checkboxes-<?= $i ?>">Visible in overview?</label>
+                                    </div>
                                     <div class="col-md-2">
-                                        <input type="checkbox"  name="'.$tablename.'columns['.$i.'][columninpreview]" id="checkboxes-'.$checked_tables_counter.'-'.$i.'-2" value="1" checked>
-                                <label for="checkboxes-'.$checked_tables_counter.'-'.$i.'-2">Visible in preview?</label></div>
-                     </div></span>';
-                                        $i++;
-                                    }
-                                    $checked_tables_counter++;
-                                }
-                            }
-                        }
-                        ?>
+                                        <!-- Visible in preview checkbox -->
+                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes-<?= $i ?>-2" value="1" checked>
+                                        <label for="checkboxes-<?= $i ?>-2">Visible in preview?</label>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                            <br>
+                        <?php endforeach; ?>
+
 
                         <div class="row">
                             <div class="col-md-8 mx-auto">
@@ -136,6 +222,7 @@
                                 <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success btn-block rounded-0 shadow-sm">Generate Pages</button>
                             </div>
                         </div>
+
                     </fieldset>
                 </form>
             </div>
