@@ -82,11 +82,14 @@ function is_primary_key($t, $c){
 
 function get_sql_concat_select($copy_columns, $table, $name){
     $array = $copy_columns;
-    foreach($array as $key => $c)
-    {
-        $array[$key] = '`'. $table .'`.`'. $array[$key] .'`';
+    if (is_array($copy_columns)) {
+        foreach ($array as $key => $c) {
+            $array[$key] = '`' . $table . '`.`' . $array[$key] . '`';
+        }
+        return "\n\t\t\t, CONCAT_WS(' | '," . implode(', ', $array) . ') AS `' . $name . '`';
+    } else {
+        return '';
     }
-    return "\n\t\t\t, CONCAT_WS(' | ',". implode(', ', $array) .') AS `'. $name .'`';
 }
 
 function get_sql_select($copy_columns){
