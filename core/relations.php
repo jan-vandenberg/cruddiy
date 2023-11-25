@@ -246,7 +246,9 @@ if(isset($_POST['addkey'])){
 <hr>
 On this page you can add new or delete existing table relations i.e. foreign keys. Having foreign keys will result in Cruddiy forms with cascading deletes/updates and dropdown fields populated by foreign keys. If it is not clear what you want or need to do here, it is SAFER to skip this step and move to the next step! You can always come back later and regenerate new forms.
 <hr>
-<form method="post" action="tables.php">
+
+<form method="post" action="tables.php" class="d-flex justify-content-between">
+    <a href="schema.php" class="btn btn-secondary">Import Schema or Dump</a>
     <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success">Continue CRUD Creation Process</button>
 </form>
 </section>
