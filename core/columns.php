@@ -30,73 +30,7 @@
                     <fieldset>
                         <?php
 
-                        include "app/config.php";
 
-                        function get_primary_keys($table){
-                            global $link;
-                            $sql = "SHOW KEYS FROM $table WHERE Key_name = 'PRIMARY'";
-                            $result = mysqli_query($link,$sql);
-							$primary_keys = Array();
-                            while($row = mysqli_fetch_assoc($result))
-                            {
-                                $primary_keys[] = $row['Column_name'];
-                            }
-                            return $primary_keys;
-                        }
-
-                        function get_autoincrement_cols($table){
-                            global $link;
-                            $sql = "DESCRIBE $table";
-                            $result = mysqli_query($link,$sql);
-							$auto_keys = Array();
-                            while($row = mysqli_fetch_assoc($result))
-                            {
-                                if ($row['Extra'] == 'auto_increment') {
-                                    $auto_keys[] = $row['Field'];
-                                }
-                            }
-                            return $auto_keys;
-                        }
-
-                        function get_col_types($table,$column){
-                            global $link; 
-                            $sql = "SHOW FIELDS FROM $table where FIELD ="."'".$column."'";
-                            $result = mysqli_query($link,$sql);
-                            $row = mysqli_fetch_assoc($result);
-                            return $row['Type'] ;
-                        }
-
-                        function get_col_comments($table,$column){
-                            global $link; 
-                            $sql = "SHOW FULL FIELDS FROM $table where FIELD ="."'".$column."'";
-                            $result = mysqli_query($link,$sql);
-                            $row = mysqli_fetch_assoc($result);
-                            return $row['Comment'] ;
-                        }
-
-                        function get_col_nullable($table,$column){
-                            global $link; 
-                            $sql = "SHOW FULL FIELDS FROM $table where FIELD ="."'".$column."'";
-                            $result = mysqli_query($link,$sql);
-                            $row = mysqli_fetch_assoc($result);
-                            return ($row['Null'] == "YES") ? true : 0;
-                        }
-
-                        function get_foreign_keys($table){
-                            global $link;
-                            global $db_name;
-                            $fks[] = "";
-                            $sql = "SELECT k.COLUMN_NAME as 'Foreign Key'
-                                    FROM information_schema.TABLE_CONSTRAINTS i
-                                    LEFT JOIN information_schema.KEY_COLUMN_USAGE k ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME
-                                    WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND i.TABLE_NAME = '$table'";
-                            $result = mysqli_query($link,$sql);
-                            while($row = mysqli_fetch_assoc($result))
-                            {
-                                $fks[] = $row['Foreign Key'];
-                            }
-                            return $fks;
-                        }
 
                         $checked_tables_counter=0;
                         if ( isset( $_POST['table'] ) )
