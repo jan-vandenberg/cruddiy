@@ -27,7 +27,9 @@ $indexfile = <<<'EOT'
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header clearfix">
-                        <h2 class="float-left">{TABLE_DISPLAY} Details</h2>
+                        <!-- {TABLE_DISPLAY} -->
+                        <?php require_once 'config-table_names.php' ?>
+                        <h2 class="float-left"><?php echo $table_names['{TABLE_NAME}'] ?> Details</h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right">Add New Record</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2">Reset View</a>
                         <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2">Back</a>
