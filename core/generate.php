@@ -347,11 +347,15 @@ function generate($postdata) {
     // Every table is a key
     global $excluded_keys;
 
+    // An indexed array of table names to display based on their system name
+    $table_names = [];
+
     // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that
     // are selected to be include in previews, such as select foreign keys and foreign key preview.
     $preview_columns = array();
     foreach ($postdata as $key => $value){
         if (!in_array($key, $excluded_keys)) {
+            $table_names[$key] = $value[0]['tabledisplay']; // Extract table name
             foreach ($_POST[$key] as $columns ) {
                 if (isset($columns['columninpreview'])){
                     $preview_columns[$columns['tablename']][] = $columns['columnname'];
@@ -824,7 +828,41 @@ function generate($postdata) {
         }
 
     }
+
+
+    // Save table names to config
+    updateTableNames($table_names);
 }
+
+// Save table names to config
+function updateTableNames($table_names) {
+
+    $configTableNamesFilePath     = 'app/config-table_names.php';
+    $configTableNamesTemplatePath = 'templates/config-table_names.php';
+
+    // Read config file template
+    $configfile = fopen($configTableNamesTemplatePath, "r") or die("Unable to read Config file template for table names!");
+    $templateContent = file_get_contents($configTableNamesTemplatePath);
+
+    // Prepare the new tables array as a string
+    $new_table_names = var_export($table_names, true);
+
+    // Replace placeholders with actual values
+    $replacements = [
+        '{{TABLE_NAMES}}' => $new_table_names,
+    ];
+
+    foreach ($replacements as $placeholder => $realValue) {
+        echo $placeholder;
+        echo $realValue;
+        $templateContent = str_replace($placeholder, $realValue, $templateContent);
+    }
+
+    $configfile = fopen($configTableNamesFilePath, "w") or die("Unable to open Config file for table names! Please check your file permissions.");
+    if (fwrite($configfile, $templateContent) === false) die("Error writing Config file for table names!");
+    fclose($configfile);
+}
+
 ?>
 <!doctype html>
 <html lang="en">
