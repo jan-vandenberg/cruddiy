@@ -50,7 +50,7 @@ if(isset($_POST['index'])) {
 	$txt .= "\$db_password = '$password'; \n";
 	$txt .= "\$no_of_records_per_page = $numrecordsperpage; \n";
 	$txt .= "\$appname = '$appname'; \n\n";
-    $txt .= "\$protocol=(\$_SERVER['HTTPS'] == 'on' ? 'https' : 'http');\n";
+    $txt .= "\$protocol = (isset(\$_SERVER['HTTPS']) && \$_SERVER['HTTPS'] == 'on') ? 'https' : 'http';\n";
     $txt .= "\$domain = \$protocol . '://' . \$_SERVER['SCRIPT_NAME']; //Replace domain with your domain name. (Locally typically something like localhost)\n\n";
 	$txt .= "\$link = mysqli_connect(\$db_server, \$db_user, \$db_password, \$db_name); \n";
 
@@ -107,6 +107,9 @@ if(isset($_POST['addkey'])){
        case "restrict":
            $ondel = "ON DELETE RESTRICT";
            break;
+        case "noaction":
+            $ondel = "ON DELETE NO ACTION";
+            break;
        default:
            $ondel = "";
     }
@@ -120,6 +123,9 @@ if(isset($_POST['addkey'])){
             break;
        case "restrict":
             $onupd = "ON UPDATE RESTRICT";
+            break;
+        case "noaction":
+            $onupd = "ON UPDATE NO ACTION";
             break;
        default:
             $onupd = "";
@@ -221,6 +227,7 @@ if(isset($_POST['addkey'])){
                             <option name="ondelete_cascade" value="cascade">On Delete: Cascade</option>
                             <option name="ondelete_setnull" value="setnull">On Delete: Set Null</option>
                             <option name="ondelete_restrict" value="restrict">On Delete: Restrict</option>
+                            <option name="ondelete_noaction" value="noaction">On Delete: No Action</option>
                        </select>
 
                        <select name='onupdate' id='onupdate' style='max-width:15%'>";
@@ -228,6 +235,7 @@ if(isset($_POST['addkey'])){
                             <option name="onupdate_cascade" value="cascade">On Update: Cascade</option>
                             <option name="onupdate_setnull" value="setnull">On Update: Set Null</option>
                             <option name="onupdate_restrict" value="restrict">On Update: Restrict</option>
+                            <option name="onupdate_noaction" value="noaction">On Update: No Action</option>
                        </select>
                                 <label class="col-form-label mt-3" for="singlebutton"></label>
                                 <button type="submit" id="singlebutton" name="addkey" class="btn btn-primary">Create relation</button>
@@ -239,8 +247,10 @@ if(isset($_POST['addkey'])){
 <hr>
 On this page you can add new or delete existing table relations i.e. foreign keys. Having foreign keys will result in Cruddiy forms with cascading deletes/updates and dropdown fields populated by foreign keys. If it is not clear what you want or need to do here, it is SAFER to skip this step and move to the next step! You can always come back later and regenerate new forms.
 <hr>
+
 <form method="post" action="tables.php" class="d-flex justify-content-between">
-    <a href="schema.php" class="btn btn-secondary">Import Schema or Dump</a> <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success">Continue CRUD Creation Process</button>
+    <a href="schema.php" class="btn btn-secondary">Import Schema or Dump</a>
+    <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-success">Continue CRUD Creation Process</button>
 </form>
 </section>
 
