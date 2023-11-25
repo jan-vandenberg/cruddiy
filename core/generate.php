@@ -610,12 +610,14 @@ function generate($postdata) {
                             $join_column_name = $columnname . $fk_table . $fk_column;
 
                             $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
-                            $join_columns .= get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name);
+                            $join_columns .= isset($preview_columns[$fk_table]) ? get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name) : '';
 
                             // Add the new columns to the search concat
-                            foreach($preview_columns[$fk_table] as $key => $c)
-                            {
-                                $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`';
+                            if (isset($preview_columns[$fk_table]) && is_iterable($preview_columns[$fk_table])) {
+                                foreach($preview_columns[$fk_table] as $key => $c)
+                                {
+                                    $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`';
+                                }
                             }
 
                             $is_primary_ref = is_primary_key($fk_table, $fk_column);
