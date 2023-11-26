@@ -156,7 +156,7 @@ if (isset($_POST['table'])) {
                                         include($configTableNamesFilePath);
                                     }
                                     ?>
-                                    <strong>Table: <?= htmlspecialchars(isset($tables_columns_names[$table['name']]['name']) ? $tables_columns_names[$table['name']]['name'] : $table['display']) ?> (<?= htmlspecialchars($table['name']) ?>)</strong>
+                                    <strong>Table: <?= htmlspecialchars($table['display']) ?> (<?= htmlspecialchars($table['name']) ?>)</strong>
                                 </div>
                             </div>
 
