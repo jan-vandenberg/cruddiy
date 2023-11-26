@@ -194,7 +194,8 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
                 } else {
                     echo '- Appending '.$start_page_link.'<br>';
                     array_push($navbarfile_links[1], $start_page_link);
-                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $table_names["'.$key.'"] ?></a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $tables_columns_names["'.$key.'"]["name"] ?></a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo (!empty($tables_columns_names["'.$key.'"]["name"])) ? $tables_columns_names["'.$key.'"]["name"] : "'.$key.'" ?></a>'."\n\t".$buttons_delimiter;
                     $step0 = str_replace($buttons_delimiter, $button_string, $navbarfile);
                     $step1 = str_replace("{APP_NAME}", $appname, $step0 );
                     if (!file_put_contents($startpage_filename, $step1, LOCK_EX)) {
@@ -376,14 +377,15 @@ function generate($postdata) {
     global $excluded_keys;
 
     // An indexed array of table names to display based on their system name
-    $table_names = [];
+    $tables_and_columns_names = [];
 
     // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that
     // are selected to be include in previews, such as select foreign keys and foreign key preview.
     $preview_columns = array();
     foreach ($postdata as $key => $value){
         if (!in_array($key, $excluded_keys)) {
-            $table_names[extractTableName($key)] = $value[0]['tabledisplay'];
+            $tables_and_columns_names[extractTableName($key)]['name'] = $value[0]['tabledisplay'];
+            $tables_and_columns_names[extractTableName($key)]['columns'] = array();
             foreach ($_POST[$key] as $columns ) {
                 if (isset($columns['columninpreview'])){
                     $preview_columns[$columns['tablename']][] = $columns['columnname'];
@@ -487,6 +489,8 @@ function generate($postdata) {
                         } else {
                             $columndisplay = $columns['columnname'];
                         }
+
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname] = $columndisplay;
 
                         if (!empty($columns['columncomment'])){
                             $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
@@ -862,7 +866,7 @@ function generate($postdata) {
 
 
     // Save table names to config
-    updateTableNames($table_names);
+    updateTableAndColumnsNames($tables_and_columns_names);
 }
 
 
@@ -883,17 +887,17 @@ function extractTableName($post_key) {
 
 
 // Save table names to config
-function updateTableNames($table_names) {
+function updateTableAndColumnsNames($tables_columns_names) {
 
-    $configTableNamesFilePath     = 'app/config-table_names.php';
-    $configTableNamesTemplatePath = 'templates/config-table_names.php';
+    $configTableNamesFilePath     = 'app/config-tables-columns.php';
+    $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
 
     // Read config file template
     $configfile = fopen($configTableNamesTemplatePath, "r") or die("Unable to read Config file template for table names!");
     $templateContent = file_get_contents($configTableNamesTemplatePath);
 
     // Prepare the new tables array as a string
-    $new_table_names = var_export($table_names, true);
+    $new_table_names = var_export($tables_columns_names, true);
 
     // Replace placeholders with actual values
     $replacements = [
