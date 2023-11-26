@@ -103,7 +103,7 @@ $indexfile = <<<'EOT'
                     }
 
                     $order_clause = !empty($order) ? "ORDER BY `$order` $sort" : '';
-                    $group_clause = !empty($order) ? "GROUP BY `{TABLE_NAME}`.`$order`" : '';
+                    $group_clause = !empty($order) && $order == '{COLUMN_ID}' ? "GROUP BY `{TABLE_NAME}`.`$order`" : '';
 
                     // Prepare SQL queries
                     $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
