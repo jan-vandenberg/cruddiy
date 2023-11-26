@@ -268,9 +268,9 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
 
                      {RECORDS_READ_FORM}
                     <p>
-                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
-                        <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Delete</a>
-                        <a href="javascript:history.back()" class="btn btn-primary">Back</a>
+                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Edit</a>
+                        <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-danger">Delete</a>
+                        <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back to List</a>
                     </p>
                     <?php
                     {FOREIGN_KEY_REFS}
@@ -371,9 +371,10 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
                             </p>
                         </div>
                     </form>
+                    <hr>
                     <p>
                         <a href="{TABLE_NAME}-read.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-info">View</a>
-                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
+                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Edit</a>
                         <a href="javascript:history.back()" class="btn btn-primary">Back</a>
                     </p>
                 </div>
@@ -563,13 +564,14 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
 
                         <input type="hidden" name="{COLUMN_ID}" value="<?php echo ${COLUMN_ID}; ?>"/>
                         <p>
-                            <input type="submit" class="btn btn-primary" value="Submit">
+                            <input type="submit" class="btn btn-primary" value="Edit">
                             <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
                         </p>
+                        <hr>
                         <p>
                             <a href="{TABLE_NAME}-read.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-info">View</a>
-                            <a href="{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-warning">Delete</a>
-                            <a href="javascript:history.back()" class="btn btn-primary">Back</a>
+                            <a href="{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-danger">Delete</a>
+                            <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back to List</a>
                         </p>
                         <p> * field can not be left empty </p>
                     </form>
