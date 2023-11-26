@@ -122,7 +122,27 @@ function get_fk_url($value, $fk_table, $fk_column, $representation, bool $pk=fal
         {
             return '<a href="' . $fk_table . '-index.php?' . $fk_column . '=' . $value . '">' . $representation . '</a>';
         }
-        
+    }
+}
+
+function translate($key, $echo = true, ...$args)
+{
+    global $translations;
+
+    // Check if the key exists in the array
+    if (isset($translations[$key])) {
+        if ($echo) {
+            echo sprintf($translations[$key], ...$args);
+        } else {
+            return sprintf($translations[$key], ...$args);
+        }
+    } else {
+        // echo key itself if translation not found
+        if ($echo) {
+            echo $key;
+        } else {
+            return $key;
+        }
     }
 }
 ?>

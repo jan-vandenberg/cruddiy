@@ -116,14 +116,16 @@ function generate_error(){
 }
 
 function generate_startpage(){
+    global $appname;
     global $startfile;
     global $CSS_REFS;
     global $JS_REFS;
 
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $startfile);
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+    $prestep3 = str_replace("{APP_NAME}", $appname, $prestep2);
 
-    if (!file_put_contents("app/index.php", $prestep2, LOCK_EX)) {
+    if (!file_put_contents("app/index.php", $prestep3, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating main index file.<br>";
@@ -840,7 +842,7 @@ function generate($postdata) {
                     if (!$forced_deletion && (!isset($_POST['keep_startpage']) || (isset($_POST['keep_startpage']) && $_POST['keep_startpage'] != 'true'))) {
                         $forced_deletion = true;
                         echo '<h3>Deleting existing files</h3>';
-                        $keep = array('config.php', 'helpers.php');
+                        $keep = array('config.php', 'locales');
                         foreach( glob("app/*") as $file ) {
                             if( !in_array(basename($file), $keep) ){
                                 if (unlink($file)) {

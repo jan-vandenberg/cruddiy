@@ -19,6 +19,12 @@ if(isset($_POST['index'])) {
         $appname = "Database Admin";
     }
 
+    if((isset($_POST['language'])) && !is_numeric($_POST['language'])) {
+        $language=$_POST['language'];
+    } else {
+        $language = "en";
+    }
+
     /* Attempt to connect to MySQL database */
 	$link = mysqli_connect($server, $username, $password, $database);
 	// Check connection
@@ -53,12 +59,13 @@ if(isset($_POST['index'])) {
 
     // Replace placeholders with actual values
     $replacements = [
-        '{{db_server}}' => $server,
-        '{{db_name}}' => $database,
-        '{{db_user}}' => $username,
-        '{{db_password}}' => $password,
+        '{{db_server}}'              => $server,
+        '{{db_name}}'                => $database,
+        '{{db_user}}'                => $username,
+        '{{db_password}}'            => $password,
         '{{no_of_records_per_page}}' => $numrecordsperpage,
-        '{{appname}}' => $appname,
+        '{{appname}}'                => $appname,
+        '{{language}}'               => $language,
     ];
 
     foreach ($replacements as $placeholder => $realValue) {
