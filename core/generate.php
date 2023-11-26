@@ -210,9 +210,9 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     global $CSS_REFS;
     global $JS_REFS;
 
-    echo '<pre>';
-    print_r($columns_available);
-    echo '</pre>';
+    // echo '<pre>';
+    // print_r($columns_available);
+    // echo '</pre>';
 
 
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $indexfile);
