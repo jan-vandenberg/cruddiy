@@ -838,7 +838,7 @@ function generate($postdata) {
                     if (!$forced_deletion && (!isset($_POST['keep_startpage']) || (isset($_POST['keep_startpage']) && $_POST['keep_startpage'] != 'true'))) {
                         $forced_deletion = true;
                         echo '<h3>Deleting existing files</h3>';
-                        $keep = array('config.php', 'helpers.php');
+                        $keep = array('config.php', 'helpers.php', 'config-tables-columns.php');
                         foreach( glob("app/*") as $file ) {
                             if( !in_array(basename($file), $keep) ){
                                 if (unlink($file)) {
