@@ -439,7 +439,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
                         {CREATE_HTML}
 
-                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <input type="submit" class="btn btn-primary" value="Create">
                         <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
                     </form>
                     <p> * field can not be left empty </p>
