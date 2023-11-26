@@ -97,7 +97,12 @@ $indexfile = <<<'EOT'
 
                     if (!empty($_GET['search'])) {
                         $search = mysqli_real_escape_string($link, $_GET['search']);
-                        $where_statement .= " AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS}) LIKE '%$search%'";
+                        if (strpos('{INDEX_CONCAT_SEARCH_FIELDS}', ',')) {
+                            $where_statement .= " AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS}) LIKE '%$search%'";
+                        } else {
+                            $where_statement .= " AND {INDEX_CONCAT_SEARCH_FIELDS} LIKE '%$search%'";
+                        }
+
                     } else {
                         $search = "";
                     }
