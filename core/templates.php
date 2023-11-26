@@ -69,12 +69,10 @@ $indexfile = <<<'EOT'
 
                     //Column sorting on column name
                     $columns = array('{COLUMNS}');
+                    // Order by primary key on default
                     $order = '{COLUMN_ID}';
                     if (isset($_GET['order']) && in_array($_GET['order'], $columns)) {
                         $order = $_GET['order'];
-                    } else {
-                    // Order by primary key on default
-                        $order = $columns[0];
                     }
 
                     //Column sort order
