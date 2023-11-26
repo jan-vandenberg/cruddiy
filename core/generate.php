@@ -1,10 +1,10 @@
 <?php
 
 $total_postvars = count($_POST, COUNT_RECURSIVE);
-$max_postvars = ini_get("max_input_vars"); 
+$max_postvars = ini_get("max_input_vars");
 if ($total_postvars >= $max_postvars) {
     echo "Uh oh, it looks like you're trying to use more variables than your PHP settings (<a href='https://www.php.net/manual/en/info.configuration.php#ini.max-input-vars'>max_input_variables</a>) allow! <br>";
-    echo "Go back and choose less tables and/or columns or change your php.ini setting. <br>";      
+    echo "Go back and choose less tables and/or columns or change your php.ini setting. <br>";
     echo "Read <a href='https://betterstudio.com/blog/increase-max-input-vars-limit/'>here</a> how you can increase this limit.<br>";
     echo "Cruddiy will now exit because only part of what you wanted would otherwise be generated. 🙇";
     exit();
@@ -36,7 +36,7 @@ $JS_REFS = '<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity=
 // $JS_REFS = '<script src="js/jquery-3.5.1.min.js"></script>
 // <script src="js/popper.min.js"></script>
 // <script src="js/bootstrap.min.js"></script>';
-    
+
 
 function column_type($columnname){
     switch ($columnname) {
@@ -84,7 +84,7 @@ function get_sql_concat_select($copy_columns, $table, $name){
     $array = $copy_columns;
     foreach($array as $key => $c)
     {
-        $array[$key] = '`'. $table .'`.`'. $array[$key] .'`'; 
+        $array[$key] = '`'. $table .'`.`'. $array[$key] .'`';
     }
     return "\n\t\t\t, CONCAT_WS(' | ',". implode(', ', $array) .') AS `'. $name .'`';
 }
@@ -93,7 +93,7 @@ function get_sql_select($copy_columns){
     $array = $copy_columns;
     foreach($array as $key => $c)
     {
-        $array[$key] = '`'.$array[$key].'`'; 
+        $array[$key] = '`'.$array[$key].'`';
     }
     return implode(', ', $array);
 }
@@ -209,6 +209,33 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     global $appname;
     global $CSS_REFS;
     global $JS_REFS;
+
+    // echo '<pre>';
+    // print_r($columns_available);
+    // echo '</pre>';
+
+    /*
+    echo "<br><strong>tablename</strong>:<pre>";
+    print_r(htmlspecialchars($tablename));
+    echo "</pre><strong>tabledisplay</strong>:<pre>";
+    print_r(htmlspecialchars($tabledisplay));
+    echo "</pre><strong>index_table_headers</strong>:<pre>";
+    print_r(htmlspecialchars($index_table_headers));
+    echo "</pre><strong>index_table_rows</strong>:<pre>";
+    print_r(htmlspecialchars($index_table_rows));
+    echo "</pre><strong>column_id</strong>:<pre>";
+    print_r(htmlspecialchars($column_id));
+    echo "</pre><strong>columns_available</strong>:<pre>";
+    print_r(htmlspecialchars(print_r($columns_available, true)));
+    echo "</pre><strong>index_sql_search</strong>:<pre>";
+    print_r(htmlspecialchars($index_sql_search));
+    echo "</pre><strong>join_columns</strong>:<pre>";
+    print_r(htmlspecialchars($join_columns));
+    echo "</pre><strong>join_clauses</strong>:<pre>";
+    print_r(htmlspecialchars($join_clauses));
+    echo "</pre>";
+    */
+
 
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $indexfile);
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
@@ -343,8 +370,8 @@ function generate($postdata) {
     // Go trough the POST array
     // Every table is a key
     global $excluded_keys;
-    
-    // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that 
+
+    // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that
     // are selected to be include in previews, such as select foreign keys and foreign key preview.
     $preview_columns = array();
     foreach ($postdata as $key => $value){
@@ -418,16 +445,19 @@ function generate($postdata) {
                     $number_of_refs = mysqli_fetch_assoc(mysqli_query($link, $sql))["count"];
                     if ($number_of_refs > 0)
                     {
-                        $html .= \'<p><a href="'. $table . '-index.php?'. $column . '=\'. $row["'.$fk_column.'"]' . '.\'" class="btn btn-info">View \' . $number_of_refs . \' ' . $table . ' with '. $column . ' = \'. $row["'.$fk_column.'"] .\'</a></p></p>\';         
+                        $html .= \'<p><a href="'. $table . '-index.php?'. $column . '=\'. $row["'.$fk_column.'"]' . '.\'" class="btn btn-info">View \' . $number_of_refs . \' ' . $table . ' with '. $column . ' = \'. $row["'.$fk_column.'"] .\'</a></p></p>\';
                     }';
                 }
             }
             $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this ' . $tablename . ':</h3>" . $html;}' : "";
 
             //Specific INDEX page variables
+            $column_id = null;
             foreach ( $_POST[$key] as $columns ) {
-                if (isset($columns['primary'])){
-                    $column_id =  $columns['columnname'];
+                if (isset($columns['primary']) && !empty($columns['primary']) && !is_null($columns['primary'])){
+                    $column_id =  $columns['primary'];
+                } else {
+                    $column_id = null;
                 }
 
                 // These variables contain the generated names, labels, input field and values for column.
@@ -459,7 +489,7 @@ function generate($postdata) {
                         $columns_available [] = "$columnname";
                         $index_sql_search [] = "`$tablename`.`$columnname`";
                         $index_table_headers .= 'echo "<th><a href=?search=$search&order='.$columnname.'&sort=$sort$get_param>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
-                        
+
                         // Display date in locale format
                         if(!empty($columns['fk'])){
                             //Get the Foreign Key
@@ -519,7 +549,7 @@ function generate($postdata) {
                     if (empty($columns['columndisplay'])){
                         $columndisplay = $columns['columnname'];
                     }
-                    
+
                     if (!$columns['columnnullable'])
                     {
                         $columndisplay .= "*";
@@ -528,7 +558,7 @@ function generate($postdata) {
                     if (!empty($columns['columncomment'])){
                         $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
                     }
-                    
+
                     if (!empty($columns['auto'])){
                         //Dont create html input field for auto-increment columns
                         $j++;
@@ -554,21 +584,21 @@ function generate($postdata) {
 
                         $columnname = $columns['columnname'];
                         $columnname_var = preg_replace('/[^a-zA-Z0-9]+/', '_', $columnname);
-                        
+
                         $create_records .= "\$$columnname_var = \"\";\n";
                         $create_record = "\$$columnname_var";
                         $create_err_records .= "\$$columnname_var".'_err'." = \"\";\n";
                         $create_err_record = "\$$columnname_var".'_err';
                         $create_sqlcolumns [] = "`$columnname`";
                         $create_sql_params [] = "\$$columnname_var";
-                        
+
                         // Process POST vars that can be null differently
                         if ($columns['columnnullable']){
                             $create_postvars .= "$$columnname_var = \$_POST[\"$columnname\"] == \"\" ? null : trim(\$_POST[\"$columnname\"]);\n\t\t";
                         } else {
                             $create_postvars .= "$$columnname_var = trim(\$_POST[\"$columnname\"]);\n\t\t";
-                        }                        
-                        
+                        }
+
                         $update_sql_params [] = "`$columnname`".'=?';
                         $update_sql_id = "`$column_id`".'=?';
                         $update_column_rows .= "$$columnname_var = htmlspecialchars(\$row[\"$columnname\"] ?? \"\");\n\t\t\t\t\t";
@@ -593,49 +623,52 @@ function generate($postdata) {
 
 
                             //Be careful code below is particular regarding single and double quotes.
-                            
+
                             $html = '<select class="form-control" id="'. $columnname .'" name="'. $columnname .'">';
                             if ($columns['columnnullable'])
                             {
                                 $html .= '<option value="">Null</option>';
                             }
-                            
-                            
-                            $fk_columns_select = get_sql_select($preview_columns[$fk_table]);
-                            
+
+
+                            $fk_columns_select = isset($preview_columns[$fk_table]) ? get_sql_select($preview_columns[$fk_table]) : null;
+
                             $join_name = $columnname .$fk_table;
                             $join_column_name = $columnname . $fk_table . $fk_column;
 
                             $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
-                            $join_columns .= get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name);
-                            
+                            $join_columns .= isset($preview_columns[$fk_table]) ? get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name) : null;
+
                             // Add the new columns to the search concat
-                            foreach($preview_columns[$fk_table] as $key => $c)
-                            {
-                                $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`'; 
+                            if (isset($preview_columns[$fk_table])) {
+                                foreach ($preview_columns[$fk_table] as $key => $c) {
+                                    $index_sql_search[] = '`' . $join_name . '`.`' . $preview_columns[$fk_table][$key] . '`';
+                                }
                             }
 
                             $is_primary_ref = is_primary_key($fk_table, $fk_column);
 
                             $column_value = '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', false); ?>';
 
-                            $html .= ' <?php
-                                        $sql = "SELECT '. $fk_columns_select .', `'. $fk_column .'` FROM `'. $fk_table . '` ORDER BY '. $fk_columns_select .'";
+                            if ($fk_columns_select) {
+                                $html .= ' <?php
+                                        $sql = "SELECT ' . $fk_columns_select . ', `' . $fk_column . '` FROM `' . $fk_table . '` ORDER BY ' . $fk_columns_select . '";
                                         $result = mysqli_query($link, $sql);
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                                             $duprow = $row;
                                             unset($duprow["' . $fk_column . '"]);
                                             $value = implode(" | ", $duprow);
                                             if ($row["' . $fk_column . '"] == $' . $columnname_var . '){
-                                            echo \'<option value="\' . $row["'. $fk_column. '"] . \'"selected="selected">\' . $value . \'</option>\';
+                                            echo \'<option value="\' . $row["' . $fk_column . '"] . \'"selected="selected">\' . $value . \'</option>\';
                                             } else {
-                                                echo \'<option value="\' . $row["'. $fk_column. '"] . \'">\' . $value . \'</option>\';
+                                                echo \'<option value="\' . $row["' . $fk_column . '"] . \'">\' . $value . \'</option>\';
                                         }
                                         }
                                     ?>
                                     </select>';
-                            $column_input = $html;
-                            unset($html);
+                                $column_input = $html;
+                                unset($html);
+                            }
                         }
 
                 // No Foreign Keys, just regular columns from here on
@@ -668,13 +701,13 @@ function generate($postdata) {
                         switch($type) {
                         //TEXT
                         case 1:
-                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo '. $create_record. '; ?></textarea>';
+                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo @'. $create_record. '; ?></textarea>';
                         break;
 
                         //ENUM types
                         case 2:
                         //Make sure on the update form that the previously selected type is also selected from the list
-                         
+
                             $html = '<select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
                             if ($columns['columnnullable'])
                             {
@@ -703,7 +736,7 @@ function generate($postdata) {
                         case 3:
                             preg_match('#\((.*?)\)#', $columns['columntype'], $match);
                             $maxlength = $match[1];
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
 
                         //TINYINT (bool)
@@ -715,32 +748,32 @@ function generate($postdata) {
                                 {
                                     $html .= '<option value="">Null</option>';
                                 }
-                            $html   .= '    <option value="0" <?php echo !' . $create_record . ' ? "selected": ""; ?> >False</option>';
-                            $html   .= '    <option value="1" <?php echo ' . $create_record . ' ? "selected": ""; ?> >True</option>';
+                            $html   .= '    <option value="0" <?php echo !@' . $create_record . ' ? "selected": ""; ?> >False</option>';
+                            $html   .= '    <option value="1" <?php echo @' . $create_record . ' ? "selected": ""; ?> >True</option>';
                             $html   .= '</select>';
                                 $column_input = $html;
                             unset($html);
                         break;
                         //INT
                         case 5:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
 
                         //DECIMAL
                         case 6:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">';
+                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>" step="any">';
                         break;
                         //DATE
                         case 7:
-                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
                         //DATETIME
                         case 8:
-                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">';
+                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime(@'. $create_record. ')); ?>">';
                         break;
 
                         default:
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
                         }
                     }
@@ -752,7 +785,7 @@ function generate($postdata) {
                     $read_records .= '<div class="form-group">
                         <h4>'.$columndisplay.'</h4>
                         <p class="form-control-static">' . $column_value .'</p></div>';
-                    
+
                     // Different Layout
                     // $create_html [] = '<div class="form-group row">
                     // <label class="col-sm-4 col-form-label" for="'.$columnname.'">'.$columndisplay.'</label>
