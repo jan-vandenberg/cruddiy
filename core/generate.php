@@ -734,7 +734,7 @@ function generate($postdata) {
                         case 3:
                             preg_match('#\((.*?)\)#', $columns['columntype'], $match);
                             $maxlength = $match[1];
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
 
                         //TINYINT (bool)
@@ -746,32 +746,32 @@ function generate($postdata) {
                                 {
                                     $html .= '<option value="">Null</option>';
                                 }
-                            $html   .= '    <option value="0" <?php echo !' . $create_record . ' ? "selected": ""; ?> >False</option>';
-                            $html   .= '    <option value="1" <?php echo ' . $create_record . ' ? "selected": ""; ?> >True</option>';
+                            $html   .= '    <option value="0" <?php echo !@' . $create_record . ' ? "selected": ""; ?> >False</option>';
+                            $html   .= '    <option value="1" <?php echo @' . $create_record . ' ? "selected": ""; ?> >True</option>';
                             $html   .= '</select>';
                                 $column_input = $html;
                             unset($html);
                         break;
                         //INT
                         case 5:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
 
                         //DECIMAL
                         case 6:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">';
+                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>" step="any">';
                         break;
                         //DATE
                         case 7:
-                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
                         //DATETIME
                         case 8:
-                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">';
+                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime(@'. $create_record. ')); ?>">';
                         break;
 
                         default:
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
                         }
                     }
