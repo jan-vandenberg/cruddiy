@@ -266,7 +266,8 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                         <h1>View Record</h1>
                     </div>
 
-                     {RECORDS_READ_FORM}
+                    {RECORDS_READ_FORM}
+                    <hr>
                     <p>
                         <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Edit</a>
                         <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-danger">Delete</a>
@@ -443,7 +444,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                         <input type="submit" class="btn btn-primary" value="Create">
                         <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
                     </form>
-                    <p> * field can not be left empty </p>
+                    <p><small>* field can not be left empty</small></p>
                 </div>
             </div>
         </div>
