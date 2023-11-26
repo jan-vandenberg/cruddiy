@@ -6,6 +6,7 @@ $db_user                = '{{db_user}}';
 $db_password            = '{{db_password}}';
 $no_of_records_per_page = '{{no_of_records_per_page}}';
 $appname                = '{{appname}}';
+$language               = '{{language}}';
 
 $protocol               = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
 $domain                 = $protocol . '://' . $_SERVER['SCRIPT_NAME']; // Replace domain with your domain name. (Locally typically something like localhost)

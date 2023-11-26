@@ -61,6 +61,31 @@ if (file_exists("app/config.php")) {
                         <input id="appname" name="appname" type="text" placeholder="Name for your app (optional)" class="form-control " value="<?php if(isset($appname)) echo $appname; ?>">
                     </div>
 
+                    <!-- Language -->
+                    <div class="form-group">
+                        <label class="language" for="textinput">Language for the generated public files</label>
+                        <select class="custom-select" id="language" name="language">
+                            <option value="0"></option>Pick</option>
+                            <?php
+                            $directory = 'locales'; // Replace with the path to your directory
+                            $phpFiles = glob($directory . '/*.php');
+                            foreach ($phpFiles as $file) :
+                                ?>
+                                <option value="<?php echo str_replace('.php', '', basename($file)) ?>" <?php echo (isset($language) && $language == str_replace('.php', '', basename($file))) ? 'selected' : '' ?>>
+                                    <?php echo str_replace('.php', '', basename($file)) ?>
+                                </option>
+                                <?php
+                            endforeach;
+                            ?>
+                        </select>
+                        <p>
+                            <small>
+                                You can add new locales in <code>core/locales</code> (use <code>en.php</code> as starting point).
+                                Please <a href="https://github.com/jan-vandenberg/cruddiy/fork" target="_blank">fork and share</a> your translations!
+                            </small>
+                        </p>
+                    </div>
+
                     <div class="form-group">
                         <label class="col-form-label" for="index"></label>
                         <button id="index" name="index" class="btn btn-primary">Submit</button>
