@@ -172,6 +172,13 @@ if (isset($_POST['table'])) {
                                         </label>
                                     </div>
                                     <div class="col-md-5">
+                                        <?php
+                                        // echo '<pre>';
+                                        // print_r($table);
+                                        // print_r($column['name']);
+                                        // echo '</pre>';
+                                        ?>
+
                                         <!-- Hidden inputs and text input for column display name -->
                                         <?php if ($column['isForeignKey']) : ?>
                                             <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][fk]" value="1"/>
@@ -193,7 +200,13 @@ if (isset($_POST['table'])) {
                                         <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columncomment]" value="<?= htmlspecialchars($column['comment']) ?>"/>
                                         <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnnullable]" value="<?php echo $column['nullable'] ?>"/>
 
-                                        <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columndisplay]" type="text" placeholder="Display field name in frontend" class="form-control rounded-0">
+                                        <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>"
+                                                name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columndisplay]"
+                                                type="text"
+                                                placeholder="Display field name in frontend"
+                                                class="form-control rounded-0"
+                                                <?php echo isset($tables_columns_names[$table['name']]['columns'][$column['name']]) ? 'value="'.addslashes(htmlspecialchars($tables_columns_names[$table['name']]['columns'][$column['name']])).'"' : '' ?>
+                                                >
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in overview checkbox -->
