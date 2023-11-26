@@ -20,6 +20,8 @@ $indexfile = <<<'EOT'
         }
     </style>
 </head>
+<?php require_once('config.php'); ?>
+<?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 <body>
     <section class="pt-5">
@@ -43,10 +45,6 @@ $indexfile = <<<'EOT'
                     <br>
 
                     <?php
-                    // Include config file
-                    require_once "config.php";
-                    require_once "helpers.php";
-
                     //Get current URL and parameters for correct pagination
                     $script   = $_SERVER['SCRIPT_NAME'];
                     $parameters   = $_GET ? $_SERVER['QUERY_STRING'] : "" ;
@@ -200,10 +198,6 @@ $readfile = <<<'EOT'
 // Check existence of id parameter before processing further
 $_GET["{TABLE_ID}"] = trim($_GET["{TABLE_ID}"]);
 if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
-    // Include config file
-    require_once "config.php";
-    require_once "helpers.php";
-
     // Prepare a select statement
     $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
             FROM `{TABLE_NAME}` {JOIN_CLAUSES}
@@ -256,6 +250,8 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     <title>View Record</title>
     {CSS_REFS}
 </head>
+<?php require_once('config.php'); ?>
+<?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 <body>
     <section class="pt-5">
@@ -296,10 +292,6 @@ EOT;
 
 $deletefile = <<<'EOT'
 <?php
-// Include config file
-require_once "config.php";
-require_once "helpers.php";
-
 // Process delete operation after confirmation
 if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
 
@@ -352,6 +344,8 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
     <title>View Record</title>
     {CSS_REFS}
 </head>
+<?php require_once('config.php'); ?>
+<?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 <body>
     <section class="pt-5">
@@ -395,10 +389,6 @@ EOT;
 
 $createfile = <<<'EOT'
 <?php
-// Include config file
-require_once "config.php";
-require_once "helpers.php";
-
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     {CREATE_POST_VARIABLES}
@@ -426,6 +416,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <title>Create Record</title>
     {CSS_REFS}
 </head>
+<?php require_once('config.php'); ?>
+<?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 <body>
     <section class="pt-5">
@@ -462,10 +454,6 @@ EOT;
 
 $updatefile = <<<'EOT'
 <?php
-// Include config file
-require_once "config.php";
-require_once "helpers.php";
-
 // Processing form data when form is submitted
 if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     // Get hidden input value
@@ -548,6 +536,8 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
     <title>Update Record</title>
     {CSS_REFS}
 </head>
+<?php require_once('config.php'); ?>
+<?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 <body>
     <section class="pt-5">
@@ -637,6 +627,8 @@ $startfile = <<<'EOT'
         }
     </style>
 </head>
+<?php require_once('config.php'); ?>
+<?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 </html>
 EOT;
@@ -652,7 +644,7 @@ $navbarfile = <<<'EOT'
     <ul class="navbar-nav mr-auto">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Select Page
+          <?php echo translate('Select Page') ?>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
         {TABLE_BUTTONS}
