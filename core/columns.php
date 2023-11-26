@@ -142,10 +142,21 @@ if (isset($_POST['table'])) {
                     <fieldset>
 
                         <?php foreach ($tablesData as $table): ?>
+                            <?php
+                            // echo '<pre>';
+                            // print_r($table);
+                            // echo '</pre>';
+                            ?>
                             <div class="row">
                                 <div class="col-3"></div>
                                 <div class="col-9 my-4">
-                                    <strong>Table: <?= htmlspecialchars($table['display']) ?> (<?= htmlspecialchars($table['name']) ?>)</strong>
+                                    <?php
+                                    $configTableNamesFilePath = 'app/config-tables-columns.php';
+                                    if (file_exists($configTableNamesFilePath)) {
+                                        include($configTableNamesFilePath);
+                                    }
+                                    ?>
+                                    <strong>Table: <?= htmlspecialchars(isset($tables_columns_names[$table['name']]['name']) ? $tables_columns_names[$table['name']]['name'] : $table['display']) ?> (<?= htmlspecialchars($table['name']) ?>)</strong>
                                 </div>
                             </div>
 
