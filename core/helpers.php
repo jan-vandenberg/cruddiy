@@ -122,7 +122,7 @@ function get_fk_url($value, $fk_table, $fk_column, $representation, bool $pk=fal
         {
             return '<a href="' . $fk_table . '-index.php?' . $fk_column . '=' . $value . '">' . $representation . '</a>';
         }
-        
+
     }
 }
 ?>
