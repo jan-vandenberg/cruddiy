@@ -214,6 +214,28 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     // print_r($columns_available);
     // echo '</pre>';
 
+    /*
+    echo "<br><strong>tablename</strong>:<pre>";
+    print_r(htmlspecialchars($tablename));
+    echo "</pre><strong>tabledisplay</strong>:<pre>";
+    print_r(htmlspecialchars($tabledisplay));
+    echo "</pre><strong>index_table_headers</strong>:<pre>";
+    print_r(htmlspecialchars($index_table_headers));
+    echo "</pre><strong>index_table_rows</strong>:<pre>";
+    print_r(htmlspecialchars($index_table_rows));
+    echo "</pre><strong>column_id</strong>:<pre>";
+    print_r(htmlspecialchars($column_id));
+    echo "</pre><strong>columns_available</strong>:<pre>";
+    print_r(htmlspecialchars(print_r($columns_available, true)));
+    echo "</pre><strong>index_sql_search</strong>:<pre>";
+    print_r(htmlspecialchars($index_sql_search));
+    echo "</pre><strong>join_columns</strong>:<pre>";
+    print_r(htmlspecialchars($join_columns));
+    echo "</pre><strong>join_clauses</strong>:<pre>";
+    print_r(htmlspecialchars($join_clauses));
+    echo "</pre>";
+    */
+
 
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $indexfile);
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
