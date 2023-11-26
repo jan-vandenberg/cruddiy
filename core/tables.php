@@ -36,6 +36,11 @@
                             {
                                 $tablelist[] = $cRow[0];
                             }
+
+                            $configTableNamesFilePath = 'app/config-table_names.php';
+                            if (file_exists($configTableNamesFilePath)) {
+                                include($configTableNamesFilePath);
+                            }
                             ?>
 
                             <div class="container">
@@ -46,7 +51,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <input type="hidden" name="table[<?= $i ?>][tablename]" value="<?= htmlspecialchars($table) ?>"/>
-                                            <input id="textinput_<?= htmlspecialchars($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm">
+                                            <input id="textinput_<?= htmlspecialchars($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($table_names[$table]) ? 'value="'.$table_names[$table].'"' : '' ?>>
                                         </div>
                                         <div class="col-md-3">
                                             <input class="mr-1" type="checkbox" name="table[<?= $i ?>][tablecheckbox]" id="checkboxes-<?= $i ?>" value="1">
