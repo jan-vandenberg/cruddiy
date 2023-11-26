@@ -70,12 +70,10 @@ $indexfile = <<<'EOT'
 
                     //Column sorting on column name
                     $columns = array('{COLUMNS}');
+                    // Order by primary key on default
                     $order = '{COLUMN_ID}';
                     if (isset($_GET['order']) && in_array($_GET['order'], $columns)) {
                         $order = $_GET['order'];
-                    } else {
-                    // Order by primary key on default
-                        $order = $columns[0];
                     }
 
                     //Column sort order
@@ -100,17 +98,25 @@ $indexfile = <<<'EOT'
 
                     if (!empty($_GET['search'])) {
                         $search = mysqli_real_escape_string($link, $_GET['search']);
-                        $where_statement .= " AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS}) LIKE '%$search%'";
+                        if (strpos('{INDEX_CONCAT_SEARCH_FIELDS}', ',')) {
+                            $where_statement .= " AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS}) LIKE '%$search%'";
+                        } else {
+                            $where_statement .= " AND {INDEX_CONCAT_SEARCH_FIELDS} LIKE '%$search%'";
+                        }
+
                     } else {
                         $search = "";
                     }
+
+                    $order_clause = !empty($order) ? "ORDER BY `$order` $sort" : '';
+                    $group_clause = !empty($order) && $order == '{COLUMN_ID}' ? "GROUP BY `{TABLE_NAME}`.`$order`" : '';
 
                     // Prepare SQL queries
                     $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
                             FROM `{TABLE_NAME}` {JOIN_CLAUSES}
                             $where_statement
-                            GROUP BY `{TABLE_NAME}`.`{COLUMN_ID}`
-                            ORDER BY `$order` $sort
+                            $group_clause
+                            $order_clause
                             LIMIT $offset, $no_of_records_per_page;";
                     $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
                             $where_statement";
@@ -351,7 +357,7 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
                         <h1>Delete Record</h1>
                     </div>
                     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?{TABLE_ID}=" . $_GET["{TABLE_ID}"]; ?>" method="post">
-                    <?php print_error_if_exists($error); ?>
+                    <?php print_error_if_exists(@$error); ?>
                         <div class="alert alert-danger fade-in">
                             <input type="hidden" name="{TABLE_ID}" value="<?php echo trim($_GET["{TABLE_ID}"]); ?>"/>
                             <p>Are you sure you want to delete this record?</p><br>
@@ -423,7 +429,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     <div class="page-header">
                         <h2>Create Record</h2>
                     </div>
-                    <?php print_error_if_exists($error); ?>
+                    <?php print_error_if_exists(@$error); ?>
                     <p>Please fill this form and submit to add a record to the database.</p>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 
@@ -545,7 +551,7 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
                     <div class="page-header">
                         <h2>Update Record</h2>
                     </div>
-                    <?php print_error_if_exists($error); ?>
+                    <?php print_error_if_exists(@$error); ?>
                     <p>Please edit the input values and submit to update the record.</p>
                     <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
 
