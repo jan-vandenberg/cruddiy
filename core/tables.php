@@ -37,7 +37,7 @@
                                 $tablelist[] = $cRow[0];
                             }
 
-                            $configTableNamesFilePath = 'app/config-table_names.php';
+                            $configTableNamesFilePath = 'app/config-tables-columns.php';
                             if (file_exists($configTableNamesFilePath)) {
                                 include($configTableNamesFilePath);
                             }
