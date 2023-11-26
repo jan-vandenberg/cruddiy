@@ -456,6 +456,8 @@ function generate($postdata) {
             foreach ( $_POST[$key] as $columns ) {
                 if (isset($columns['primary']) && !empty($columns['primary']) && !is_null($columns['primary'])){
                     $column_id =  $columns['primary'];
+                } else {
+                    $column_id = null;
                 }
 
                 // These variables contain the generated names, labels, input field and values for column.
