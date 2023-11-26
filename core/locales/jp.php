@@ -43,6 +43,5 @@ return array(
     'stmt_error' => 'おっと！何か問題が発生しました。後でもう一度試してください。',
     'unsupported_no_pk' => '主キーのない表の編集はまだサポートされていません。',
     'invalid_request_instructions' => '申し訳ありませんが、無効なリクエストを行いました。 <a href="index.php" class="alert-link">戻って</a>もう一度試してください。'
-
 );
 ?>
