@@ -452,9 +452,10 @@ function generate($postdata) {
             $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this ' . $tablename . ':</h3>" . $html;}' : "";
 
             //Specific INDEX page variables
+            $column_id = null;
             foreach ( $_POST[$key] as $columns ) {
-                if (isset($columns['primary'])){
-                    $column_id =  $columns['columnname'];
+                if (isset($columns['primary']) && !empty($columns['primary']) && !is_null($columns['primary'])){
+                    $column_id =  $columns['primary'];
                 }
 
                 // These variables contain the generated names, labels, input field and values for column.
