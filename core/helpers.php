@@ -125,20 +125,24 @@ function get_fk_url($value, $fk_table, $fk_column, $representation, bool $pk=fal
     }
 }
 
-function translate($key, ...$args)
+function translate($key, $echo = true, ...$args)
 {
-    global $language;
-
-    // Load the language file
-    $translations = include('locales/'.$language . '.php');
+    global $translations;
 
     // Check if the key exists in the array
-    if (array_key_exists($key, $translations)) {
-        // Use sprintf to insert arguments into the translation
-        return sprintf($translations[$key], ...$args);
+    if (isset($translations[$key])) {
+        if ($echo) {
+            echo sprintf($translations[$key], ...$args);
+        } else {
+            return sprintf($translations[$key], ...$args);
+        }
+    } else {
+        // echo key itself if translation not found
+        if ($echo) {
+            echo $key;
+        } else {
+            return $key;
+        }
     }
-
-    // Return key itself if translation not found
-    return $key;
 }
 ?>
