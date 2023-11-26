@@ -699,7 +699,7 @@ function generate($postdata) {
                         switch($type) {
                         //TEXT
                         case 1:
-                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo '. $create_record. '; ?></textarea>';
+                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo @'. $create_record. '; ?></textarea>';
                         break;
 
                         //ENUM types
