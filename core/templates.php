@@ -28,7 +28,7 @@ $indexfile = <<<'EOT'
                 <div class="col-md-12">
                     <div class="page-header clearfix">
                         <!-- {TABLE_DISPLAY} -->
-                        <h2 class="float-left"><?php echo $tables_columns_names['{TABLE_NAME}']['name'] ?> Details</h2>
+                        <h2 class="float-left"><?php echo (!empty($tables_columns_names['{TABLE_NAME}']['name'])) ? $tables_columns_names['{TABLE_NAME}']['name'] : '{TABLE_NAME}' ?> Details</h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right">Add New Record</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2">Reset View</a>
                         <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2">Back</a>
