@@ -194,7 +194,7 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
                 } else {
                     echo '- Appending '.$start_page_link.'<br>';
                     array_push($navbarfile_links[1], $start_page_link);
-                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $table_names["'.$key.'"]["name"] ?></a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $tables_columns_names["'.$key.'"]["name"] ?></a>'."\n\t".$buttons_delimiter;
                     $step0 = str_replace($buttons_delimiter, $button_string, $navbarfile);
                     $step1 = str_replace("{APP_NAME}", $appname, $step0 );
                     if (!file_put_contents($startpage_filename, $step1, LOCK_EX)) {
@@ -886,7 +886,7 @@ function extractTableName($post_key) {
 
 
 // Save table names to config
-function updateTableAndColumnsNames($table_names) {
+function updateTableAndColumnsNames($tables_columns_names) {
 
     $configTableNamesFilePath     = 'app/config-tables-columns.php';
     $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
@@ -896,7 +896,7 @@ function updateTableAndColumnsNames($table_names) {
     $templateContent = file_get_contents($configTableNamesTemplatePath);
 
     // Prepare the new tables array as a string
-    $new_table_names = var_export($table_names, true);
+    $new_table_names = var_export($tables_columns_names, true);
 
     // Replace placeholders with actual values
     $replacements = [

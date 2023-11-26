@@ -1,5 +1,5 @@
 <?php
 
-$table_names = {{TABLE_NAMES}};
+$tables_columns_names = {{TABLE_NAMES}};
 
 ?>
