@@ -90,7 +90,7 @@ $indexfile = <<<'EOT'
 
                     //Generate WHERE statements for param
                     $where_columns = array_intersect_key($_GET, array_flip($columns));
-                    $get_param = "";                    
+                    $get_param = "";
                     $where_statement = " WHERE 1=1 ";
                     foreach ( $where_columns as $key => $val ) {
                         $where_statement .= " AND `$key` = '" . mysqli_real_escape_string($link, $val) . "' ";
@@ -260,7 +260,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                         <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
                         <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Delete</a>
                         <a href="javascript:history.back()" class="btn btn-primary">Back</a>
-                    </p> 
+                    </p>
                     <?php
                     {FOREIGN_KEY_REFS}
 
@@ -311,7 +311,7 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
             error_log($e->getMessage());
             $error = $e->getMessage();
         }
-    
+
         if (!isset($error)){
             // Records deleted successfully. Redirect to landing page
             header("location: {TABLE_NAME}-index.php");
@@ -474,7 +474,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     if (!isset($error)){
         header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=${COLUMN_ID}");
     }
-} 
+}
 // Check existence of id parameter before processing further
 $_GET["{COLUMN_ID}"] = trim($_GET["{COLUMN_ID}"]);
 if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
@@ -607,24 +607,24 @@ $errorfile = <<<'EOT'
 EOT;
 
 $startfile = <<<'EOT'
-<html lang="en">                                                                                                                                                                                                   
-<head>                                                                                                                                                                                                             
-    <meta charset="UTF-8">                                                                                                                                                                                         
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <title>{APP_NAME}</title>
     {CSS_REFS}
     {JS_REFS}
 
-    <style type="text/css">                                                                                                                                                                                        
-        .page-header h2{                                                                                                                                                                                           
-            margin-top: 0;                                                                                                                                                                                         
-        }                                                                                                                                                                                                          
-        table tr td:last-child a{                                                                                                                                                                                  
-            margin-right: 5px;                                                                                                                                                                                     
-        }                                                                                                                                                                                                          
-    </style>                                                                                                                                                                                                       
-</head>                                                                                                                                                                                                            
+    <style type="text/css">
+        .page-header h2{
+            margin-top: 0;
+        }
+        table tr td:last-child a{
+            margin-right: 5px;
+        }
+    </style>
+</head>
 <?php require_once('navbar.php'); ?>
-</html>  
+</html>
 EOT;
 
 $navbarfile = <<<'EOT'
@@ -641,7 +641,7 @@ $navbarfile = <<<'EOT'
           Select Page
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        {TABLE_BUTTONS}                                                                                                                                                                                                     
+        {TABLE_BUTTONS}
         <!-- TABLE_BUTTONS -->
         </div>
       </li>
