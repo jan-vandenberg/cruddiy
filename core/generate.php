@@ -214,6 +214,33 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     global $CSS_REFS;
     global $JS_REFS;
 
+    // echo '<pre>';
+    // print_r($columns_available);
+    // echo '</pre>';
+
+    /*
+    echo "<br><strong>tablename</strong>:<pre>";
+    print_r(htmlspecialchars($tablename));
+    echo "</pre><strong>tabledisplay</strong>:<pre>";
+    print_r(htmlspecialchars($tabledisplay));
+    echo "</pre><strong>index_table_headers</strong>:<pre>";
+    print_r(htmlspecialchars($index_table_headers));
+    echo "</pre><strong>index_table_rows</strong>:<pre>";
+    print_r(htmlspecialchars($index_table_rows));
+    echo "</pre><strong>column_id</strong>:<pre>";
+    print_r(htmlspecialchars($column_id));
+    echo "</pre><strong>columns_available</strong>:<pre>";
+    print_r(htmlspecialchars(print_r($columns_available, true)));
+    echo "</pre><strong>index_sql_search</strong>:<pre>";
+    print_r(htmlspecialchars($index_sql_search));
+    echo "</pre><strong>join_columns</strong>:<pre>";
+    print_r(htmlspecialchars($join_columns));
+    echo "</pre><strong>join_clauses</strong>:<pre>";
+    print_r(htmlspecialchars($join_clauses));
+    echo "</pre>";
+    */
+
+
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $indexfile);
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
 
@@ -433,9 +460,10 @@ function generate($postdata) {
             $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this ' . $tablename . ':</h3>" . $html;}' : "";
 
             //Specific INDEX page variables
+            $column_id = null;
             foreach ( $_POST[$key] as $columns ) {
-                if (isset($columns['primary'])){
-                    $column_id =  $columns['columnname'];
+                if (isset($columns['primary']) && !empty($columns['primary']) && !is_null($columns['primary'])){
+                    $column_id =  $columns['primary'];
                 }
 
                 // These variables contain the generated names, labels, input field and values for column.
@@ -629,23 +657,25 @@ function generate($postdata) {
 
                             $column_value = '<?php echo get_fk_url($row["'.$columnname.'"], "'.$fk_table.'", "'.$fk_column.'", $row["'.$join_column_name.'"], '. $is_primary_ref .', false); ?>';
 
-                            $html .= ' <?php
-                                        $sql = "SELECT '. $fk_columns_select .', `'. $fk_column .'` FROM `'. $fk_table . '` ORDER BY '. $fk_columns_select .'";
+                            if ($fk_columns_select) {
+                                $html .= ' <?php
+                                        $sql = "SELECT ' . $fk_columns_select . ', `' . $fk_column . '` FROM `' . $fk_table . '` ORDER BY ' . $fk_columns_select . '";
                                         $result = mysqli_query($link, $sql);
                                         while($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                                             $duprow = $row;
                                             unset($duprow["' . $fk_column . '"]);
                                             $value = implode(" | ", $duprow);
                                             if ($row["' . $fk_column . '"] == $' . $columnname_var . '){
-                                            echo \'<option value="\' . $row["'. $fk_column. '"] . \'"selected="selected">\' . $value . \'</option>\';
+                                            echo \'<option value="\' . $row["' . $fk_column . '"] . \'"selected="selected">\' . $value . \'</option>\';
                                             } else {
-                                                echo \'<option value="\' . $row["'. $fk_column. '"] . \'">\' . $value . \'</option>\';
+                                                echo \'<option value="\' . $row["' . $fk_column . '"] . \'">\' . $value . \'</option>\';
                                         }
                                         }
                                     ?>
                                     </select>';
-                            $column_input = $html;
-                            unset($html);
+                                $column_input = $html;
+                                unset($html);
+                            }
                         }
 
                 // No Foreign Keys, just regular columns from here on
@@ -678,7 +708,7 @@ function generate($postdata) {
                         switch($type) {
                         //TEXT
                         case 1:
-                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo '. $create_record. '; ?></textarea>';
+                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo @'. $create_record. '; ?></textarea>';
                         break;
 
                         //ENUM types
@@ -713,7 +743,7 @@ function generate($postdata) {
                         case 3:
                             preg_match('#\((.*?)\)#', $columns['columntype'], $match);
                             $maxlength = $match[1];
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'"class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
 
                         //TINYINT (bool)
@@ -725,32 +755,32 @@ function generate($postdata) {
                                 {
                                     $html .= '<option value="">Null</option>';
                                 }
-                            $html   .= '    <option value="0" <?php echo !' . $create_record . ' ? "selected": ""; ?> >False</option>';
-                            $html   .= '    <option value="1" <?php echo ' . $create_record . ' ? "selected": ""; ?> >True</option>';
+                            $html   .= '    <option value="0" <?php echo !@' . $create_record . ' ? "selected": ""; ?> >False</option>';
+                            $html   .= '    <option value="1" <?php echo @' . $create_record . ' ? "selected": ""; ?> >True</option>';
                             $html   .= '</select>';
                                 $column_input = $html;
                             unset($html);
                         break;
                         //INT
                         case 5:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
 
                         //DECIMAL
                         case 6:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>" step="any">';
+                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>" step="any">';
                         break;
                         //DATE
                         case 7:
-                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
                         //DATETIME
                         case 8:
-                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime('. $create_record. ')); ?>">';
+                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime(@'. $create_record. ')); ?>">';
                         break;
 
                         default:
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo '. $create_record. '; ?>">';
+                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
                         break;
                         }
                     }
