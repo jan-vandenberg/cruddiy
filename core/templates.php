@@ -102,12 +102,15 @@ $indexfile = <<<'EOT'
                         $search = "";
                     }
 
+                    $order_clause = !empty($order) ? "ORDER BY `$order` $sort" : '';
+                    $group_clause = !empty($order) ? "GROUP BY `{TABLE_NAME}`.`$order`" : '';
+
                     // Prepare SQL queries
                     $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
                             FROM `{TABLE_NAME}` {JOIN_CLAUSES}
                             $where_statement
-                            GROUP BY `{TABLE_NAME}`.`{COLUMN_ID}`
-                            ORDER BY `$order` $sort
+                            $group_clause
+                            $order_clause
                             LIMIT $offset, $no_of_records_per_page;";
                     $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
                             $where_statement";

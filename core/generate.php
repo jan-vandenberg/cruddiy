@@ -840,10 +840,10 @@ function generate($postdata) {
                     generate_error();
                     generate_startpage();
                     generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search, $join_columns, $join_clauses);
-                    // generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
-                    // generate_read($tablename,$column_id,$read_records,$foreign_key_references, $join_columns, $join_clauses);
-                    // generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
-                    // generate_delete($tablename,$column_id);
+                    generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars);
+                    generate_read($tablename,$column_id,$read_records,$foreign_key_references, $join_columns, $join_clauses);
+                    generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
+                    generate_delete($tablename,$column_id);
                 }
             }
 
