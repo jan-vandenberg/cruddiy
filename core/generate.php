@@ -829,7 +829,7 @@ function generate($postdata) {
                     if (!$forced_deletion && (!isset($_POST['keep_startpage']) || (isset($_POST['keep_startpage']) && $_POST['keep_startpage'] != 'true'))) {
                         $forced_deletion = true;
                         echo '<h3>Deleting existing files</h3>';
-                        $keep = array('config.php', 'helpers.php');
+                        $keep = array('config.php', 'locales');
                         foreach( glob("app/*") as $file ) {
                             if( !in_array(basename($file), $keep) ){
                                 if (unlink($file)) {
@@ -839,6 +839,7 @@ function generate($postdata) {
                         }
                         echo '<br>';
                     }
+
 
                     generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay);
                     generate_error();
@@ -854,7 +855,51 @@ function generate($postdata) {
         }
 
     }
+
+    copy_core_files();
 }
+
+function copy_core_files() {
+    echo '<h3>Copying core files into <code>app/</code></h3>';
+
+    // regenerate helpers
+    $sourceFile = 'helpers.php';
+    $destinationFile = 'app/helpers.php';
+
+    if (copy($sourceFile, $destinationFile)) {
+        echo "Helpers file duplicated successfully.";
+    } else {
+        echo "Helpers file could not be duplicated.";
+    }
+    echo '<br>';
+
+
+    // copy localization files
+    $sourceDir = 'locales';
+    $destinationDir = 'app/locales';
+
+    // Create destination directory if it doesn't exist
+    if (!is_dir($destinationDir)) {
+        mkdir($destinationDir, 0755, true); // The true parameter allows the creation of nested directories as needed
+    }
+
+    // Copy files
+    if (is_dir($sourceDir)) {
+        $files = scandir($sourceDir);
+
+        foreach ($files as $file) {
+            // Skip current and parent directory links
+            if ($file != '.' && $file != '..') {
+                copy("$sourceDir/$file", "$destinationDir/$file");
+            }
+        }
+        echo "Localization files copied successfully.";
+    } else {
+        echo "Source directory for localization files (<code>locales</code>) does not exist.";
+    }
+    echo "<br>";
+}
+
 ?>
 <!doctype html>
 <html lang="en">
