@@ -77,6 +77,7 @@ if (isset($_POST['table'])) {
 
             $tableName    = $table['tablename'];
             $tableDisplay = $table['tabledisplay'];
+
             $primaryKey  = get_primary_key($tableName);
             $autoKeys     = get_autoincrement_cols($tableName);
             $foreignKeys  = get_foreign_keys($tableName);
