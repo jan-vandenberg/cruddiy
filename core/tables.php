@@ -37,28 +37,30 @@
                                 $tablelist[] = $cRow[0];
                             }
 
-                            //Loop trough list of tables
-                            $i = 0;
-                            foreach($tablelist as $table) {
-
-                                echo
-                        '<div class="row align-items-center">
-                            <div class="col-md-3 text-right">
-                                  <label class="control-label" for="table['.$i.'][tablename]">'. $table . ' </label>
-                            </div>
-                            <div class="col-md-6">
-                                     <input type="hidden" name="table['.$i.'][tablename]" value="'.$table.'"/>
-                                     <input id="textinput_'.$table. '" name="table['.$i.'][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm">
-                            </div>
-                            <div class="col-md-3">
-                              <input class="mr-1" type="checkbox"  name="table['.$i.'][tablecheckbox]" id="checkboxes-'.$i.'" value="1"><label for="checkboxes-'.$i.'">Generate CRUD</label>
-                            </div>
-                        </div>
-                        ';
-
-                                $i++;
+                            $configTableNamesFilePath = 'app/config-tables-columns.php';
+                            if (file_exists($configTableNamesFilePath)) {
+                                include($configTableNamesFilePath);
                             }
                             ?>
+
+                            <div class="container">
+                                <?php foreach ($tablelist as $i => $table): ?>
+                                    <div class="row align-items-center">
+                                        <div class="col-md-3 text-right">
+                                            <label class="control-label" for="table[<?= $i ?>][tablename]"><?= htmlspecialchars($table) ?></label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <input type="hidden" name="table[<?= $i ?>][tablename]" value="<?= htmlspecialchars($table) ?>"/>
+                                            <input id="textinput_<?= htmlspecialchars($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($tables_columns_names[$table]['name']) ? 'value="'.$tables_columns_names[$table]['name'].'"' : '' ?>>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input class="mr-1" type="checkbox" name="table[<?= $i ?>][tablecheckbox]" id="checkboxes-<?= $i ?>" value="1">
+                                            <label for="checkboxes-<?= $i ?>">Generate CRUD</label>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+
                             <div class="row">
                                 <div class="col-md-6 mx-auto">
                                     <label class="control-label" for="singlebutton"></label>
