@@ -69,12 +69,10 @@ $indexfile = <<<'EOT'
 
                     //Column sorting on column name
                     $columns = array('{COLUMNS}');
+                    // Order by primary key on default
                     $order = '{COLUMN_ID}';
                     if (isset($_GET['order']) && in_array($_GET['order'], $columns)) {
                         $order = $_GET['order'];
-                    } else {
-                    // Order by primary key on default
-                        $order = $columns[0];
                     }
 
                     //Column sort order
@@ -90,7 +88,7 @@ $indexfile = <<<'EOT'
 
                     //Generate WHERE statements for param
                     $where_columns = array_intersect_key($_GET, array_flip($columns));
-                    $get_param = "";                    
+                    $get_param = "";
                     $where_statement = " WHERE 1=1 ";
                     foreach ( $where_columns as $key => $val ) {
                         $where_statement .= " AND `$key` = '" . mysqli_real_escape_string($link, $val) . "' ";
@@ -99,17 +97,25 @@ $indexfile = <<<'EOT'
 
                     if (!empty($_GET['search'])) {
                         $search = mysqli_real_escape_string($link, $_GET['search']);
-                        $where_statement .= " AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS}) LIKE '%$search%'";
+                        if (strpos('{INDEX_CONCAT_SEARCH_FIELDS}', ',')) {
+                            $where_statement .= " AND CONCAT_WS ({INDEX_CONCAT_SEARCH_FIELDS}) LIKE '%$search%'";
+                        } else {
+                            $where_statement .= " AND {INDEX_CONCAT_SEARCH_FIELDS} LIKE '%$search%'";
+                        }
+
                     } else {
                         $search = "";
                     }
+
+                    $order_clause = !empty($order) ? "ORDER BY `$order` $sort" : '';
+                    $group_clause = !empty($order) && $order == '{COLUMN_ID}' ? "GROUP BY `{TABLE_NAME}`.`$order`" : '';
 
                     // Prepare SQL queries
                     $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
                             FROM `{TABLE_NAME}` {JOIN_CLAUSES}
                             $where_statement
-                            GROUP BY `{TABLE_NAME}`.`{COLUMN_ID}`
-                            ORDER BY `$order` $sort
+                            $group_clause
+                            $order_clause
                             LIMIT $offset, $no_of_records_per_page;";
                     $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
                             $where_statement";
@@ -132,9 +138,14 @@ $indexfile = <<<'EOT'
                                     echo "<tr>";
                                     {INDEX_TABLE_ROWS}
                                         echo "<td>";
-                                            echo "<a href='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='View Record' data-toggle='tooltip'><i class='far fa-eye'></i></a>";
-                                            echo "<a href='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Update Record' data-toggle='tooltip'><i class='far fa-edit'></i></a>";
-                                            echo "<a href='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Delete Record' data-toggle='tooltip'><i class='far fa-trash-alt'></i></a>";
+                                            $column_id = '{COLUMN_ID}';
+                                            if (!empty($column_id)) {
+                                                echo "<a href='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='View Record' data-toggle='tooltip'><i class='far fa-eye'></i></a>";
+                                                echo "<a href='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Update Record' data-toggle='tooltip'><i class='far fa-edit'></i></a>";
+                                                echo "<a href='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Delete Record' data-toggle='tooltip'><i class='far fa-trash-alt'></i></a>";
+                                            } else {
+                                                echo "Editing tables without primary key isn't supported yet.";
+                                            }
                                         echo "</td>";
                                     echo "</tr>";
                                 }
@@ -260,7 +271,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                         <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-secondary">Edit</a>
                         <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Delete</a>
                         <a href="javascript:history.back()" class="btn btn-primary">Back</a>
-                    </p> 
+                    </p>
                     <?php
                     {FOREIGN_KEY_REFS}
 
@@ -311,7 +322,7 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
             error_log($e->getMessage());
             $error = $e->getMessage();
         }
-    
+
         if (!isset($error)){
             // Records deleted successfully. Redirect to landing page
             header("location: {TABLE_NAME}-index.php");
@@ -350,7 +361,7 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
                         <h1>Delete Record</h1>
                     </div>
                     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?{TABLE_ID}=" . $_GET["{TABLE_ID}"]; ?>" method="post">
-                    <?php print_error_if_exists($error); ?>
+                    <?php print_error_if_exists(@$error); ?>
                         <div class="alert alert-danger fade-in">
                             <input type="hidden" name="{TABLE_ID}" value="<?php echo trim($_GET["{TABLE_ID}"]); ?>"/>
                             <p>Are you sure you want to delete this record?</p><br>
@@ -422,7 +433,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     <div class="page-header">
                         <h2>Create Record</h2>
                     </div>
-                    <?php print_error_if_exists($error); ?>
+                    <?php print_error_if_exists(@$error); ?>
                     <p>Please fill this form and submit to add a record to the database.</p>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 
@@ -474,7 +485,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     if (!isset($error)){
         header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=${COLUMN_ID}");
     }
-} 
+}
 // Check existence of id parameter before processing further
 $_GET["{COLUMN_ID}"] = trim($_GET["{COLUMN_ID}"]);
 if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
@@ -544,7 +555,7 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
                     <div class="page-header">
                         <h2>Update Record</h2>
                     </div>
-                    <?php print_error_if_exists($error); ?>
+                    <?php print_error_if_exists(@$error); ?>
                     <p>Please edit the input values and submit to update the record.</p>
                     <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
 
@@ -607,24 +618,24 @@ $errorfile = <<<'EOT'
 EOT;
 
 $startfile = <<<'EOT'
-<html lang="en">                                                                                                                                                                                                   
-<head>                                                                                                                                                                                                             
-    <meta charset="UTF-8">                                                                                                                                                                                         
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <title>{APP_NAME}</title>
     {CSS_REFS}
     {JS_REFS}
 
-    <style type="text/css">                                                                                                                                                                                        
-        .page-header h2{                                                                                                                                                                                           
-            margin-top: 0;                                                                                                                                                                                         
-        }                                                                                                                                                                                                          
-        table tr td:last-child a{                                                                                                                                                                                  
-            margin-right: 5px;                                                                                                                                                                                     
-        }                                                                                                                                                                                                          
-    </style>                                                                                                                                                                                                       
-</head>                                                                                                                                                                                                            
+    <style type="text/css">
+        .page-header h2{
+            margin-top: 0;
+        }
+        table tr td:last-child a{
+            margin-right: 5px;
+        }
+    </style>
+</head>
 <?php require_once('navbar.php'); ?>
-</html>  
+</html>
 EOT;
 
 $navbarfile = <<<'EOT'
@@ -641,7 +652,7 @@ $navbarfile = <<<'EOT'
           Select Page
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-        {TABLE_BUTTONS}                                                                                                                                                                                                     
+        {TABLE_BUTTONS}
         <!-- TABLE_BUTTONS -->
         </div>
       </li>

@@ -1,16 +1,16 @@
 <?php
 include "app/config.php";
 
-function get_primary_keys($table){
+function get_primary_key($table){
     global $link;
     $sql = "SHOW KEYS FROM $table WHERE Key_name = 'PRIMARY'";
     $result = mysqli_query($link,$sql);
-    $primary_keys = Array();
+    $primary_key = null;
     while($row = mysqli_fetch_assoc($result))
     {
-        $primary_keys[] = $row['Column_name'];
+        $primary_key = $row['Column_name'];
     }
-    return $primary_keys;
+    return $primary_key;
 }
 
 function get_autoincrement_cols($table){
@@ -77,7 +77,8 @@ if (isset($_POST['table'])) {
 
             $tableName    = $table['tablename'];
             $tableDisplay = $table['tabledisplay'];
-            $primaryKeys  = get_primary_keys($tableName);
+
+            $primaryKey  = get_primary_key($tableName);
             $autoKeys     = get_autoincrement_cols($tableName);
             $foreignKeys  = get_foreign_keys($tableName);
 
@@ -91,7 +92,7 @@ if (isset($_POST['table'])) {
                     'comment'      => get_col_comments($tableName, $column[0]),
                     'nullable'     => get_col_nullable($tableName, $column[0]),
                     'name'         => $column[0],
-                    'isPrimary'    => in_array($column[0], $primaryKeys),
+                    'isPrimary'    => $primaryKey,
                     'isAuto'       => in_array($column[0], $autoKeys),
                     'isForeignKey' => in_array($column[0], $foreignKeys),
                 ];
@@ -167,7 +168,7 @@ if (isset($_POST['table'])) {
                                         <?php endif ?>
 
                                         <?php if ($column['isPrimary']) : ?>
-                                            <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][primary]" value="1"/>
+                                            <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][primary]" value="<?php echo $column['isPrimary'] ?>"/>
                                         <?php endif ?>
 
                                         <?php if ($column['isAuto']) : ?>
