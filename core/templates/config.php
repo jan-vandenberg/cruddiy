@@ -8,7 +8,8 @@ $no_of_records_per_page = '{{no_of_records_per_page}}';
 $appname                = '{{appname}}';
 
 $protocol               = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
-$domain                 = $protocol . '://' . $_SERVER['SCRIPT_NAME']; // Replace domain with your domain name. (Locally typically something like localhost)
+$current_domain = $_SERVER['HTTP_HOST'];
+$domain                 = $protocol . '://' . $current_domain . '/' . $_SERVER['SCRIPT_NAME']; // Replace domain with your domain name. (Locally typically something like localhost)
 
 $link                   = mysqli_connect($db_server, $db_user, $db_password, $db_name);
 
