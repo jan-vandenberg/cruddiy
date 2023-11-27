@@ -1,10 +1,10 @@
 <?php
 
 $total_postvars = count($_POST, COUNT_RECURSIVE);
-$max_postvars = ini_get("max_input_vars"); 
+$max_postvars = ini_get("max_input_vars");
 if ($total_postvars >= $max_postvars) {
     echo "Uh oh, it looks like you're trying to use more variables than your PHP settings (<a href='https://www.php.net/manual/en/info.configuration.php#ini.max-input-vars'>max_input_variables</a>) allow! <br>";
-    echo "Go back and choose less tables and/or columns or change your php.ini setting. <br>";      
+    echo "Go back and choose less tables and/or columns or change your php.ini setting. <br>";
     echo "Read <a href='https://betterstudio.com/blog/increase-max-input-vars-limit/'>here</a> how you can increase this limit.<br>";
     echo "Cruddiy will now exit because only part of what you wanted would otherwise be generated. 🙇";
     exit();
@@ -36,7 +36,7 @@ $JS_REFS = '<script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity=
 // $JS_REFS = '<script src="js/jquery-3.5.1.min.js"></script>
 // <script src="js/popper.min.js"></script>
 // <script src="js/bootstrap.min.js"></script>';
-    
+
 
 function column_type($columnname){
     switch ($columnname) {
@@ -84,7 +84,7 @@ function get_sql_concat_select($copy_columns, $table, $name){
     $array = $copy_columns;
     foreach($array as $key => $c)
     {
-        $array[$key] = '`'. $table .'`.`'. $array[$key] .'`'; 
+        $array[$key] = '`'. $table .'`.`'. $array[$key] .'`';
     }
     return "\n\t\t\t, CONCAT_WS(' | ',". implode(', ', $array) .') AS `'. $name .'`';
 }
@@ -93,7 +93,7 @@ function get_sql_select($copy_columns){
     $array = $copy_columns;
     foreach($array as $key => $c)
     {
-        $array[$key] = '`'.$array[$key].'`'; 
+        $array[$key] = '`'.$array[$key].'`';
     }
     return implode(', ', $array);
 }
@@ -343,8 +343,8 @@ function generate($postdata) {
     // Go trough the POST array
     // Every table is a key
     global $excluded_keys;
-    
-    // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that 
+
+    // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that
     // are selected to be include in previews, such as select foreign keys and foreign key preview.
     $preview_columns = array();
     foreach ($postdata as $key => $value){
@@ -418,7 +418,7 @@ function generate($postdata) {
                     $number_of_refs = mysqli_fetch_assoc(mysqli_query($link, $sql))["count"];
                     if ($number_of_refs > 0)
                     {
-                        $html .= \'<p><a href="'. $table . '-index.php?'. $column . '=\'. $row["'.$fk_column.'"]' . '.\'" class="btn btn-info">View \' . $number_of_refs . \' ' . $table . ' with '. $column . ' = \'. $row["'.$fk_column.'"] .\'</a></p></p>\';         
+                        $html .= \'<p><a href="'. $table . '-index.php?'. $column . '=\'. $row["'.$fk_column.'"]' . '.\'" class="btn btn-info">View \' . $number_of_refs . \' ' . $table . ' with '. $column . ' = \'. $row["'.$fk_column.'"] .\'</a></p></p>\';
                     }';
                 }
             }
@@ -459,7 +459,7 @@ function generate($postdata) {
                         $columns_available [] = "$columnname";
                         $index_sql_search [] = "`$tablename`.`$columnname`";
                         $index_table_headers .= 'echo "<th><a href=?search=$search&order='.$columnname.'&sort=$sort$get_param>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
-                        
+
                         // Display date in locale format
                         if(!empty($columns['fk'])){
                             //Get the Foreign Key
@@ -519,7 +519,7 @@ function generate($postdata) {
                     if (empty($columns['columndisplay'])){
                         $columndisplay = $columns['columnname'];
                     }
-                    
+
                     if (!$columns['columnnullable'])
                     {
                         $columndisplay .= "*";
@@ -528,7 +528,7 @@ function generate($postdata) {
                     if (!empty($columns['columncomment'])){
                         $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
                     }
-                    
+
                     if (!empty($columns['auto'])){
                         //Dont create html input field for auto-increment columns
                         $j++;
@@ -554,21 +554,21 @@ function generate($postdata) {
 
                         $columnname = $columns['columnname'];
                         $columnname_var = preg_replace('/[^a-zA-Z0-9]+/', '_', $columnname);
-                        
+
                         $create_records .= "\$$columnname_var = \"\";\n";
                         $create_record = "\$$columnname_var";
                         $create_err_records .= "\$$columnname_var".'_err'." = \"\";\n";
                         $create_err_record = "\$$columnname_var".'_err';
                         $create_sqlcolumns [] = "`$columnname`";
                         $create_sql_params [] = "\$$columnname_var";
-                        
+
                         // Process POST vars that can be null differently
                         if ($columns['columnnullable']){
                             $create_postvars .= "$$columnname_var = \$_POST[\"$columnname\"] == \"\" ? null : trim(\$_POST[\"$columnname\"]);\n\t\t";
                         } else {
                             $create_postvars .= "$$columnname_var = trim(\$_POST[\"$columnname\"]);\n\t\t";
-                        }                        
-                        
+                        }
+
                         $update_sql_params [] = "`$columnname`".'=?';
                         $update_sql_id = "`$column_id`".'=?';
                         $update_column_rows .= "$$columnname_var = htmlspecialchars(\$row[\"$columnname\"] ?? \"\");\n\t\t\t\t\t";
@@ -593,26 +593,26 @@ function generate($postdata) {
 
 
                             //Be careful code below is particular regarding single and double quotes.
-                            
+
                             $html = '<select class="form-control" id="'. $columnname .'" name="'. $columnname .'">';
                             if ($columns['columnnullable'])
                             {
                                 $html .= '<option value="">Null</option>';
                             }
-                            
-                            
+
+
                             $fk_columns_select = get_sql_select($preview_columns[$fk_table]);
-                            
+
                             $join_name = $columnname .$fk_table;
                             $join_column_name = $columnname . $fk_table . $fk_column;
 
                             $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
                             $join_columns .= get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name);
-                            
+
                             // Add the new columns to the search concat
                             foreach($preview_columns[$fk_table] as $key => $c)
                             {
-                                $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`'; 
+                                $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`';
                             }
 
                             $is_primary_ref = is_primary_key($fk_table, $fk_column);
@@ -674,7 +674,7 @@ function generate($postdata) {
                         //ENUM types
                         case 2:
                         //Make sure on the update form that the previously selected type is also selected from the list
-                         
+
                             $html = '<select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
                             if ($columns['columnnullable'])
                             {
@@ -752,7 +752,7 @@ function generate($postdata) {
                     $read_records .= '<div class="form-group">
                         <h4>'.$columndisplay.'</h4>
                         <p class="form-control-static">' . $column_value .'</p></div>';
-                    
+
                     // Different Layout
                     // $create_html [] = '<div class="form-group row">
                     // <label class="col-sm-4 col-form-label" for="'.$columnname.'">'.$columndisplay.'</label>
@@ -827,7 +827,7 @@ function generate($postdata) {
     <title>Generated pages</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
+    <script src="https://kit.fontawesome.com/6b773fe9e4.js" crossorigin="anonymous"></script>
 </head>
 <body class="bg-light">
 <section class="py-5">
@@ -836,8 +836,8 @@ function generate($postdata) {
             <div class="col-md-12 mx-auto px-5">
                 <?php generate($_POST); ?>
                 <hr>
-                <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
-                <a href="app/index.php" target="_blank" rel="noopener noreferrer">Go to your app</a> (this will open your app in a new tab).<br><br>
+                <br>Your app has been created! It is completely self contained in the <code>/app</code> folder. You can move this folder anywhere on your server.<br><br>
+                <a href="app/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a><br><br>
                 You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
                 <hr>
                 If you need further instructions please visit <a href="http://cruddiy.com">cruddiy.com</a>
