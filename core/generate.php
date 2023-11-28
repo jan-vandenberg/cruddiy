@@ -924,7 +924,7 @@ function updateTableAndColumnsNames($tables_columns_names) {
     <title>Generated pages</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
+    <script src="https://kit.fontawesome.com/6b773fe9e4.js" crossorigin="anonymous"></script>
 </head>
 <body class="bg-light">
 <section class="py-5">
@@ -933,8 +933,8 @@ function updateTableAndColumnsNames($tables_columns_names) {
             <div class="col-md-12 mx-auto px-5">
                 <?php generate($_POST); ?>
                 <hr>
-                <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
-                <a href="app/index.php" target="_blank" rel="noopener noreferrer">Go to your app</a> (this will open your app in a new tab).<br><br>
+                <br>Your app has been created! It is completely self contained in the <code>/app</code> folder. You can move this folder anywhere on your server.<br><br>
+                <a href="app/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a><br><br>
                 You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
                 <hr>
                 If you need further instructions please visit <a href="http://cruddiy.com">cruddiy.com</a>
