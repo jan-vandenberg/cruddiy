@@ -116,14 +116,16 @@ function generate_error(){
 }
 
 function generate_startpage(){
+    global $appname;
     global $startfile;
     global $CSS_REFS;
     global $JS_REFS;
 
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $startfile);
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
+    $prestep3 = str_replace("{APP_NAME}", $appname, $prestep2);
 
-    if (!file_put_contents("app/index.php", $prestep2, LOCK_EX)) {
+    if (!file_put_contents("app/index.php", $prestep3, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating main index file.<br>";
@@ -466,6 +468,8 @@ function generate($postdata) {
             foreach ( $_POST[$key] as $columns ) {
                 if (isset($columns['primary']) && !empty($columns['primary']) && !is_null($columns['primary'])){
                     $column_id =  $columns['primary'];
+                } else {
+                    $column_id = null;
                 }
 
                 // These variables contain the generated names, labels, input field and values for column.
