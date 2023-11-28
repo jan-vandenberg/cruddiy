@@ -867,56 +867,11 @@ function generate($postdata) {
         }
 
     }
-
-
-    // Save table names to config
-    updateTableAndColumnsNames($tables_and_columns_names);
+==== BASE ====
+==== BASE ====
 }
-
-
-
-// Extract table name
-function extractTableName($post_key) {
-    // Find the position of the last occurrence of 'columns'
-    $lastPos = strrpos($post_key, "columns");
-
-    if ($lastPos !== false) {
-        // Remove the last occurrence of 'columns'
-        $table_name = substr_replace($post_key, "", $lastPos, strlen("columns"));
-    }
-
-    return $table_name;
-}
-
-
-
-// Save table names to config
-function updateTableAndColumnsNames($tables_columns_names) {
-
-    $configTableNamesFilePath     = 'app/config-tables-columns.php';
-    $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
-
-    // Read config file template
-    $configfile = fopen($configTableNamesTemplatePath, "r") or die("Unable to read Config file template for table names!");
-    $templateContent = file_get_contents($configTableNamesTemplatePath);
-
-    // Prepare the new tables array as a string
-    $new_table_names = var_export($tables_columns_names, true);
-
-    // Replace placeholders with actual values
-    $replacements = [
-        '{{TABLE_NAMES}}' => $new_table_names,
-    ];
-
-    foreach ($replacements as $placeholder => $realValue) {
-        $templateContent = str_replace($placeholder, $realValue, $templateContent);
-    }
-
-    $configfile = fopen($configTableNamesFilePath, "w") or die("Unable to open Config file for table names! Please check your file permissions.");
-    if (fwrite($configfile, $templateContent) === false) die("Error writing Config file for table names!");
-    fclose($configfile);
-}
-
+==== BASE ====
+==== BASE ====
 ?>
 <!doctype html>
 <html lang="en">
@@ -924,7 +879,7 @@ function updateTableAndColumnsNames($tables_columns_names) {
     <title>Generated pages</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <script src="https://kit.fontawesome.com/6b773fe9e4.js" crossorigin="anonymous"></script>
+
 </head>
 <body class="bg-light">
 <section class="py-5">
@@ -933,8 +888,8 @@ function updateTableAndColumnsNames($tables_columns_names) {
             <div class="col-md-12 mx-auto px-5">
                 <?php generate($_POST); ?>
                 <hr>
-                <br>Your app has been created! It is completely self contained in the <code>/app</code> folder. You can move this folder anywhere on your server.<br><br>
-                <a href="app/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a><br><br>
+                <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
+                <a href="app/index.php" target="_blank" rel="noopener noreferrer">Go to your app</a> (this will open your app in a new tab).<br><br>
                 You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
                 <hr>
                 If you need further instructions please visit <a href="http://cruddiy.com">cruddiy.com</a>

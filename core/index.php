@@ -50,6 +50,7 @@ if (file_exists("app/config.php")) {
                         <input id="password" name="password" type="password" placeholder="" class="form-control input-md" value="<?php if(isset($db_password)) echo $db_password; ?>">
                     </div>
                     <hr>
+
                     <!-- Number records per page-->
                     <div class="form-group">
                         <label class="col-form-label" for="recordsperpage">Items per generated page</label>
