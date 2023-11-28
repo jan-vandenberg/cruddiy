@@ -8,5 +8,10 @@
             "name": "Jan van den Berg"
         }
     ],
-    "require": {}
+    "require-dev": {
+        "phpunit/phpunit": "^10.4"
+    },
+    "require": {
+        "php-webdriver/webdriver": "^1.15"
+    }
 }
