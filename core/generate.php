@@ -867,11 +867,56 @@ function generate($postdata) {
         }
 
     }
-==== BASE ====
-==== BASE ====
+
+
+    // Save table names to config
+    updateTableAndColumnsNames($tables_and_columns_names);
 }
-==== BASE ====
-==== BASE ====
+
+
+
+// Extract table name
+function extractTableName($post_key) {
+    // Find the position of the last occurrence of 'columns'
+    $lastPos = strrpos($post_key, "columns");
+
+    if ($lastPos !== false) {
+        // Remove the last occurrence of 'columns'
+        $table_name = substr_replace($post_key, "", $lastPos, strlen("columns"));
+    }
+
+    return $table_name;
+}
+
+
+
+// Save table names to config
+function updateTableAndColumnsNames($tables_columns_names) {
+
+    $configTableNamesFilePath     = 'app/config-tables-columns.php';
+    $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
+
+    // Read config file template
+    $configfile = fopen($configTableNamesTemplatePath, "r") or die("Unable to read Config file template for table names!");
+    $templateContent = file_get_contents($configTableNamesTemplatePath);
+
+    // Prepare the new tables array as a string
+    $new_table_names = var_export($tables_columns_names, true);
+
+    // Replace placeholders with actual values
+    $replacements = [
+        '{{TABLE_NAMES}}' => $new_table_names,
+    ];
+
+    foreach ($replacements as $placeholder => $realValue) {
+        $templateContent = str_replace($placeholder, $realValue, $templateContent);
+    }
+
+    $configfile = fopen($configTableNamesFilePath, "w") or die("Unable to open Config file for table names! Please check your file permissions.");
+    if (fwrite($configfile, $templateContent) === false) die("Error writing Config file for table names!");
+    fclose($configfile);
+}
+
 ?>
 <!doctype html>
 <html lang="en">

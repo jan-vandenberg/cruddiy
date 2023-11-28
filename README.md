@@ -6,7 +6,7 @@ With Cruddiy you can easily generate some simple, but beautiful, PHP Bootstrap 4
 
 ### Notes
 * Does not support MyISAM for Foreign Keys and Cascades. Will need InnoDB type ENGINE. MyISAM can be used, but Foreign Keys and Cascades will not be available.
-* PHP 7+ is recommended
+* PHP 8+ is recommended
 * Capable of string ID Primary Keys as well as integer ones.
 
 # How it works
