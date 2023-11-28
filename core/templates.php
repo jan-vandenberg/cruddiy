@@ -20,6 +20,8 @@ $indexfile = <<<'EOT'
         }
     </style>
 </head>
+<?php require_once('config.php'); ?>
+<?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 <body>
     <section class="pt-5">
@@ -27,27 +29,22 @@ $indexfile = <<<'EOT'
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header clearfix">
-                        <!-- {TABLE_DISPLAY} -->
-                        <h2 class="float-left"><?php echo (!empty($tables_columns_names['{TABLE_NAME}']['name'])) ? $tables_columns_names['{TABLE_NAME}']['name'] : '{TABLE_NAME}' ?> Details</h2>
-                        <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right">Add New Record</a>
-                        <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2">Reset View</a>
-                        <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2">Back</a>
+                        <h2 class="float-left"><?php translate('%s Details', true, '{TABLE_DISPLAY}') ?></h2>
+                        <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right"><?php translate('Add New Record') ?></a>
+                        <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2"><?php translate('Reset View') ?></a>
+                        <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2"><?php translate('Back') ?></a>
                     </div>
 
                     <div class="form-row">
                         <form action="{TABLE_NAME}-index.php" method="get">
                         <div class="col">
-                          <input type="text" class="form-control" placeholder="Search this table" name="search">
+                          <input type="text" class="form-control" placeholder="<?php translate('Search this table') ?>" name="search">
                         </div>
                     </div>
                         </form>
                     <br>
 
                     <?php
-                    // Include config file
-                    require_once "config.php";
-                    require_once "helpers.php";
-
                     //Get current URL and parameters for correct pagination
                     $script   = $_SERVER['SCRIPT_NAME'];
                     $parameters   = $_GET ? $_SERVER['QUERY_STRING'] : "" ;
@@ -125,13 +122,13 @@ $indexfile = <<<'EOT'
                         if(mysqli_num_rows($result) > 0){
                             $number_of_results = mysqli_fetch_assoc(mysqli_query($link, $count_pages))['count'];
                             $total_pages = ceil($number_of_results / $no_of_records_per_page);
-                            echo " " . $number_of_results . " results - Page " . $pageno . " of " . $total_pages;
+                            translate('total_results', true, $number_of_results, $pageno, $total_pages);
 
                             echo "<table class='table table-bordered table-striped'>";
                                 echo "<thead class='thead-light'>";
                                     echo "<tr>";
                                         {INDEX_TABLE_HEADERS}
-                                        echo "<th>Actions</th>";
+                                        echo "<th><?php translate('Actions') ?></th>";
                                     echo "</tr>";
                                 echo "</thead>";
                                 echo "<tbody>";
@@ -157,22 +154,22 @@ $indexfile = <<<'EOT'
                                 <?php
                                     $new_url = preg_replace('/&?pageno=[^&]*/', '', $currenturl);
                                  ?>
-                                    <li class="page-item"><a class="page-link" href="<?php echo $new_url .'&pageno=1' ?>">First</a></li>
+                                    <li class="page-item"><a class="page-link" href="<?php echo $new_url .'&pageno=1' ?>"><?php translate('First') ?></a></li>
                                     <li class="page-item <?php if($pageno <= 1){ echo 'disabled'; } ?>">
-                                        <a class="page-link" href="<?php if($pageno <= 1){ echo '#'; } else { echo $new_url ."&pageno=".($pageno - 1); } ?>">Prev</a>
+                                        <a class="page-link" href="<?php if($pageno <= 1){ echo '#'; } else { echo $new_url ."&pageno=".($pageno - 1); } ?>"><?php translate('Prev') ?></a>
                                     </li>
                                     <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
-                                        <a class="page-link" href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo $new_url . "&pageno=".($pageno + 1); } ?>">Next</a>
+                                        <a class="page-link" href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo $new_url . "&pageno=".($pageno + 1); } ?>"><?php translate('Next') ?></a>
                                     </li>
                                     <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
-                                        <a class="page-item"><a class="page-link" href="<?php echo $new_url .'&pageno=' . $total_pages; ?>">Last</a>
+                                        <a class="page-item"><a class="page-link" href="<?php echo $new_url .'&pageno=' . $total_pages; ?>"><?php translate('Last') ?></a>
                                     </li>
                                 </ul>
 <?php
                             // Free result set
                             mysqli_free_result($result);
                         } else{
-                            echo "<p class='lead'><em>No records were found.</em></p>";
+                            echo "<p class='lead'><em><?php translate('No records were found.') ?></em></p>";
                         }
                     } else{
                         echo "ERROR: Could not able to execute $sql. " . mysqli_error($link);
@@ -198,13 +195,12 @@ EOT;
 
 $readfile = <<<'EOT'
 <?php
+require_once('config.php');
+require_once('helpers.php');
+
 // Check existence of id parameter before processing further
 $_GET["{TABLE_ID}"] = trim($_GET["{TABLE_ID}"]);
 if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
-    // Include config file
-    require_once "config.php";
-    require_once "helpers.php";
-
     // Prepare a select statement
     $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
             FROM `{TABLE_NAME}` {JOIN_CLAUSES}
@@ -237,7 +233,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
             }
 
         } else{
-            echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
+            echo translate('stmt_error') . "<br>".$stmt->error;
         }
     }
 
@@ -297,9 +293,8 @@ EOT;
 
 $deletefile = <<<'EOT'
 <?php
-// Include config file
-require_once "config.php";
-require_once "helpers.php";
+require_once('config.php');
+require_once('helpers.php');
 
 // Process delete operation after confirmation
 if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
@@ -350,7 +345,7 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Record</title>
+    <title><?php translate ('Delete Record') ?></title>
     {CSS_REFS}
 </head>
 <?php require_once('navbar.php'); ?>
@@ -360,24 +355,24 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
             <div class="row">
                 <div class="col-md-6 mx-auto">
                     <div class="page-header">
-                        <h1>Delete Record</h1>
+                        <h1><?php translate ('Delete Record') ?></h1>
                     </div>
                     <form action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . "?{TABLE_ID}=" . $_GET["{TABLE_ID}"]; ?>" method="post">
                     <?php print_error_if_exists(@$error); ?>
                         <div class="alert alert-danger fade-in">
                             <input type="hidden" name="{TABLE_ID}" value="<?php echo trim($_GET["{TABLE_ID}"]); ?>"/>
-                            <p>Are you sure you want to delete this record?</p><br>
+                            <p><?php translate('delete_record_confirm') ?></p><br>
                             <p>
-                                <input type="submit" value="Yes" class="btn btn-danger">
-                                <a href="javascript:history.back()" class="btn btn-secondary">No</a>
+                                <input type="submit" value="<?php translate('Yes') ?>" class="btn btn-danger">
+                                <a href="javascript:history.back()" class="btn btn-secondary"><?php translate('No') ?></a>
                             </p>
                         </div>
                     </form>
                     <hr>
                     <p>
-                        <a href="{TABLE_NAME}-read.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-info">View</a>
-                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Edit</a>
-                        <a href="javascript:history.back()" class="btn btn-primary">Back</a>
+                        <a href="{TABLE_NAME}-read.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-info"><?php translate('View Record') ?></a>
+                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning"><?php translate('Update Record') ?></a>
+                        <a href="javascript:history.back()" class="btn btn-primary"><?php translate('Back') ?></a>
                     </p>
                 </div>
             </div>
@@ -396,9 +391,8 @@ EOT;
 
 $createfile = <<<'EOT'
 <?php
-// Include config file
-require_once "config.php";
-require_once "helpers.php";
+require_once('config.php');
+require_once('helpers.php');
 
 // Processing form data when form is submitted
 if($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -424,7 +418,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create Record</title>
+    <title><?php translate('Add New Record') ?></title>
     {CSS_REFS}
 </head>
 <?php require_once('navbar.php'); ?>
@@ -434,18 +428,18 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
             <div class="row">
                 <div class="col-md-6 mx-auto">
                     <div class="page-header">
-                        <h2>Create Record</h2>
+                        <h2><?php translate('Add New Record') ?></h2>
                     </div>
                     <?php print_error_if_exists(@$error); ?>
-                    <p>Please fill this form and submit to add a record to the database.</p>
+                    <p><?php translate('add_new_record_instructions') ?></p>
                     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 
                         {CREATE_HTML}
 
-                        <input type="submit" class="btn btn-primary" value="Create">
-                        <a href="{TABLE_NAME}-index.php" class="btn btn-secondary">Cancel</a>
+                        <input type="submit" class="btn btn-primary" value="<?php translate('Create') ?>">
+                        <a href="{TABLE_NAME}-index.php" class="btn btn-secondary"><?php translate('Cancel') ?></a>
                     </form>
-                    <p><small>* field can not be left empty</small></p>
+                    <p><small><?php translate('required_fiels_instructions') ?></small></p>
                 </div>
             </div>
         </div>
@@ -463,9 +457,8 @@ EOT;
 
 $updatefile = <<<'EOT'
 <?php
-// Include config file
-require_once "config.php";
-require_once "helpers.php";
+require_once('config.php');
+require_once('helpers.php');
 
 // Processing form data when form is submitted
 if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
@@ -528,7 +521,7 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
             }
 
         } else{
-            echo "Oops! Something went wrong. Please try again later.<br>".$stmt->error;
+            translate('stmt_error') . "<br>".$stmt->error;
         }
     }
 
@@ -546,7 +539,7 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Update Record</title>
+    <title><?php translate('Update Record') ?></title>
     {CSS_REFS}
 </head>
 <?php require_once('navbar.php'); ?>
@@ -556,26 +549,26 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
             <div class="row">
                 <div class="col-md-6 mx-auto">
                     <div class="page-header">
-                        <h2>Update Record</h2>
+                        <h2><?php translate('Update Record') ?></h2>
                     </div>
                     <?php print_error_if_exists(@$error); ?>
-                    <p>Please edit the input values and submit to update the record.</p>
+                    <p><?php translate('update_record_instructions') ?></p>
                     <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
 
                         {CREATE_HTML}
 
                         <input type="hidden" name="{COLUMN_ID}" value="<?php echo ${COLUMN_ID}; ?>"/>
                         <p>
-                            <input type="submit" class="btn btn-primary" value="Edit">
-                            <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+                            <input type="submit" class="btn btn-primary" value="<?php translate('Edit') ?>">
+                            <a href="javascript:history.back()" class="btn btn-secondary"><?php translate('Cancel') ?></a>
                         </p>
                         <hr>
                         <p>
-                            <a href="{TABLE_NAME}-read.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-info">View</a>
-                            <a href="{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-danger">Delete</a>
-                            <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back to List</a>
+                            <a href="{TABLE_NAME}-read.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-info"><?php translate('View Record') ?></a>
+                            <a href="{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $_GET["{COLUMN_ID}"];?>" class="btn btn-danger"><?php translate('Update Record') ?></a>
+                            <a href="{TABLE_NAME}-index.php" class="btn btn-primary"><?php translate('Back to List') ?></a>
                         </p>
-                        <p> * field can not be left empty </p>
+                        <p><?php translate('required_fiels_instructions') ?></p>
                     </form>
                 </div>
             </div>
@@ -594,11 +587,14 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
 EOT;
 
 $errorfile = <<<'EOT'
-<!DOCTYPE html>
+<?php
+require_once('config.php');
+require_once('helpers.php');
+?><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Error</title>
+    <title><?php translate('Error') ?></title>
     {CSS_REFS}
 </head>
 <body>
@@ -607,10 +603,10 @@ $errorfile = <<<'EOT'
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header">
-                        <h1>Invalid Request</h1>
+                        <h1><?php translate('Invalid Request') ?></h1>
                     </div>
                     <div class="alert alert-danger fade-in">
-                        <p>Sorry, you've made an invalid request. Please <a href="index.php" class="alert-link">go back</a> and try again.</p>
+                        <p><?php translate('invalid_request_instructions') ?></p>
                     </div>
                 </div>
             </div>
@@ -638,6 +634,8 @@ $startfile = <<<'EOT'
         }
     </style>
 </head>
+<?php require_once('config.php'); ?>
+<?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 </html>
 EOT;
@@ -654,7 +652,7 @@ $navbarfile = <<<'EOT'
     <ul class="navbar-nav mr-auto">
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Select Page
+          <?php translate('Select Page') ?>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
         {TABLE_BUTTONS}
