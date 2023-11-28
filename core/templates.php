@@ -27,7 +27,8 @@ $indexfile = <<<'EOT'
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header clearfix">
-                        <h2 class="float-left">{TABLE_DISPLAY} Details</h2>
+                        <!-- {TABLE_DISPLAY} -->
+                        <h2 class="float-left"><?php echo (!empty($tables_columns_names['{TABLE_NAME}']['name'])) ? $tables_columns_names['{TABLE_NAME}']['name'] : '{TABLE_NAME}' ?> Details</h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right">Add New Record</a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2">Reset View</a>
                         <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2">Back</a>
@@ -140,11 +141,11 @@ $indexfile = <<<'EOT'
                                         echo "<td>";
                                             $column_id = '{COLUMN_ID}';
                                             if (!empty($column_id)) {
-                                                echo "<a href='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='View Record' data-toggle='tooltip' class='btn btn-sm btn-info'><i class='far fa-eye'></i></a>";
-                                                echo "<a href='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Update Record' data-toggle='tooltip' class='btn btn-sm btn-warning'><i class='far fa-edit'></i></a>";
-                                                echo "<a href='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='Delete Record' data-toggle='tooltip' class='btn btn-sm btn-danger'><i class='far fa-trash-alt'></i></a>";
+                                                echo "<a href='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('View Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-info'><i class='far fa-eye'></i></a>";
+                                                echo "<a href='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('Update Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-warning'><i class='far fa-edit'></i></a>";
+                                                echo "<a href='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('Delete Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-danger'><i class='far fa-trash-alt'></i></a>";
                                             } else {
-                                                echo "Editing tables without primary key isn't supported yet.";
+                                                addslashes(translate('unsupported_no_pk'));
                                             }
                                         echo "</td>";
                                     echo "</tr>";
@@ -269,9 +270,9 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
                     {RECORDS_READ_FORM}
                     <hr>
                     <p>
-                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning">Edit</a>
-                        <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-danger">Delete</a>
-                        <a href="{TABLE_NAME}-index.php" class="btn btn-primary">Back to List</a>
+                        <a href="{TABLE_NAME}-update.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-warning"><?php translate('Update Record') ?></a>
+                        <a href="{TABLE_NAME}-delete.php?{TABLE_ID}=<?php echo $_GET["{TABLE_ID}"];?>" class="btn btn-danger"><?php translate('Delete Record') ?></a>
+                        <a href="{TABLE_NAME}-index.php" class="btn btn-primary"><?php translate('Back to List') ?></a>
                     </p>
                     <?php
                     {FOREIGN_KEY_REFS}
@@ -642,6 +643,7 @@ $startfile = <<<'EOT'
 EOT;
 
 $navbarfile = <<<'EOT'
+<?php require_once('config-tables-columns.php'); ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand nav-link" href="index.php">{APP_NAME}</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
