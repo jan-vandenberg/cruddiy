@@ -3,3 +3,4 @@ schema/*
 !schema/.gitkeep
 !schema/Example - All field types.sql
 !schema/Example - No primary key.sql
+/vendor/

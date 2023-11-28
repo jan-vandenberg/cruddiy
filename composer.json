@@ -1,0 +1,12 @@
+{
+    "name": "jan-vandenberg/cruddiy",
+    "description": "No-code Bootstrap PHP CRUD generator",
+    "type": "project",
+    "license": "GNU Affero General Public License v3.0",
+    "authors": [
+        {
+            "name": "Jan van den Berg"
+        }
+    ],
+    "require": {}
+}
