@@ -641,6 +641,7 @@ $startfile = <<<'EOT'
 EOT;
 
 $navbarfile = <<<'EOT'
+<?php require_once('config-tables-columns.php'); ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <a class="navbar-brand nav-link" href="index.php">{APP_NAME}</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

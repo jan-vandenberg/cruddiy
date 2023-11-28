@@ -82,11 +82,14 @@ function is_primary_key($t, $c){
 
 function get_sql_concat_select($copy_columns, $table, $name){
     $array = $copy_columns;
-    foreach($array as $key => $c)
-    {
-        $array[$key] = '`'. $table .'`.`'. $array[$key] .'`';
+    if (is_array($copy_columns)) {
+        foreach ($array as $key => $c) {
+            $array[$key] = '`' . $table . '`.`' . $array[$key] . '`';
+        }
+        return "\n\t\t\t, CONCAT_WS(' | '," . implode(', ', $array) . ') AS `' . $name . '`';
+    } else {
+        return '';
     }
-    return "\n\t\t\t, CONCAT_WS(' | ',". implode(', ', $array) .') AS `'. $name .'`';
 }
 
 function get_sql_select($copy_columns){
@@ -129,7 +132,7 @@ function generate_startpage(){
 
 }
 
-function generate_navbar($tablename, $start_page, $keep_startpage, $append_links, $td){
+function generate_navbar($tablename, $start_page, $keep_startpage, $append_links, $tabledisplay, $key){
     global $navbarfile;
     global $generate_start_checked_links;
     global $startpage_filename;
@@ -152,7 +155,7 @@ function generate_navbar($tablename, $start_page, $keep_startpage, $append_links
             if (!$navbarfile) {
                 die("Unable to open existing startpage file!");
             }
-            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
+            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $key);
         }
     } else {
         if ($append_links) {
@@ -162,12 +165,13 @@ function generate_navbar($tablename, $start_page, $keep_startpage, $append_links
             if (!$navbarfile) {
                 die("Unable to open existing startpage file!");
             }
-            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links,$td);
+            append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $key);
         }
     }
 }
 
-function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $td) {
+function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $generate_start_checked_links, $key) {
+
     global $buttons_delimiter;
     global $appname;
 
@@ -192,7 +196,8 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
                 } else {
                     echo '- Appending '.$start_page_link.'<br>';
                     array_push($navbarfile_links[1], $start_page_link);
-                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'">'.$td.'</a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $tables_columns_names["'.$key.'"]["name"] ?></a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo (!empty($tables_columns_names["'.$key.'"]["name"])) ? $tables_columns_names["'.$key.'"]["name"] : "'.$key.'" ?></a>'."\n\t".$buttons_delimiter;
                     $step0 = str_replace($buttons_delimiter, $button_string, $navbarfile);
                     $step1 = str_replace("{APP_NAME}", $appname, $step0 );
                     if (!file_put_contents($startpage_filename, $step1, LOCK_EX)) {
@@ -373,11 +378,16 @@ function generate($postdata) {
     // Every table is a key
     global $excluded_keys;
 
+    // An indexed array of table names to display based on their system name
+    $tables_and_columns_names = [];
+
     // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that
     // are selected to be include in previews, such as select foreign keys and foreign key preview.
     $preview_columns = array();
     foreach ($postdata as $key => $value){
         if (!in_array($key, $excluded_keys)) {
+            $tables_and_columns_names[extractTableName($key)]['name'] = $value[0]['tabledisplay'];
+            $tables_and_columns_names[extractTableName($key)]['columns'] = array();
             foreach ($_POST[$key] as $columns ) {
                 if (isset($columns['columninpreview'])){
                     $preview_columns[$columns['tablename']][] = $columns['columnname'];
@@ -483,6 +493,8 @@ function generate($postdata) {
                         } else {
                             $columndisplay = $columns['columnname'];
                         }
+
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname] = $columndisplay;
 
                         if (!empty($columns['columncomment'])){
                             $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
@@ -633,18 +645,19 @@ function generate($postdata) {
                             }
 
 
-                            $fk_columns_select = isset($preview_columns[$fk_table]) ? get_sql_select($preview_columns[$fk_table]) : null;
+                            $fk_columns_select = isset($preview_columns[$fk_table]) ? get_sql_select($preview_columns[$fk_table]) : '';
 
                             $join_name = $columnname .$fk_table;
                             $join_column_name = $columnname . $fk_table . $fk_column;
 
                             $join_clauses .= "\n\t\t\tLEFT JOIN `$fk_table` AS `$join_name` ON `$join_name`.`$fk_column` = `$tablename`.`$columnname`";
-                            $join_columns .= isset($preview_columns[$fk_table]) ? get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name) : null;
+                            $join_columns .= isset($preview_columns[$fk_table]) ? get_sql_concat_select($preview_columns[$fk_table], $join_name, $join_column_name) : '';
 
                             // Add the new columns to the search concat
-                            if (isset($preview_columns[$fk_table])) {
-                                foreach ($preview_columns[$fk_table] as $key => $c) {
-                                    $index_sql_search[] = '`' . $join_name . '`.`' . $preview_columns[$fk_table][$key] . '`';
+                            if (isset($preview_columns[$fk_table]) && is_iterable($preview_columns[$fk_table])) {
+                                foreach($preview_columns[$fk_table] as $key => $c)
+                                {
+                                    $index_sql_search [] = '`'. $join_name .'`.`'. $preview_columns[$fk_table][$key] .'`';
                                 }
                             }
 
@@ -829,7 +842,7 @@ function generate($postdata) {
                     if (!$forced_deletion && (!isset($_POST['keep_startpage']) || (isset($_POST['keep_startpage']) && $_POST['keep_startpage'] != 'true'))) {
                         $forced_deletion = true;
                         echo '<h3>Deleting existing files</h3>';
-                        $keep = array('config.php', 'locales');
+                        $keep = array('config.php', 'helpers.php', 'config-tables-columns.php', 'locales');
                         foreach( glob("app/*") as $file ) {
                             if( !in_array(basename($file), $keep) ){
                                 if (unlink($file)) {
@@ -840,8 +853,7 @@ function generate($postdata) {
                         echo '<br>';
                     }
 
-
-                    generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay);
+                    generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay, $key);
                     generate_error();
                     generate_startpage();
                     generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available,$index_sql_search, $join_columns, $join_clauses);
@@ -856,48 +868,53 @@ function generate($postdata) {
 
     }
 
-    copy_core_files();
+
+    // Save table names to config
+    updateTableAndColumnsNames($tables_and_columns_names);
 }
 
-function copy_core_files() {
-    echo '<h3>Copying core files into <code>app/</code></h3>';
-
-    // regenerate helpers
-    $sourceFile = 'helpers.php';
-    $destinationFile = 'app/helpers.php';
-
-    if (copy($sourceFile, $destinationFile)) {
-        echo "Helpers file duplicated successfully.";
-    } else {
-        echo "Helpers file could not be duplicated.";
-    }
-    echo '<br>';
 
 
-    // copy localization files
-    $sourceDir = 'locales';
-    $destinationDir = 'app/locales';
+// Extract table name
+function extractTableName($post_key) {
+    // Find the position of the last occurrence of 'columns'
+    $lastPos = strrpos($post_key, "columns");
 
-    // Create destination directory if it doesn't exist
-    if (!is_dir($destinationDir)) {
-        mkdir($destinationDir, 0755, true); // The true parameter allows the creation of nested directories as needed
+    if ($lastPos !== false) {
+        // Remove the last occurrence of 'columns'
+        $table_name = substr_replace($post_key, "", $lastPos, strlen("columns"));
     }
 
-    // Copy files
-    if (is_dir($sourceDir)) {
-        $files = scandir($sourceDir);
+    return $table_name;
+}
 
-        foreach ($files as $file) {
-            // Skip current and parent directory links
-            if ($file != '.' && $file != '..') {
-                copy("$sourceDir/$file", "$destinationDir/$file");
-            }
-        }
-        echo "Localization files copied successfully.";
-    } else {
-        echo "Source directory for localization files (<code>locales</code>) does not exist.";
+
+
+// Save table names to config
+function updateTableAndColumnsNames($tables_columns_names) {
+
+    $configTableNamesFilePath     = 'app/config-tables-columns.php';
+    $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
+
+    // Read config file template
+    $configfile = fopen($configTableNamesTemplatePath, "r") or die("Unable to read Config file template for table names!");
+    $templateContent = file_get_contents($configTableNamesTemplatePath);
+
+    // Prepare the new tables array as a string
+    $new_table_names = var_export($tables_columns_names, true);
+
+    // Replace placeholders with actual values
+    $replacements = [
+        '{{TABLE_NAMES}}' => $new_table_names,
+    ];
+
+    foreach ($replacements as $placeholder => $realValue) {
+        $templateContent = str_replace($placeholder, $realValue, $templateContent);
     }
-    echo "<br>";
+
+    $configfile = fopen($configTableNamesFilePath, "w") or die("Unable to open Config file for table names! Please check your file permissions.");
+    if (fwrite($configfile, $templateContent) === false) die("Error writing Config file for table names!");
+    fclose($configfile);
 }
 
 ?>
