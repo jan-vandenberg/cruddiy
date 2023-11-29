@@ -76,4 +76,22 @@ class FeatureContext extends MinkContext implements Context {
 
         $this->fillField($field, $envValue);
     }
+
+
+
+    /**
+     * @Then /^I should see "([^"]*)" only once$/
+     */
+    public function iShouldSeeOnlyOnce($text) {
+        $page = $this->getSession()->getPage();
+        $allText = $page->getText();
+        $occurrences = substr_count($allText, $text);
+
+        if ($occurrences !== 1) {
+            throw new ExpectationException("Expected to find the text '$text' only once, found $occurrences times.", $this->getSession()->getDriver());
+        }
+    }
+
+
+
 }
