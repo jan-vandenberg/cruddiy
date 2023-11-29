@@ -4,6 +4,9 @@ Feature: Check admin schema import form
     Given I am on "/core/relations.php"
     And I follow "Import Schema or Dump"
     Then I should see "Import schema"
+    And I should not see "Error"
+    And I should not see "Warning"
+    And I should not see "Fatal"
 
   Scenario: Check schema import form
     Given I am on "/core/schema.php"

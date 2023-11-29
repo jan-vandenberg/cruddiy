@@ -2,7 +2,11 @@ Feature: Check admin relations creation form
 
   Scenario: Check unicity display of existing relations
     Given I am on "/core/relations.php"
-    Then I should see "products_ibfk_1" only once
+    Then I should not see "Error"
+    And I should not see "Warning"
+    And I should not see "Fatal"
+
+    And I should see "products_ibfk_1" only once
 
   Scenario: Check that we can add a relation
     Given I am on "/core/relations.php"

@@ -2,6 +2,9 @@ Feature: Check admin tables mapping form
 
   Scenario: Check checkboxes
     Given I am on "/core/tables.php"
+    Then I should not see "Error"
+    And I should not see "Warning"
+    And I should not see "Fatal"
 
     And I fill in "table[0][tabledisplay]" with "The Brands"
     And I check "checkboxes-0"

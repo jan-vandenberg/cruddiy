@@ -2,6 +2,9 @@ Feature: Check admin index form submission
 
   Scenario:
     Given I am on "/core/index.php"
+    Then I should not see "Error"
+    And I should not see "Warning"
+    And I should not see "Fatal"
 
     And I fill in "server" with the environment variable "DB_HOST"
     And I fill in "database" with the environment variable "DB_BASE"
