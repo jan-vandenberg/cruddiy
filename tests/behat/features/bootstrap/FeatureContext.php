@@ -2,6 +2,7 @@
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
 use Dotenv\Dotenv;
@@ -9,6 +10,7 @@ use Dotenv\Dotenv;
 class FeatureContext extends MinkContext implements Context {
 
     private $pdo;
+    private $dotenv;
 
     /**
      * Initializes context.
@@ -16,11 +18,12 @@ class FeatureContext extends MinkContext implements Context {
      * @param array $parameters Context parameters (set them in behat.yml)
      */
     public function __construct(array $parameters = []) {
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__, 3));
-        $dotenv->load();
+        $this->dotenv = Dotenv::createImmutable(dirname(__DIR__, 3));
+        $this->dotenv->load();
 
         try {
             // Connect to MySQL
+            // TODO: Cruddiy generator does not support port variable
             $this->pdo = new PDO('mysql:host=' . $_ENV['DB_HOST']. ';port=' . $_ENV['DB_PORT'], $_ENV['DB_USER'], $_ENV['DB_PASS']);
             // $this->showDatabases();
         } catch (PDOException $e) {
@@ -59,4 +62,18 @@ class FeatureContext extends MinkContext implements Context {
         }
     }
 
+
+
+    /**
+     * @Given I fill in :field with the environment variable :envVariable
+     */
+    public function iFillInWithEnvironmentVariable($field, $envVariable) {
+        $envValue = $_ENV[$envVariable] ?? null;
+
+        if ($envValue === null) {
+            throw new \Exception("Environment variable '$envVariable' is not set.");
+        }
+
+        $this->fillField($field, $envValue);
+    }
 }
