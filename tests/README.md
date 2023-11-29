@@ -61,7 +61,7 @@ You can check:
 
 ```
 germain@nuc13 UCRT64 /d/Sites/cruddiy
-$ vendor/bin/behat --config tests/behat/behat.yml
+$ vendor/bin/behat --config tests/behat/behat.yml --suite admin
 Feature: Check admin index page content
 
   Scenario: Checking content on the admin homepage # features\admin\index.feature:3
