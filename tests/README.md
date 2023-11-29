@@ -48,7 +48,16 @@ You can check:
 - http://localhost:4444/wd/hub/status
 
 
-## 4. Run the tests
+## 4. Edit mock database credentials
+
+- We use the file `tests/.env` to store the database credentials for the tests.
+- This file is specific to your environment and is not committed.
+- To create one, duplicate `tests/.env.dist` and edit credentials to suit your need.
+- You don't have to create the mock database (default: `cruddiy_tests`), creating it is part of the tests.
+- If your test user does not have the privileges to create a database, just create it and fill the credentials in the `.env`. If the database exists, we will not attempt to re-create it.
+
+
+## 5. Run the tests
 
 ```
 germain@nuc13 UCRT64 /d/Sites/cruddiy
