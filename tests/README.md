@@ -1,6 +1,6 @@
 # How to run tests?
 
-## 1. Install PHPUnit and Selenium
+## 1. Install Behat, Mink, and Selenium dependencies in the project
 
 Go to the root of the project and run:
 
@@ -8,45 +8,58 @@ Go to the root of the project and run:
 composer install
 ```
 
-## 2. Install JSE
+## 2. Install the Selenium server on your computer
+
+### 2.1 JSE
 
 https://www.oracle.com/java/technologies/downloads/#java11-windows
 
 Download and install `jdk-21_windows-x64_bin.exe`
 
+Test in a command prompt (`cmd`):
+```
+C:\Users\germain>java --version
+java 21.0.1 2023-10-17 LTS
+Java(TM) SE Runtime Environment (build 21.0.1+12-LTS-29)
+Java HotSpot(TM) 64-Bit Server VM (build 21.0.1+12-LTS-29, mixed mode, sharing)
+```
 
-## 3. Install Selenium
+
+### 2.2 Selenium
 
 https://www.selenium.dev/downloads/
 
 Download and install Selenium Server (Grid) `selenium-server-4.15.0.jar`
 
 
-## 4. Open cmd
+## 3. Run Selenium Grid (the Selenium server)
 
+Open cmd:
 `Win` + `R`, `cmd.exe`
 
+Run:
 ```
 java -jar selenium-server-4.15.0.jar standalone --selenium-manager true
 ```
 
-http://192.168.100.14:4444/ui
-
 This should bring the Selenium Grid.
+You can check:
+- http://192.168.100.14:4444/ui
+- http://localhost:4444/wd/hub/status
 
 
-## 5. Back to the project shell
+## 4. Run the tests
 
 ```
-php vendor/bin/phpunit tests/HelloWorldTest.php
+germain@nuc13 UCRT64 /d/Sites/cruddiy
+$ vendor/bin/behat --config tests/behat/behat.yml
+Feature: Check admin index page content
 
-PHPUnit 10.4.2 by Sebastian Bergmann and contributors.
+  Scenario: Checking content on the admin homepage # features\admin\index.feature:3
+    Given I am on "/core/index.php"                # FeatureContext::visit()
+    Then I should see "Enter database information" # FeatureContext::assertPageContainsText()
 
-Runtime:       PHP 8.1.0
-
-.                                                                   1 / 1 (100%)
-
-Time: 00:06.333, Memory: 8.00 MB
-
-OK (1 test, 1 assertion)
+1 scénario (1 succès)
+2 étapes (2 succès)
+0m0.06s (11.78Mb)
 ```
