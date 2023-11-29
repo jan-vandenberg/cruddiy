@@ -2,7 +2,14 @@ default:
   suites:
     default:
       contexts:
-        - FeatureContext: []  # Passing empty array as parameters
+        - FeatureContext: []
+    admin:
+      paths:
+        - features/admin/index/page.feature
+        - features/admin/index/form.feature
+        - features/admin/relations/page.feature
+        - features/admin/relations/schema.feature
+        - features/admin/relations/form.feature
   extensions:
     Behat\MinkExtension:
       goutte:
