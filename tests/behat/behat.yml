@@ -1,0 +1,22 @@
+default:
+  suites:
+    default:
+      contexts:
+        - FeatureContext: []  # Passing empty array as parameters
+  extensions:
+    Behat\MinkExtension:
+      goutte:
+        guzzle_parameters:
+          curl.options:
+            CURLOPT_TIMEOUT: 5
+      base_url: 'http://cruddiy.localhost'
+      sessions:
+        default:
+          selenium2:
+            browser: chrome
+            wd_host: http://localhost:4444/wd/hub
+            capabilities:
+              chrome:
+                switches:
+                  - "--headless"
+                  - "--disable-gpu"
