@@ -19,4 +19,8 @@ Feature: Check admin relations creation form
     And I press "Create relation"
     Then I should see "products_ibfk_2"
     And I press "Continue CRUD Creation Process"
+
     Then I should see "All Available Tables"
+    And I should not see "Error"
+    And I should not see "Warning"
+    And I should not see "Fatal"

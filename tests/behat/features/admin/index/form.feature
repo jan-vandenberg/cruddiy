@@ -16,4 +16,8 @@ Feature: Check admin index form submission
     And I fill in "language" with "en"
 
     And I press "Submit"
+
     Then I should see "Existing Table Relations"
+    And I should not see "Error"
+    And I should not see "Warning"
+    And I should not see "Fatal"

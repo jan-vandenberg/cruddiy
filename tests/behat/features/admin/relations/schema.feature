@@ -11,5 +11,10 @@ Feature: Check admin schema import form
   Scenario: Check schema import form
     Given I am on "/core/schema.php"
     When I select "../schema/Tests.sql" from "schemaFile"
+
     And I press "Import schema"
+
     Then I should see "Existing Table Relations"
+    And I should not see "Error"
+    And I should not see "Warning"
+    And I should not see "Fatal"
