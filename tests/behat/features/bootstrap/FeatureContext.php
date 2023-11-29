@@ -5,6 +5,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
+use Behat\Mink\Exception\ElementNotFoundException;
 use Dotenv\Dotenv;
 
 class FeatureContext extends MinkContext implements Context {
@@ -91,6 +92,19 @@ class FeatureContext extends MinkContext implements Context {
             throw new ExpectationException("Expected to find the text '$text' only once, found $occurrences times.", $this->getSession()->getDriver());
         }
     }
+
+
+
+    /**
+     * @Then /^I wait for the element with id "([^"]*)" to appear$/
+     */
+    public function iWaitForTheElementWithIdToAppear($id) {
+        $this->getSession()->wait(5000,
+            "document.getElementById('$id') !== null"
+        );
+    }
+
+
 
 
 
