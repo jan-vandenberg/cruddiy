@@ -1,6 +1,6 @@
 Feature: Check admin index form submission
 
-  Scenario: Checking form on the admin homepage
+  Scenario:
     Given I am on "/core/index.php"
 
     And I fill in "server" with the environment variable "DB_HOST"
