@@ -72,3 +72,13 @@ Feature: Check admin index page content
 2 étapes (2 succès)
 0m0.06s (11.78Mb)
 ```
+
+To run all tests in the "admin" suite:
+```
+vendor/bin/behat --config tests/behat/behat.yml --suite admin
+```
+
+To run a specific test:
+```
+vendor/bin/behat --config tests/behat/behat.yml tests/behat/features/admin/relations/schema.feature
+```
