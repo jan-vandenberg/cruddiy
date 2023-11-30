@@ -4,7 +4,8 @@ schema/*
 !schema/.gitkeep
 !schema/Example - All field types.sql
 !schema/Example - No primary key.sql
-!schema/Tests.sql
+!schema/Tests - Admin.sql
+!schema/Tests - Public.sql
 
 /vendor/
 **/.env
