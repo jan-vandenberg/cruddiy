@@ -1,4 +1,4 @@
-@database
+@resetDB
 Feature: Check admin index form submission
 
   Scenario:
