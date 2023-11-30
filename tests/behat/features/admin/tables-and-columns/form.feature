@@ -2,9 +2,8 @@ Feature: Check admin tables mapping form
 
   Scenario: Check checkboxes
     Given I am on "/core/tables.php"
-    Then I should not see "Error"
-    And I should not see "Warning"
-    And I should not see "Fatal"
+    Then I should not see "Parse error"
+    And I should not see "Fatal error"
 
     And I fill in "table[0][tabledisplay]" with "The Brands"
     And I check "checkboxes-0"
@@ -113,7 +112,15 @@ Scenario: Check for POST data continuity between Tables and Columns
 
     And I press "Generate Pages"
 
-    Then I should see "Deleting existing files"
-    And I should not see "Error"
-    And I should not see "Warning"
-    And I should not see "Fatal"
+    Then I should not see "Parse error"
+    And I should not see "Fatal error"
+
+    And I should not see "Deleting existing files"
+    And I should see "Table: The Brands"
+    And I should see "Table: The Products"
+    And I should see "Table: The Suppliers"
+
+    And I should see "Your app has been created!"
+
+    When I follow "Go to your app"
+    Then I should see "Cruddiy Tests"

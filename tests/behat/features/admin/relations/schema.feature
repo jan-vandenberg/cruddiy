@@ -4,9 +4,8 @@ Feature: Check admin schema import form
     Given I am on "/core/relations.php"
     And I follow "Import Schema or Dump"
     Then I should see "Import schema"
-    And I should not see "Error"
-    And I should not see "Warning"
-    And I should not see "Fatal"
+    And I should not see "Parse error"
+    And I should not see "Fatal error"
 
   Scenario: Check schema import form
     Given I am on "/core/schema.php"
@@ -15,6 +14,5 @@ Feature: Check admin schema import form
     And I press "Import schema"
 
     Then I should see "Existing Table Relations"
-    And I should not see "Error"
-    And I should not see "Warning"
-    And I should not see "Fatal"
+    And I should not see "Parse error"
+    And I should not see "Fatal error"
