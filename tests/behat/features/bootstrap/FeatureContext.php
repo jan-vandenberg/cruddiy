@@ -95,17 +95,4 @@ class FeatureContext extends MinkContext implements Context {
 
 
 
-    /**
-     * @Then /^I wait for the element with id "([^"]*)" to appear$/
-     */
-    public function iWaitForTheElementWithIdToAppear($id) {
-        $this->getSession()->wait(5000,
-            "document.getElementById('$id') !== null"
-        );
-    }
-
-
-
-
-
 }

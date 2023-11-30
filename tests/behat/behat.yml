@@ -19,18 +19,3 @@ default:
           curl.options:
             CURLOPT_TIMEOUT: 5
       base_url: 'http://cruddiy.localhost'
-      javascript_session: selenium2
-      browser_name: chrome
-      selenium2:
-        browser: chrome
-        wd_host: http://localhost:4444/wd/hub
-        capabilities:
-          marionette: true
-          browserName: chrome
-          browser: chrome
-          chrome:
-            switches:
-              - "--headless"
-              - "--disable-gpu"
-              - "--window-size=1920,1080"
-              - "--no-sandbox"
