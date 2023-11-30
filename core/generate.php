@@ -502,7 +502,10 @@ function generate($postdata) {
 
                         $columns_available [] = "$columnname";
                         $index_sql_search [] = "`$tablename`.`$columnname`";
-                        $index_table_headers .= 'echo "<th><a href=?search=$search&order='.$columnname.'&sort=$sort$get_param>'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t".'$columnname = "'.$columnname.'";'."\n";
+                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t".'$sort_link = isset($_GET["order"]) && $_GET["order"] == $columnname && $_GET["sort"] == "asc" ? "desc" : "asc";'."\n";
+                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t".'$sort_link = isset($_GET["order"]) && $_GET["order"] == $columnname && $_GET["sort"] == "desc" ? "asc" : $sort_link;'."\n";
+                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t".'echo "<th><a href=?search=$search&order='.$columnname.'&sort=".$sort_link.">'.$columndisplay.'</th>";'."\n\t\t\t\t\t\t\t\t\t\t";
 
                         // Display date in locale format
                         if(!empty($columns['fk'])){
