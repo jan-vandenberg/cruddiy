@@ -1,9 +1,9 @@
 - Feature: Check admin index page content
-  -   Scenario:
+  -   Scenario: No errors on page
 - Feature: Check admin index form submission
-  -   Scenario:
+  -   Scenario: Read and inject environment variables and fill in the first form
 - Feature: Check admin relations page content
-  -   Scenario:
+  -   Scenario: No errors on page
 - Feature: Check admin schema import form
   -   Scenario: Check link to import schema page
   -   Scenario: Check schema import form

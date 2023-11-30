@@ -1,7 +1,7 @@
 @resetDB
 Feature: Check admin index form submission
 
-  Scenario:
+  Scenario: Read and inject environment variables and fill in the first form
     Given I am on "/core/index.php"
     Then I should not see "Parse error"
     And I should not see "Fatal error"
