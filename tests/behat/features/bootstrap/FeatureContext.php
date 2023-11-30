@@ -1,11 +1,16 @@
 <?php
 
 use Behat\Behat\Context\Context;
+
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\AfterStepScope;
+
+use Behat\Testwork\Tester\Result\TestResult;
+
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\ElementNotFoundException;
+
 use Dotenv\Dotenv;
 
 class FeatureContext extends MinkContext implements Context {
@@ -173,6 +178,58 @@ class FeatureContext extends MinkContext implements Context {
             throw new \Exception(sprintf('The label for "%s" unexpectedly has the class "%s"', $forValue, $expectedClass));
         }
     }
+
+
+
+    /**
+     * @AfterStep
+     */
+    public function logFailedStep(AfterStepScope $scope) {
+        if ($scope->getTestResult()->getResultCode() !== TestResult::PASSED) {
+            $this->logPageContent($scope);
+        }
+    }
+
+    // Log HTML page if the step has not passed
+    public function logPageContent($scope) {
+        $feature = $scope->getFeature()->getFile();
+        $line = $scope->getStep()->getLine();
+
+        $logDirectory = __DIR__ . '/../../logs';
+        if (!file_exists($logDirectory)) {
+            mkdir($logDirectory, 0777, true);
+        } else {
+            // Clean up old log files, except for .gitkeep
+            $files = glob($logDirectory . '/*');
+            foreach ($files as $file) {
+                if (is_file($file) && basename($file) !== '.gitkeep') {
+                    unlink($file);
+                }
+            }
+        }
+
+        // Identify the directory separator and build the features string accordingly
+        $dirSeparator = DIRECTORY_SEPARATOR;
+        $featuresString = $dirSeparator . "features" . $dirSeparator;
+        $featuresPos = strpos($feature, $featuresString) + strlen($featuresString);
+        $relativePath = substr($feature, $featuresPos);
+
+        // Replace directory separators with underscores and remove the .feature extension
+        $filename = str_replace($dirSeparator, '_', $relativePath);
+        $filename = basename($filename, '.feature');
+
+        // Construct the log filename
+        $logFilename = $logDirectory . '/' . $filename . '-' . $line . '.html';
+
+        // Save the page content to the log file
+        file_put_contents($logFilename, $this->getSession()->getPage()->getContent());
+
+        // Display the log filename in test results
+        echo "HTML content logged to: " . $logFilename . PHP_EOL;
+    }
+
+
+
 
 
 
