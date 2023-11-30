@@ -182,6 +182,27 @@ class FeatureContext extends MinkContext implements Context {
 
 
     /**
+     * @BeforeSuite
+     */
+    public static function cleanLogDirectory() {
+        // Cleanup old logs when a test suite runs
+        // see logPageContent() for logging.
+        $logDirectory = __DIR__ . '/../../logs';
+
+        if (file_exists($logDirectory)) {
+            $files = glob($logDirectory . '/*');
+            foreach ($files as $file) {
+                if (is_file($file) && basename($file) !== '.gitkeep') {
+                    unlink($file);
+                }
+            }
+        }
+    }
+
+
+
+
+    /**
      * @AfterStep
      */
     public function logFailedStep(AfterStepScope $scope) {
@@ -198,14 +219,6 @@ class FeatureContext extends MinkContext implements Context {
         $logDirectory = __DIR__ . '/../../logs';
         if (!file_exists($logDirectory)) {
             mkdir($logDirectory, 0777, true);
-        } else {
-            // Clean up old log files, except for .gitkeep
-            $files = glob($logDirectory . '/*');
-            foreach ($files as $file) {
-                if (is_file($file) && basename($file) !== '.gitkeep') {
-                    unlink($file);
-                }
-            }
         }
 
         // Identify the directory separator and build the features string accordingly
