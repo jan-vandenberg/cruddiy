@@ -12,6 +12,9 @@ default:
         - features/admin/relations/form.feature
         - features/admin/tables-and-columns/page.feature
         - features/admin/tables-and-columns/form.feature
+    public:
+      paths:
+        - features/public/index/list.feature
   extensions:
     Behat\MinkExtension:
       goutte:

@@ -73,9 +73,14 @@ Feature: Check admin index page content
 0m0.06s (11.78Mb)
 ```
 
-To run all tests in the "admin" suite:
+To run all tests in the "admin" suite (test the generator):
 ```
 vendor/bin/behat --config tests/behat/behat.yml --suite admin
+```
+
+To run all tests in the "public" suite (test the generated pages):
+```
+vendor/bin/behat --config tests/behat/behat.yml --suite public
 ```
 
 To run a specific test:
