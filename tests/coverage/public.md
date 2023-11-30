@@ -1,0 +1,15 @@
+- Feature: Check public index page content
+  -   Scenario: Check Brands list
+  -   Scenario: Check Products list
+- Feature: Check public read page content
+  -   Scenario: Go to Brands item
+- Feature: Check public create page content
+  -   Scenario: Add supplier
+  -   Scenario: Add product
+- Feature: Check public update page content
+  -   Scenario: Go to Brands item
+  -   Scenario: Update a record
+- Feature: Check public delete page content
+  -   Scenario: Check if there is a warning before deletion
+  -   Scenario: Delete a Suppliers record
+  -   Scenario: Check FK dependency

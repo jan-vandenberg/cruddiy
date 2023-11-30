@@ -93,3 +93,36 @@ To run a specific test:
 ```
 vendor/bin/behat --config tests/behat/behat.yml tests/behat/features/admin/relations/schema.feature
 ```
+
+# What is tested now, and how to update the coverage list?
+
+## Admin test suite for generated CRUD pages:
+
+Read the coverage at [tests/coverage/admin.md](tests/coverage/admin.md)
+
+Update the coverage by executing:
+
+```
+vendor/bin/behat --config tests/behat/behat.yml --suite admin --dry-run --no-snippets \
+| grep -e '^Feature:' -e '^  Scenario:' \
+| grep -o '^[^#]*' \
+| sed 's/[[:space:]]*$//' \
+| sed '/^Feature:/s/^/- /' \
+| sed '/^  Scenario:/s/^/  - /' > tests/coverage/admin.md
+```
+
+
+## Public test suite for generated CRUD pages:
+
+Read the coverage at [tests/coverage/public.md](tests/coverage/public.md)
+
+Update the coverage by executing:
+
+```
+vendor/bin/behat --config tests/behat/behat.yml --suite public --dry-run --no-snippets \
+| grep -e '^Feature:' -e '^  Scenario:' \
+| grep -o '^[^#]*' \
+| sed 's/[[:space:]]*$//' \
+| sed '/^Feature:/s/^/- /' \
+| sed '/^  Scenario:/s/^/  - /' > tests/coverage/public.md
+```

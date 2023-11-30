@@ -48,6 +48,7 @@ _This project implements two suites of Behat tests: Admin (for the generator) an
 - Make sure that you didn't break anything with your changes
 - Edit the tests accordingly
 - Create new tests accordingly
+- When everything is green, perform the actions in "What is tested now, and how to update the coverage list?" so that everybody knows the code coverage.
 
 
 # 4. Wait for approval

@@ -1,0 +1,20 @@
+- Feature: Check admin index page content
+  -   Scenario:
+- Feature: Check admin index form submission
+  -   Scenario:
+- Feature: Check admin relations page content
+  -   Scenario:
+- Feature: Check admin schema import form
+  -   Scenario: Check link to import schema page
+  -   Scenario: Check schema import form
+- Feature: Check admin relations creation form
+  -   Scenario: Check unicity display of existing relations
+  -   Scenario: Check that we can add a relation
+- Feature: Check admin tables and columns pages
+  -   Scenario: Check for errors on Tables page
+  -   Scenario: Check for errors on Columns page
+- Feature: Check admin tables mapping form
+  -   Scenario: Check checkboxes
+  -   Scenario: Check for errors on the Columns page
+  -   Scenario: Check for form continuity on the Columns page
+  -   Scenario: Check for POST data continuity between Tables and Columns
