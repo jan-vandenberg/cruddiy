@@ -107,15 +107,15 @@ Scenario: Check for POST data continuity between Tables and Columns
 
 
     # Other
-    And I check "keep_startpage"
-    And I check "append_links"
+    And I uncheck "keep_startpage"
+    And I uncheck "append_links"
 
     And I press "Generate Pages"
 
     Then I should not see "Parse error"
     And I should not see "Fatal error"
 
-    And I should not see "Deleting existing files"
+    And I should see "Deleting existing files"
     And I should see "Table: The Brands"
     And I should see "Table: The Products"
     And I should see "Table: The Suppliers"
