@@ -39,12 +39,23 @@ Altough there is no requirement, it is considered a good practice to use Git Flo
 `content/`: For updates focused on content changes, like text, images, or other media.
 
 
-# 3. Wait for approval
+# 3. Tests
+
+_This project implements two suites of Behat tests: Admin (for the generator) and Public (for the generated pages).
+
+- Kindly read the tests documentation in `tests/README.md`
+- Install the Composer dependencies and run both test suites
+- Make sure that you didn't break anything with your changes
+- Edit the tests accordingly
+- Create new tests accordingly
+
+
+# 4. Wait for approval
 
 @jan-vandenberg is the official maintainer (and creator) and will have the power to accept or refuse your PR.
 
 
-4. Stack
+# 5. Stack
 
 - The project was designed to work with PHP 7.4 but PHP 8+ is recommended
 - You can use [schema/Example - All field types.sql](schema/Example - All field types.sql) to create a sample table. We still have issues with some field types (see #75)
