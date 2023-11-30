@@ -5,6 +5,7 @@ Feature: Check public create page content
     Then I should see "The Suppliers List"
     And I should see "No records were found."
 
+    # Will be used in Products creation
     When I follow "Add New Record"
     Then I should see "Add New Record"
     And I should see "Supplier name"
@@ -16,6 +17,20 @@ Feature: Check public create page content
 
     When I follow "Back to List"
     Then I should see "1 results - Page 1 of 1"
+
+
+    # Will be used in Delete test
+    When I follow "Add New Record"
+    Then I should see "Add New Record"
+    And I should see "Supplier name"
+
+    When I fill in "name" with "Test Supplier Name 2"
+    And I press "Create"
+    Then I should see "Test Supplier Name 2"
+    And I should see "View Record"
+
+    When I follow "Back to List"
+    Then I should see "2 results - Page 1 of 1"
 
 
 
