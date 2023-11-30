@@ -1,6 +1,12 @@
 # How to run tests?
 
-## 1. Install Behat, Mink, and Selenium dependencies in the project
+_Note: I was planning to use Selenium for some tests, but I didn't need it._
+
+_We're only using the Goutte driver at the moment, but I'm keeping the existing doc as reference for future improvements._
+
+> **You can safely bypass steps 2 and 3.**
+
+## 1. Install Behat, Mink, and other dependencies in the project
 
 Go to the root of the project and run:
 
