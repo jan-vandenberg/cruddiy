@@ -9,7 +9,7 @@ Feature: Check admin schema import form
 
   Scenario: Check schema import form
     Given I am on "/core/schema.php"
-    When I select "../schema/Tests.sql" from "schemaFile"
+    When I select "../schema/Tests - Admin.sql" from "schemaFile"
 
     And I press "Import schema"
 
