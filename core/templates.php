@@ -77,10 +77,10 @@ $indexfile = <<<'EOT'
                     $sortBy = array('asc', 'desc'); $sort = 'asc';
                     if (isset($_GET['sort']) && in_array($_GET['sort'], $sortBy)) {
                           if($_GET['sort']=='asc') {
-                            $sort='desc';
+                            $sort='asc';
                             }
                     else {
-                        $sort='asc';
+                        $sort='desc';
                         }
                     }
 
@@ -169,7 +169,7 @@ $indexfile = <<<'EOT'
                             // Free result set
                             mysqli_free_result($result);
                         } else{
-                            echo "<p class='lead'><em><?php translate('No records were found.') ?></em></p>";
+                            echo "<p class='lead'><em>" . translate('No records were found.') . "</em></p>";
                         }
                     } else{
                         echo "ERROR: Could not able to execute $sql. " . mysqli_error($link);
