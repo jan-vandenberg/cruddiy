@@ -676,6 +676,7 @@ function generate($postdata) {
                                             $duprow = $row;
                                             unset($duprow["' . $fk_column . '"]);
                                             $value = implode(" | ", $duprow);
+                                            $'.$columnname_var.' = isset($'.$columnname_var.') ? $'.$columnname_var.' : null;
                                             if ($row["' . $fk_column . '"] == $' . $columnname_var . '){
                                             echo \'<option value="\' . $row["' . $fk_column . '"] . \'"selected="selected">\' . $value . \'</option>\';
                                             } else {
