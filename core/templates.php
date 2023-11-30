@@ -138,9 +138,9 @@ $indexfile = <<<'EOT'
                                         echo "<td>";
                                             $column_id = '{COLUMN_ID}';
                                             if (!empty($column_id)) {
-                                                echo "<a href='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('View Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-info'><i class='far fa-eye'></i></a>";
-                                                echo "<a href='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('Update Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-warning'><i class='far fa-edit'></i></a>";
-                                                echo "<a href='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('Delete Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-danger'><i class='far fa-trash-alt'></i></a>";
+                                                echo "<a id='read-" . $row['{COLUMN_NAME}']. "' href='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('View Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-info'><i class='far fa-eye'></i></a>";
+                                                echo "<a id='update-" . $row['{COLUMN_NAME}']. "' href='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('Update Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-warning'><i class='far fa-edit'></i></a>";
+                                                echo "<a id='delete-" . $row['{COLUMN_NAME}']. "' href='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('Delete Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-danger'><i class='far fa-trash-alt'></i></a>";
                                             } else {
                                                 addslashes(translate('unsupported_no_pk'));
                                             }

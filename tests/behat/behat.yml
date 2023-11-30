@@ -15,6 +15,7 @@ default:
     public:
       paths:
         - features/public/index/list.feature
+        - features/public/read/read.feature
   extensions:
     Behat\MinkExtension:
       goutte:
