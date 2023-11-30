@@ -17,7 +17,13 @@ Feature: Check admin tables mapping form
 
     And I press "Select columns from tables"
 
+  Scenario: Check for errors on the Columns page
     Then I should see "All Available Columns"
-    Then I should see "The Brands (brands)"
-    Then I should see "The Products (products)"
-    Then I should see "The Suppliers (suppliers)"
+    And I should see "The Brands (brands)"
+    And I should see "The Products (products)"
+    And I should see "The Suppliers (suppliers)"
+
+  Scenario: Check for form continuity on the Columns page
+    And I should see "Table: The Brands (brands)"
+    And I should see "Table: The Products (products)"
+    And I should see "Table: The Suppliers (suppliers)"
