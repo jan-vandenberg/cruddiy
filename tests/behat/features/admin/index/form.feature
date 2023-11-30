@@ -10,7 +10,7 @@ Feature: Check admin index form submission
     And I fill in "username" with the environment variable "DB_USER"
     And I fill in "password" with the environment variable "DB_PASS"
 
-    And I fill in "numrecordsperpage" with "1"
+    And I fill in "numrecordsperpage" with "2"
     And I fill in "appname" with "Cruddiy Tests"
     And I fill in "language" with "en"
 
