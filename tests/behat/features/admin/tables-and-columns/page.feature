@@ -6,6 +6,8 @@ Feature: Check admin tables and columns pages
     And I should not see "Parse error"
     And I should not see "Fatal error"
 
+
+
   Scenario: Check for errors on Columns page
     Given I am on "/core/columns.php"
     Then I should see "All Available Columns"
