@@ -1,3 +1,4 @@
+@database
 Feature: Check admin index form submission
 
   Scenario:

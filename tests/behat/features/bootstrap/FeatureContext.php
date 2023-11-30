@@ -36,12 +36,12 @@ class FeatureContext extends MinkContext implements Context {
 
 
     /**
-     * @BeforeScenario
+     * @BeforeScenario @database
      */
-    public function beforeScenario(BeforeScenarioScope $scope) {
+    public function cleanDB(BeforeScenarioScope $scope) {
 
         try {
-            // Create database
+            $this->pdo->exec("DROP DATABASE IF EXISTS `" . $_ENV['DB_BASE'] . "`");
             $this->pdo->exec("CREATE DATABASE IF NOT EXISTS `" . $_ENV['DB_BASE'] . "`  COLLATE '" . $_ENV['DB_CHAR'] . "'");
             $this->pdo->exec("GRANT ALL ON `" . $_ENV['DB_BASE'] . "`.* TO '" . $_ENV['DB_USER'] . "'@'localhost'");
             $this->pdo->exec("FLUSH PRIVILEGES");
