@@ -18,6 +18,7 @@ default:
         - features/public/read/read.feature
         - features/public/create/create.feature
         - features/public/update/update.feature
+        - features/public/delete/delete.feature
   extensions:
     Behat\MinkExtension:
       goutte:
