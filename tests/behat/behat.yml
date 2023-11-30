@@ -10,8 +10,8 @@ default:
         - features/admin/relations/page.feature
         - features/admin/relations/schema.feature
         - features/admin/relations/form.feature
-        - features/admin/tables/page.feature
-        - features/admin/tables/form.feature
+        - features/admin/tables-and-columns/page.feature
+        - features/admin/tables-and-columns/form.feature
   extensions:
     Behat\MinkExtension:
       goutte:
