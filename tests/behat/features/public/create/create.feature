@@ -69,10 +69,12 @@ Feature: Check public create page content
     And I fill in "packaging_details" with "Lorem ipsum dolor sit amet, nec consectuter adisciping elis."
     And I fill in "recycled_material_incorporation" with "0"
     And I select "False" from "hazardous_substance_presence"
-    And I attach the file "./tests/assets/image.jpg" to "packshot_file"
+    And I attach the file "./tests/assets/cruddiy_test_image.jpg" to "packshot_file"
     And I press "Create"
 
     Then I should see "Test Product Name 2 with file"
-    And I should see "image.jpg"
+    And I should see "cruddiy_test_image.jpg"
     And I follow "Back to List"
     And I should see a ".uploaded_file" element
+    And I follow "link_packshot_file"
+    Then the response status code should be 200

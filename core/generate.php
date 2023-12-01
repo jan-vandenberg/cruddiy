@@ -574,7 +574,7 @@ function generate($postdata) {
                             $index_table_rows .= "// echo '</pre>';"."\n";
 
                             $index_table_rows .= '$is_file = $tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . '][\'is_file\'];'."\n";
-                            $index_table_rows .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file">\' : \'\';'."\n";
+                            $index_table_rows .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_'. $columnname .'">\' : \'\';'."\n";
                             $index_table_rows .= 'echo $link_file;' . "\n";
 
                             $index_table_rows .= 'echo nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? ""));'."\n";
@@ -867,9 +867,20 @@ function generate($postdata) {
                     $create_html [] = '<div class="form-group">
                     <label for="'.$columnname.'">'.$columndisplay.'</label>
                     '. $column_input .'</div>';
+
+                    $read_records .= '<?php'."\n";
+                    $read_records .= '// Check if the column is file upload'."\n";
+                    $read_records .= "// echo '<pre>';"."\n";
+                    $read_records .= '// print_r($tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . ']);'."\n";
+                    $read_records .= "// echo '</pre>';"."\n";
+                    $read_records .= '$is_file = $tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . '][\'is_file\'];'."\n";
+                    $read_records .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_'. $columnname .'">\' : \'\';'."\n";
+                    $read_records .= '$end_link_file = $is_file ? "</a>" : "";'."\n";
+                    $read_records .= '?>'."\n";
+
                     $read_records .= '<div class="form-group">
                         <h4>'.$columndisplay.'</h4>
-                        <p class="form-control-static">' . $column_value .'</p></div>';
+                        <p class="form-control-static"><?php echo $link_file ?>' . $column_value . '<?php echo $end_link_file ?></p></div>';
 
                     // Different Layout
                     // $create_html [] = '<div class="form-group row">
