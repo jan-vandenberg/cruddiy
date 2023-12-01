@@ -725,83 +725,99 @@ function generate($postdata) {
 
                         //$type = column_type($columns['columntype']);
 
-                        switch($type) {
-                        //TEXT
-                        case 1:
-                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo @'. $create_record. '; ?></textarea>';
-                        break;
 
-                        //ENUM types
-                        case 2:
-                        //Make sure on the update form that the previously selected type is also selected from the list
+                        // Check for a specific configuration of the column
+                        // echo '<pre>';
+                        // print_r($tables_and_columns_names[$tablename]['columns'][$columnname]);
+                        // echo '</pre>';
+                        $is_special_column_type = false;
 
-                            $html = '<select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
-                            if ($columns['columnnullable'])
-                            {
-                                $html .= '<option value="">Null</option>';
-                            }
+                        // Check if the column is a file upload
+                        if ($tables_and_columns_names[$tablename]['columns'][$columnname]['is_file']) {
+                            $is_special_column_type = true;
+                            $column_input = '<input type="file" name="' . $columnname . '" id="' . $columnname . '" class="form-control">';
+                        }
 
-                            $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
+
+
+
+                        if (!$is_special_column_type) {
+                            switch ($type) {
+                                //TEXT
+                                case 1:
+                                    $column_input = '<textarea name="' . $columnname . '" id="' . $columnname . '" class="form-control"><?php echo @' . $create_record . '; ?></textarea>';
+                                    break;
+
+                                //ENUM types
+                                case 2:
+                                    //Make sure on the update form that the previously selected type is also selected from the list
+
+                                    $html = '<select name="' . $columnname . '" class="form-control" id="' . $columnname . '">';
+                                    if ($columns['columnnullable']) {
+                                        $html .= '<option value="">Null</option>';
+                                    }
+
+                                    $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
                             FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$tablename' AND COLUMN_NAME = '$columnname';";
-                            $result = mysqli_query($link, $sql_enum);
-                            $row = mysqli_fetch_array($result, MYSQLI_NUM);
-                            preg_match('/enum\((.*)\)$/', $row[0], $matches);
-                            $html .= "<?php \n\t\t\t\t\t\t\t \$enum_$columnname = array(" . $matches[1] . ");";
-                            $html .= "
+                                    $result = mysqli_query($link, $sql_enum);
+                                    $row = mysqli_fetch_array($result, MYSQLI_NUM);
+                                    preg_match('/enum\((.*)\)$/', $row[0], $matches);
+                                    $html .= "<?php \n\t\t\t\t\t\t\t \$enum_$columnname = array(" . $matches[1] . ");";
+                                    $html .= "
                                 foreach (\$enum_$columnname as " . ' $val){
-                                    if ($val == $'.$columnname.'){
+                                    if ($val == $' . $columnname . '){
                                     echo \'<option value="\' . $val . \'" selected="selected">\' . $val . \'</option>\';
                                     } else
                                     echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
                                             }
                             ?></select>';
 
-                            $column_input = $html;
-                            unset($html);
-                        break;
-                        //VARCHAR
-                        case 3:
-                            preg_match('#\((.*?)\)#', $columns['columntype'], $match);
-                            $maxlength = $match[1];
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
-                        break;
+                                    $column_input = $html;
+                                    unset($html);
+                                    break;
+                                //VARCHAR
+                                case 3:
+                                    preg_match('#\((.*?)\)#', $columns['columntype'], $match);
+                                    $maxlength = $match[1];
+                                    $column_input = '<input type="text" name="' . $columnname . '" id="' . $columnname . '" maxlength="' . $maxlength . '" class="form-control" value="<?php echo @' . $create_record . '; ?>">';
+                                    break;
 
-                        //TINYINT (bool)
-                        case 4:
-                            $regex = "/'(.*?)'/";
-                            preg_match_all( $regex , $columns['columntype'] , $enum_array );
-                            $html = '<select name="'.$columnname.'" id="'. $columnname .'" class="form-control" id="'.$columnname .'">';
-                                if ($columns['columnnullable'])
-                                {
-                                    $html .= '<option value="">Null</option>';
-                                }
-                            $html   .= '    <option value="0" <?php echo !@' . $create_record . ' ? "selected": ""; ?> >False</option>';
-                            $html   .= '    <option value="1" <?php echo @' . $create_record . ' ? "selected": ""; ?> >True</option>';
-                            $html   .= '</select>';
-                                $column_input = $html;
-                            unset($html);
-                        break;
-                        //INT
-                        case 5:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
-                        break;
+                                //TINYINT (bool)
+                                case 4:
+                                    $regex = "/'(.*?)'/";
+                                    preg_match_all($regex, $columns['columntype'], $enum_array);
+                                    $html = '<select name="' . $columnname . '" id="' . $columnname . '" class="form-control" id="' . $columnname . '">';
+                                    if ($columns['columnnullable']) {
+                                        $html .= '<option value="">Null</option>';
+                                    }
+                                    $html .= '    <option value="0" <?php echo !@' . $create_record . ' ? "selected": ""; ?> >False</option>';
+                                    $html .= '    <option value="1" <?php echo @' . $create_record . ' ? "selected": ""; ?> >True</option>';
+                                    $html .= '</select>';
+                                    $column_input = $html;
+                                    unset($html);
+                                    break;
+                                //INT
+                                case 5:
+                                    $column_input = '<input type="number" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo @' . $create_record . '; ?>">';
+                                    break;
 
-                        //DECIMAL
-                        case 6:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>" step="any">';
-                        break;
-                        //DATE
-                        case 7:
-                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
-                        break;
-                        //DATETIME
-                        case 8:
-                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime(@'. $create_record. ')); ?>">';
-                        break;
+                                //DECIMAL
+                                case 6:
+                                    $column_input = '<input type="number" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo @' . $create_record . '; ?>" step="any">';
+                                    break;
+                                //DATE
+                                case 7:
+                                    $column_input = '<input type="date" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo @' . $create_record . '; ?>">';
+                                    break;
+                                //DATETIME
+                                case 8:
+                                    $column_input = '<input type="datetime-local" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo empty(' . $create_record . ') ? "" : date("Y-m-d\TH:i:s", strtotime(@' . $create_record . ')); ?>">';
+                                    break;
 
-                        default:
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
-                        break;
+                                default:
+                                    $column_input = '<input type="text" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo @' . $create_record . '; ?>">';
+                                    break;
+                            }
                         }
                     }
 
