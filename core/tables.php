@@ -83,9 +83,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <script>
     $(document).ready(function () {
-        $('#checkall').click(function(e) {
-            var chb = $('.form-horizontal').find('input[type="checkbox"]');
-            chb.prop('checked', !chb.prop('checked'));
+        $('#checkall').click(function() {
+            var isChecked = $(this).prop('checked');
+            $('.form-horizontal').find('input[type="checkbox"]').prop('checked', isChecked);
         });
     });
     </script>
