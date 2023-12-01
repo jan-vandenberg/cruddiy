@@ -278,7 +278,7 @@ function is_table_referenced($table_name) {
                                         <!-- Upload checkbox -->
                                         <?php
                                         $checked = '';
-                                        $guesslist_checked_colums = array('file', 'image', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
+                                        $guesslist_checked_colums = array('file', 'image', 'logo', 'picture', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
                                         foreach($guesslist_checked_colums as $term) {
                                             if (strstr($column['name'], $term)) {
                                                 $checked = 'checked';
@@ -298,8 +298,8 @@ function is_table_referenced($table_name) {
                                         <?php
                                         if ($is_table_referenced):
                                             $checked = '';
-                                            $whitelist_checked_colums = array('name', 'reference', 'id');
-                                            foreach($whitelist_checked_colums as $term) {
+                                            $guesslist_checked_colums = array('name', 'reference', 'id');
+                                            foreach($guesslist_checked_colums as $term) {
                                                 if (strstr($column['name'], $term)) {
                                                     $checked = 'checked';
                                                 }
