@@ -27,3 +27,17 @@ Feature: Check public update page content
 
     When I follow "Back to List"
     Then I should see "Under Armour updated"
+
+
+  Scenario: Update a record with a file upload
+    Given I am on "/core/app/products-update.php?id=2"
+    And I fill in "product_name" with "Test Product Name 2 with updated file"
+    And I attach the file "./tests/assets/cruddiy_test_image.jpg" to "packshot_file"
+    And I press "Edit"
+
+    Then I should see "Test Product Name 2 with updated file"
+    And I should see "cruddiy_test_image.jpg"
+    And I follow "Back to List"
+    And I should see a ".uploaded_file" element
+    And I follow "link_packshot_file"
+    Then the response status code should be 200
