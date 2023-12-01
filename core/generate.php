@@ -307,7 +307,18 @@ function generate_delete($tablename, $column_id){
 }
 
 function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
-    global $createfile;
+
+    $template = "templates/entity-create.php";
+
+    // Check if the file exists
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $createfile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
+
     global $CSS_REFS;
     global $JS_REFS;
 
