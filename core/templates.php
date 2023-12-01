@@ -409,7 +409,11 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
     if (!isset($error)){
         $new_id = mysqli_insert_id($link);
-        header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=$new_id");
+        if ($new_id) {
+            header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=$new_id");
+        } else {
+            header("location: {TABLE_NAME}-index.php");
+        }
     }
 }
 ?>
