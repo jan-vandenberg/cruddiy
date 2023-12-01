@@ -453,7 +453,8 @@ function generate($postdata) {
                     $fk_column = $row["FK Column"];
                     $column = $row["Column"];
                     $foreign_key_references .= '
-                    $sql = "SELECT COUNT(*) AS count FROM `'. $table .'` WHERE `'. $column .'` = ". $row["'.$fk_column.'"] . ";";
+                    $id = is_numeric($row["'.$fk_column.'"]) ? $row["'.$fk_column.'"] : "\'".$row["'.$fk_column.'"]."\'";
+                    $sql = "SELECT COUNT(*) AS count FROM `'. $table .'` WHERE `'. $column .'` = ". $id . ";";
                     $number_of_refs = mysqli_fetch_assoc(mysqli_query($link, $sql))["count"];
                     if ($number_of_refs > 0)
                     {
