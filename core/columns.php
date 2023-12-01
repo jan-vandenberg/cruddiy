@@ -126,20 +126,44 @@ if (isset($_POST['table'])) {
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-8"></div>
-                    <div class="col-2">
-                        <input type="checkbox" id="checkall-1" checked>
-                        <label for="checkall-1">Check/uncheck all</label>
-                    </div>
-                    <div class="col-2">
-                        <input type="checkbox" id="checkall-2" checked>
-                        <label for="checkall-2">Check/uncheck all</label>
-                    </div>
-                </div>
+
 
                 <form class="form-horizontal" action="generate.php" method="post">
                     <fieldset>
+
+                        <div class="row">
+                            <div class="col-3">
+                            </div>
+                            <div class="col-9">
+                                <small><br>
+                                <p><strong>Visibility in this table:</strong> Check the "Show column" box to display the selected column in the list view of this table.</p>
+                                <p><strong>Visibility in related tables:</strong> Check the "Show in FK" box to display the selected column when it is referenced as foreign key in another table. Columns keys "id", "name", "reference" are checked by default.</p>
+                                <p><strong>File:</strong> Check to activate file upload feature.</p>
+                                </small>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-8">
+                            </div>
+                            <div class="col-4 text-center pb-3">
+                                <strong>Visibility</strong>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-2">
+                                <input type="checkbox" id="checkall-1" checked>
+                                <label for="checkall-1">Check/uncheck all</label>
+                            </div>
+                            <div class="col-2">
+                                <input type="checkbox" id="checkall-2" checked>
+                                <label for="checkall-2">Check/uncheck all</label>
+                            </div>
+                        </div>
 
                         <?php foreach ($tablesData as $table): ?>
                             <?php
@@ -149,7 +173,7 @@ if (isset($_POST['table'])) {
                             ?>
                             <div class="row">
                                 <div class="col-3"></div>
-                                <div class="col-9 my-4">
+                                <div class="col-4 my-4">
                                     <?php
                                     $configTableNamesFilePath = 'app/config-tables-columns.php';
                                     if (file_exists($configTableNamesFilePath)) {
@@ -157,6 +181,13 @@ if (isset($_POST['table'])) {
                                     }
                                     ?>
                                     <strong>Table: <?= htmlspecialchars($table['display']) ?> (<?= htmlspecialchars($table['name']) ?>)</strong>
+                                </div>
+                                <div class="col-1"></div>
+                                <div class="col-2 my-4">
+                                    <strong>This table</strong>
+                                </div>
+                                <div class="col-2 my-4">
+                                    <strong>Related tables</strong>
                                 </div>
                             </div>
 
@@ -171,7 +202,7 @@ if (isset($_POST['table'])) {
                                             <?= $column['nullable'] ? '🫙' : '' ?>
                                         </label>
                                     </div>
-                                    <div class="col-md-5">
+                                    <div class="col-md-4">
                                         <?php
                                         // echo '<pre>';
                                         // print_r($table);
@@ -208,15 +239,29 @@ if (isset($_POST['table'])) {
                                                 <?php echo isset($tables_columns_names[$table['name']]['columns'][$column['name']]) ? 'value="'.addslashes(htmlspecialchars($tables_columns_names[$table['name']]['columns'][$column['name']])).'"' : '' ?>
                                                 >
                                     </div>
+                                    <div class="col-md-1">
+                                        <!-- Upload checkbox -->
+                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" checked>
+                                        <label for="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>">File</label>
+                                    </div>
                                     <div class="col-md-2">
                                         <!-- Visible in overview checkbox -->
                                         <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" checked>
-                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>">Visible in overview?</label>
+                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>">Show column</label>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in preview checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" checked>
-                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Visible in preview?</label>
+                                        <?php
+                                        $checked = '';
+                                        $whitelist_checked_colums = array('name', 'reference', 'id');
+                                        foreach($whitelist_checked_colums as $term) {
+                                            if (strstr($column['name'], $term)) {
+                                                $checked = 'checked';
+                                            }
+                                        }
+                                        ?>
+                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" <?php echo $checked ?>>
+                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Show in FK</label>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
