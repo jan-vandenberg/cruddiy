@@ -41,6 +41,9 @@ CREATE TABLE `products` (
   CONSTRAINT `products_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `products`
+ADD `packshot_file` text COLLATE 'utf8_general_ci' NULL;
+
 
 DROP TABLE IF EXISTS `suppliers`;
 CREATE TABLE `suppliers` (

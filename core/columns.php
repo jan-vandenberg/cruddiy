@@ -268,7 +268,16 @@ function is_table_referenced($table_name) {
                                     </div>
                                     <div class="col-md-1">
                                         <!-- Upload checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" checked>
+                                        <?php
+                                        $checked = '';
+                                        $guesslist_checked_colums = array('file', 'image', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
+                                        foreach($guesslist_checked_colums as $term) {
+                                            if (strstr($column['name'], $term)) {
+                                                $checked = 'checked';
+                                            }
+                                        }
+                                        ?>
+                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" <?php echo $checked ?>>
                                         <label for="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>">File</label>
                                     </div>
                                     <div class="col-md-2">
