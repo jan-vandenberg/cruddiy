@@ -224,3 +224,13 @@ function sanitizeFileName($fileName) {
 
     return $fileName;
 }
+
+
+
+function generateUniqueFileName($originalFileName) {
+    $timestamp = time();
+    $salt = uniqid(); // Alternatively, use bin2hex(random_bytes(8)) for more randomness
+    $uniquePrefix = $timestamp . '_' . $salt . '_';
+
+    return $uniquePrefix . $originalFileName;
+}
