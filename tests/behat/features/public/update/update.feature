@@ -41,3 +41,16 @@ Feature: Check public update page content
     And I should see a ".uploaded_file" element
     And I follow "link_packshot_file"
     Then the response status code should be 200
+
+
+  Scenario: Preserve existing attachment when updating a record without picking a new file
+    Given I am on "/core/app/products-update.php?id=2"
+    And I fill in "product_name" with "Test Product Name 2 with preserved file"
+    And I press "Edit"
+
+    Then I should see "Test Product Name 2 with preserved file"
+    And I should see "cruddiy_test_image.jpg"
+    And I follow "Back to List"
+    And I should see a ".uploaded_file" element
+    And I follow "link_packshot_file"
+    Then the response status code should be 200
