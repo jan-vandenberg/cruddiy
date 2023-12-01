@@ -56,13 +56,33 @@ class FeatureContext extends MinkContext implements Context {
 
 
     /**
-     * @BeforeScenario @cleanDB
+     * @BeforeScenario @cleanTestRecordsAndUploads
      */
-    public function cleanDB(BeforeScenarioScope $scope) {
+    public function cleanTestRecordsAndUploads(BeforeScenarioScope $scope) {
+        $this->cleanDB($scope);
+        $this->cleanUploads($scope);
+    }
 
-        // Delete the test database and re-import what was created by the Admin test suite
-        // This is useful to run the Public test suite multiple times, whithout encounting errors
-        // because the Public test suites performs operations that invalidates the tests.
+
+
+    // Delete files uploaded by the Public test suite
+    private function cleanUploads(BeforeScenarioScope $scope) {
+        $directory = __DIR__ . '/../../../../core/app/uploads';
+        $substring = '_cruddiy_test_image.jpg';
+
+        foreach (glob($directory . '/*') as $file) {
+            if (is_file($file) && strpos(basename($file), $substring) !== false) {
+                unlink($file);
+            }
+        }
+    }
+
+
+
+    // Delete the test database and re-import what was created by the Admin test suite
+    // This is useful to run the Public test suite multiple times, whithout encounting errors
+    // because the Public test suites performs operations that invalidates the tests.
+    private function cleanDB(BeforeScenarioScope $scope) {
         try {
             $dir_schema = realpath(__DIR__ . '/../../../../schema');
             $file_schema = 'Tests - Public.sql';
