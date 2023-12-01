@@ -82,7 +82,13 @@ function get_columns_attributes($table_name, $column)
 function print_error_if_exists($error)
 {
     if (isset($error)) {
-        echo "<div class='alert alert-danger' role='alert'>$error</div>";
+        if (!is_array($error)) {
+            echo "<div class='alert alert-danger' role='alert'>$error</div>";
+        } else {
+            foreach ($error as $err) {
+                echo "<div class='alert alert-danger' role='alert'>$err</div>";
+            }
+        }
     }
 }
 
