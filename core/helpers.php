@@ -201,3 +201,26 @@ function handleFileUpload($FILE) {
     }
     return $upload_results;
 }
+
+
+
+function sanitizeFileName($fileName) {
+    // Remove illegal file system characters
+    $fileName = str_replace(array('<', '>', ':', '"', '/', '\\', '|', '?', '*'), '', $fileName);
+
+    // Normalize Unicode characters
+    if (class_exists('Normalizer')) {
+        $fileName = Normalizer::normalize($fileName, Normalizer::FORM_C);
+    }
+
+    // Replace spaces with underscores
+    $fileName = str_replace(' ', '_', $fileName);
+
+    // Convert to lowercase for consistency
+    $fileName = strtolower($fileName);
+
+    // Truncate to a maximum length to avoid system limitations (255 characters is a safe bet)
+    $fileName = substr($fileName, 0, 255);
+
+    return $fileName;
+}
