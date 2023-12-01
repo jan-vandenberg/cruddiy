@@ -201,8 +201,8 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
                 } else {
                     echo '- Appending '.$start_page_link.'<br>';
                     array_push($navbarfile_links[1], $start_page_link);
-                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $tables_columns_names["'.$key.'"]["name"] ?></a>'."\n\t".$buttons_delimiter;
-                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo (!empty($tables_columns_names["'.$key.'"]["name"])) ? $tables_columns_names["'.$key.'"]["name"] : "'.$key.'" ?></a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $tables_and_columns_names["'.$key.'"]["name"] ?></a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo (!empty($tables_and_columns_names["'.$key.'"]["name"])) ? $tables_and_columns_names["'.$key.'"]["name"] : "'.$key.'" ?></a>'."\n\t".$buttons_delimiter;
                     $step0 = str_replace($buttons_delimiter, $button_string, $navbarfile);
                     $step1 = str_replace("{APP_NAME}", $appname, $step0 );
                     if (!file_put_contents($startpage_filename, $step1, LOCK_EX)) {
@@ -558,9 +558,21 @@ function generate($postdata) {
                         }
                         else if ($type == 1) // Text
                         {
-                            $index_table_rows .= 'echo "<td>"; ';
-                            $index_table_rows .= 'echo nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "")); ';
-                            $index_table_rows .= 'echo "</td>"."\n\t\t\t\t\t\t\t\t\t\t"; ';
+                            $index_table_rows .= 'echo "<td>";'."\n";
+                            $index_table_rows .= '// Check if the column is file upload'."\n";
+                            $index_table_rows .= "// echo '<pre>';"."\n";
+                            $index_table_rows .= '// print_r($tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . ']);'."\n";
+                            $index_table_rows .= "// echo '</pre>';"."\n";
+                            
+                            $index_table_rows .= '$is_file = $tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . '][\'is_file\'];'."\n";
+                            $index_table_rows .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank">\' : \'\';'."\n";
+                            $index_table_rows .= 'echo $link_file;' . "\n";
+
+                            $index_table_rows .= 'echo nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? ""));'."\n";
+
+                            $index_table_rows .= 'echo $is_file ? "</a>" : "";'."\n";
+
+                            $index_table_rows .= 'echo "</td>"."\n\t\t\t\t\t\t\t\t\t\t";';
                         }
                         else if ($type == 4) // TinyInt / Bool
                         {
@@ -940,7 +952,7 @@ function extractTableName($post_key) {
 
 
 // Save table and columns configuration
-function updateTableAndColumnsNames($tables_columns_names) {
+function updateTableAndColumnsNames($tables_and_columns_names) {
 
     $configTableNamesFilePath     = 'app/config-tables-columns.php';
     $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
@@ -950,7 +962,7 @@ function updateTableAndColumnsNames($tables_columns_names) {
     $templateContent = file_get_contents($configTableNamesTemplatePath);
 
     // Prepare the new tables array as a string
-    $new_table_names = var_export($tables_columns_names, true);
+    $new_table_names = var_export($tables_and_columns_names, true);
 
     // Replace placeholders with actual values
     $replacements = [

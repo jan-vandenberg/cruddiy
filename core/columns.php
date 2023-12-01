@@ -263,7 +263,7 @@ function is_table_referenced($table_name) {
                                         <?php
                                         // Debug a row
                                         // echo '<pre>';
-                                        // print_r($tables_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']);
+                                        // print_r($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']);
                                         // echo '</pre>';
                                         ?>
                                         <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>"
@@ -271,7 +271,7 @@ function is_table_referenced($table_name) {
                                                 type="text"
                                                 placeholder="Display field name in frontend"
                                                 class="form-control rounded-0"
-                                                <?php echo isset($tables_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ? 'value="'.addslashes(htmlspecialchars($tables_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])).'"' : '' ?>
+                                                <?php echo isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ? 'value="'.addslashes(htmlspecialchars($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])).'"' : '' ?>
                                                 >
                                     </div>
                                     <div class="col-md-1">

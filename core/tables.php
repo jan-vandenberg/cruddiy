@@ -48,7 +48,7 @@
                                 <?php foreach ($tablelist as $i => $table): ?>
                                     <?php
                                     // echo '<pre>';
-                                    // print_r($tables_columns_names[$table]);
+                                    // print_r($tables_and_columns_names[$table]);
                                     // echo '</pre>';
                                     ?>
                                     <div class="row align-items-center">
@@ -57,7 +57,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <input type="hidden" name="table[<?= $i ?>][tablename]" value="<?= htmlspecialchars($table) ?>"/>
-                                            <input id="textinput_<?= htmlspecialchars($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($tables_columns_names[$table]['name']) ? 'value="'.$tables_columns_names[$table]['name'].'"' : '' ?>>
+                                            <input id="textinput_<?= htmlspecialchars($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($tables_and_columns_names[$table]['name']) ? 'value="'.$tables_and_columns_names[$table]['name'].'"' : '' ?>>
                                         </div>
                                         <div class="col-md-3">
                                             <input class="mr-1" type="checkbox" name="table[<?= $i ?>][tablecheckbox]" id="checkboxes-<?= $i ?>" value="1">
