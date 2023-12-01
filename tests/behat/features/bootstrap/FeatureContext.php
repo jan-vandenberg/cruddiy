@@ -136,36 +136,4 @@ class FeatureContext extends MinkContext implements Context {
 
 
 
-    /**
-     * @Then /^I should see an element "([^"]*)"$/
-     */
-    public function iShouldSeeAnElement($selector)
-    {
-        // Escape special characters
-        $escapedSelector = addcslashes($selector, "[]");
-
-        $element = $this->getSession()->getPage()->find('css', $escapedSelector);
-        if (null === $element) {
-            throw new \Exception(sprintf('The element "%s" was not found on the page', $selector));
-        }
-    }
-
-    /**
-     * @Then /^I should not see an element "([^"]*)"$/
-     */
-    public function iShouldNotSeeAnElement($selector)
-    {
-        // Escape special characters
-        $escapedSelector = addcslashes($selector, "[]");
-
-        $element = $this->getSession()->getPage()->find('css', $escapedSelector);
-        if (null !== $element) {
-            throw new \Exception(sprintf('The element "%s" was found on the page when it should not be', $selector));
-        }
-    }
-
-
-
-
-
 }
