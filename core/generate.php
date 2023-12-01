@@ -1,4 +1,9 @@
 <?php
+// Debug POST data
+// echo '<pre>';
+// print_r($_POST);
+// echo '</pre>';
+// exit();
 
 $total_postvars = count($_POST, COUNT_RECURSIVE);
 $max_postvars = ini_get("max_input_vars");
@@ -494,7 +499,10 @@ function generate($postdata) {
                             $columndisplay = $columns['columnname'];
                         }
 
-                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname] = $columndisplay;
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columndisplay'] = $columndisplay;
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['is_file'] = isset($columns['file']) && $columns['file'] ? 1 : 0;
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columnvisible'] = isset($columns['columnvisible']) && $columns['columnvisible'] ? 1 : 0;
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columninpreview'] = isset($columns['columninpreview']) && $columns['columninpreview'] ? 1 : 0;
 
                         if (!empty($columns['columncomment'])){
                             $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
@@ -894,7 +902,7 @@ function extractTableName($post_key) {
 
 
 
-// Save table names to config
+// Save table and columns configuration
 function updateTableAndColumnsNames($tables_columns_names) {
 
     $configTableNamesFilePath     = 'app/config-tables-columns.php';
