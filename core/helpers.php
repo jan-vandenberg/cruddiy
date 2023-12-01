@@ -145,4 +145,59 @@ function translate($key, $echo = true, ...$args)
         }
     }
 }
-?>
+
+
+
+
+function handleFileUpload($FILE) {
+
+    global $upload_max_size;
+    global $upload_target_dir;
+    global $upload_disallowed_exts;
+
+    $upload_results     = array();
+    $sanitized_fileName = sanitizeFileName(basename($FILE["name"]));
+    $unique_filename    = generateUniqueFileName($sanitized_fileName);
+    $target_file        = $upload_target_dir . $unique_filename;
+    $extension          = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+
+    // Check if the upload directory exists
+    if (!file_exists($upload_target_dir)) {
+        // The 0777 permission will be modified by your umask
+        mkdir($upload_target_dir, 0777, true);
+
+        // Write a dummy index file to prevent directory listing
+        file_put_contents($upload_target_dir . '/index.php', '');
+        // $upload_results['error'] = "Upload directory created.";
+    } else {
+        // $upload_results['error'] = "Upload directory already exists.";
+    }
+
+    // Check if file already exists
+    if (file_exists($target_file)) {
+        $upload_results['error'] = "Sorry, the file " . htmlspecialchars(basename($FILE["name"])) . " already exists.";
+        return $upload_results;
+    }
+
+    // Check file size (example: 5MB limit)
+    if ($FILE["size"] > $upload_max_size) {
+        $upload_results['error'] = "Sorry, the file " . htmlspecialchars(basename($FILE["name"])) . " is too large.";
+        return $upload_results;
+    }
+
+    // Extensions blacklist
+    if (in_array($extension, $upload_disallowed_exts)) {
+        $upload_results['error'] = "Sorry, uploading files with extension $extension is not allowed.";
+        return $upload_results;
+    }
+
+    // Try to upload file
+    if (empty($upload_results)) {
+        if (move_uploaded_file($FILE["tmp_name"], $target_file)) {
+            $upload_results['success'] = $unique_filename;
+        } else {
+            $upload_results['error'] = "Sorry, there was an error uploading the file " . htmlspecialchars(basename($FILE["name"])) . ".";
+        }
+    }
+    return $upload_results;
+}
