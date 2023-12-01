@@ -46,6 +46,11 @@
 
                             <div class="container">
                                 <?php foreach ($tablelist as $i => $table): ?>
+                                    <?php
+                                    // echo '<pre>';
+                                    // print_r($tables_columns_names[$table]);
+                                    // echo '</pre>';
+                                    ?>
                                     <div class="row align-items-center">
                                         <div class="col-md-3 text-right">
                                             <label class="control-label" for="table[<?= $i ?>][tablename]"><?= htmlspecialchars($table) ?></label>

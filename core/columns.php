@@ -214,7 +214,9 @@ function is_table_referenced($table_name) {
                                     <strong>This table</strong>
                                 </div>
                                 <div class="col-2 my-4">
-                                    <strong>Related tables</strong>
+                                    <?php if ($is_table_referenced) : ?>
+                                        <strong>Related tables</strong>
+                                    <?php endif ?>
                                 </div>
                             </div>
 
@@ -258,12 +260,18 @@ function is_table_referenced($table_name) {
                                         <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columncomment]" value="<?= htmlspecialchars($column['comment']) ?>"/>
                                         <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnnullable]" value="<?php echo $column['nullable'] ?>"/>
 
+                                        <?php
+                                        // Debug a row
+                                        // echo '<pre>';
+                                        // print_r($tables_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']);
+                                        // echo '</pre>';
+                                        ?>
                                         <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>"
                                                 name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columndisplay]"
                                                 type="text"
                                                 placeholder="Display field name in frontend"
                                                 class="form-control rounded-0"
-                                                <?php echo isset($tables_columns_names[$table['name']]['columns'][$column['name']]) ? 'value="'.addslashes(htmlspecialchars($tables_columns_names[$table['name']]['columns'][$column['name']])).'"' : '' ?>
+                                                <?php echo isset($tables_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ? 'value="'.addslashes(htmlspecialchars($tables_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])).'"' : '' ?>
                                                 >
                                     </div>
                                     <div class="col-md-1">
@@ -288,9 +296,7 @@ function is_table_referenced($table_name) {
                                     <div class="col-md-2">
                                         <!-- Visible in preview checkbox -->
                                         <?php
-                                        if (!$is_table_referenced):
-                                            echo !$i ? '<small>No FK linked to this table</small>' : '';
-                                        else:
+                                        if ($is_table_referenced):
                                             $checked = '';
                                             $whitelist_checked_colums = array('name', 'reference', 'id');
                                             foreach($whitelist_checked_colums as $term) {
