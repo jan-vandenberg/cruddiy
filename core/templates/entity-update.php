@@ -13,7 +13,10 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
     if (!empty($_FILES)) {
         foreach ($_FILES as $key => $value) {
             // Check if the file was actually uploaded
-            if ($value['error'] != UPLOAD_ERR_NO_FILE) {
+            // echo '<pre>';
+            // print_r($value);
+            // echo '</pre>';
+            if ($value['error'] == UPLOAD_ERR_OK ) {
                 // echo "Field " . $key . " is a file upload.\n";
                 $this_upload = handleFileUpload($_FILES[$key]);
                 $upload_results[] = $this_upload;
@@ -21,6 +24,14 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                 if (!in_array(true, array_column($this_upload, 'error')) && !array_key_exists('error', $this_upload)) {
                     $_POST[$key] = $this_upload['success'];
                 }
+            }
+            // When no file was provided, we keep the existing one
+            elseif ($value['error'] == UPLOAD_ERR_NO_FILE) {
+                $_POST[$key] = $_POST['cruddiy_backup_' . $key];
+            }
+            // Other errors
+            else {
+                $upload_errors[] = array('error' => getUploadResultByErrorCode($value['error']));
             }
         }
     }
