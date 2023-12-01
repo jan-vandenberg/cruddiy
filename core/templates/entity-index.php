@@ -18,6 +18,7 @@
     </style>
 </head>
 <?php require_once('config.php'); ?>
+<?php require_once('config-tables-columns.php'); ?>
 <?php require_once('helpers.php'); ?>
 <?php require_once('navbar.php'); ?>
 <body>
@@ -120,33 +121,38 @@
                             $number_of_results = mysqli_fetch_assoc(mysqli_query($link, $count_pages))['count'];
                             $total_pages = ceil($number_of_results / $no_of_records_per_page);
                             translate('total_results', true, $number_of_results, $pageno, $total_pages);
+                            ?>
 
-                            echo "<table class='table table-bordered table-striped'>";
-                                echo "<thead class='thead-light'>";
-                                    echo "<tr>";
-                                        {INDEX_TABLE_HEADERS}
-                                        echo "<th><?php translate('Actions') ?></th>";
-                                    echo "</tr>";
-                                echo "</thead>";
-                                echo "<tbody>";
-                                while($row = mysqli_fetch_array($result)){
-                                    echo "<tr>";
-                                    {INDEX_TABLE_ROWS}
-                                        echo "<td>";
-                                            $column_id = '{COLUMN_ID}';
-                                            if (!empty($column_id)) {
-                                                echo "<a id='read-" . $row['{COLUMN_NAME}']. "' href='{TABLE_NAME}-read.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('View Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-info'><i class='far fa-eye'></i></a>";
-                                                echo "<a id='update-" . $row['{COLUMN_NAME}']. "' href='{TABLE_NAME}-update.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('Update Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-warning'><i class='far fa-edit'></i></a>";
-                                                echo "<a id='delete-" . $row['{COLUMN_NAME}']. "' href='{TABLE_NAME}-delete.php?{COLUMN_ID}=". $row['{COLUMN_NAME}'] ."' title='" . addslashes(translate('Delete Record', false)) ."' data-toggle='tooltip' class='btn btn-sm btn-danger'><i class='far fa-trash-alt'></i></a>";
-                                            } else {
-                                                addslashes(translate('unsupported_no_pk'));
-                                            }
-                                        echo "</td>";
-                                    echo "</tr>";
-                                }
-                                echo "</tbody>";
-                            echo "</table>";
-?>
+                            <table class='table table-bordered table-striped'>
+                                <thead class='thead-light'>
+                                    <tr>
+                                        <?php {INDEX_TABLE_HEADERS} ?>
+                                        <th><?php translate('Actions'); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while($row = mysqli_fetch_array($result)): ?>
+                                        <tr>
+                                            <?php {INDEX_TABLE_ROWS} ?>
+                                            <td>
+                                                <?php
+                                                $column_id = '{COLUMN_ID}';
+                                                if (!empty($column_id)): ?>
+                                                    <a id='read-<?php echo $row['{COLUMN_NAME}']; ?>' href='{TABLE_NAME}-read.php?{COLUMN_ID}=<?php echo $row['{COLUMN_NAME}']; ?>' title='<?php echo addslashes(translate('View Record', false)); ?>' data-toggle='tooltip' class='btn btn-sm btn-info'><i class='far fa-eye'></i></a>
+                                                    <a id='update-<?php echo $row['{COLUMN_NAME}']; ?>' href='{TABLE_NAME}-update.php?{COLUMN_ID}=<?php echo $row['{COLUMN_NAME}']; ?>' title='<?php echo addslashes(translate('Update Record', false)); ?>' data-toggle='tooltip' class='btn btn-sm btn-warning'><i class='far fa-edit'></i></a>
+                                                    <a id='delete-<?php echo $row['{COLUMN_NAME}']; ?>' href='{TABLE_NAME}-delete.php?{COLUMN_ID}=<?php echo $row['{COLUMN_NAME}']; ?>' title='<?php echo addslashes(translate('Delete Record', false)); ?>' data-toggle='tooltip' class='btn btn-sm btn-danger'><i class='far fa-trash-alt'></i></a>
+                                                <?php else: ?>
+                                                    <?php echo addslashes(translate('unsupported_no_pk')); ?>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
+
+
+
+
                                 <ul class="pagination" align-right>
                                 <?php
                                     $new_url = preg_replace('/&?pageno=[^&]*/', '', $currenturl);
