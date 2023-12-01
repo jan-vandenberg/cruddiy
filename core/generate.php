@@ -358,7 +358,16 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
 }
 
 function generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns){
-    global $updatefile;
+
+    // Load template
+    $template = "templates/entity-update.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $updatefile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
     global $CSS_REFS;
     global $JS_REFS;
 
