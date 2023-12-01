@@ -280,7 +280,16 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
 }
 
 function generate_read($tablename, $column_id, $read_records, $foreign_key_references, $join_columns, $join_clauses){
-    global $readfile;
+
+    // Load template
+    $template = "templates/entity-read.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $readfile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
     global $CSS_REFS;
     global $JS_REFS;
 
@@ -563,7 +572,7 @@ function generate($postdata) {
                             $index_table_rows .= "// echo '<pre>';"."\n";
                             $index_table_rows .= '// print_r($tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . ']);'."\n";
                             $index_table_rows .= "// echo '</pre>';"."\n";
-                            
+
                             $index_table_rows .= '$is_file = $tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . '][\'is_file\'];'."\n";
                             $index_table_rows .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank">\' : \'\';'."\n";
                             $index_table_rows .= 'echo $link_file;' . "\n";
