@@ -217,7 +217,16 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
 
 
 function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search, $join_columns, $join_clauses) {
-    global $indexfile;
+
+    // Load template
+    $template = "templates/entity-index.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $indexfile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
     global $appname;
     global $CSS_REFS;
     global $JS_REFS;
@@ -308,9 +317,8 @@ function generate_delete($tablename, $column_id){
 
 function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
 
+    // Load template
     $template = "templates/entity-create.php";
-
-    // Check if the file exists
     if (file_exists($template)) {
         // Read the file's content into a variable
         $createfile = file_get_contents($template);
@@ -550,7 +558,9 @@ function generate($postdata) {
                         }
                         else if ($type == 1) // Text
                         {
-                            $index_table_rows .= 'echo "<td>" . nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "")) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                            $index_table_rows .= 'echo "<td>"; ';
+                            $index_table_rows .= 'echo nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "")); ';
+                            $index_table_rows .= 'echo "</td>"."\n\t\t\t\t\t\t\t\t\t\t"; ';
                         }
                         else if ($type == 4) // TinyInt / Bool
                         {
