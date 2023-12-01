@@ -56,3 +56,23 @@ Feature: Check public create page content
 
     When I follow "Back to List"
     Then I should see "1 results - Page 1 of 1"
+
+
+  Scenario: Add product with upload file
+    Given I am on "/core/app/products-create.php"
+
+    When I fill in "ean" with "2345678901234"
+    And I fill in "product_name" with "Test Product Name 2 with file"
+    And I select "Adidas" from "brand_id"
+    And I select "Test Supplier Name 1" from "supplier_id"
+    And I fill in "visual_url" with "https://www.image2.com"
+    And I fill in "packaging_details" with "Lorem ipsum dolor sit amet, nec consectuter adisciping elis."
+    And I fill in "recycled_material_incorporation" with "0"
+    And I select "False" from "hazardous_substance_presence"
+    And I attach the file "./tests/assets/image.jpg" to "packshot_file"
+    And I press "Create"
+
+    Then I should see "Test Product Name 2 with file"
+    And I should see "image.jpg"
+    And I follow "Back to List"
+    And I should see a ".uploaded_file" element

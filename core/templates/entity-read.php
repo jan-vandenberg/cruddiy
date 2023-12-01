@@ -1,6 +1,7 @@
 <?php
 require_once('config.php');
 require_once('helpers.php');
+require_once('config-tables-columns.php');
 
 // Check existence of id parameter before processing further
 $_GET["{TABLE_ID}"] = trim($_GET["{TABLE_ID}"]);

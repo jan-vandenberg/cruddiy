@@ -574,7 +574,7 @@ function generate($postdata) {
                             $index_table_rows .= "// echo '</pre>';"."\n";
 
                             $index_table_rows .= '$is_file = $tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . '][\'is_file\'];'."\n";
-                            $index_table_rows .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank">\' : \'\';'."\n";
+                            $index_table_rows .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file">\' : \'\';'."\n";
                             $index_table_rows .= 'echo $link_file;' . "\n";
 
                             $index_table_rows .= 'echo nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? ""));'."\n";
