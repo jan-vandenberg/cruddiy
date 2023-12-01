@@ -432,7 +432,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     </div>
                     <?php print_error_if_exists(@$error); ?>
                     <p><?php translate('add_new_record_instructions') ?></p>
-                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" enctype="multipart/form-data">
 
                         {CREATE_HTML}
 
@@ -553,7 +553,7 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
                     </div>
                     <?php print_error_if_exists(@$error); ?>
                     <p><?php translate('update_record_instructions') ?></p>
-                    <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post">
+                    <form action="<?php echo htmlspecialchars(basename($_SERVER['REQUEST_URI'])); ?>" method="post" enctype="multipart/form-data">
 
                         {CREATE_HTML}
 
