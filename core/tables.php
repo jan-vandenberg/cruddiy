@@ -20,13 +20,15 @@
 
                     <form class="form-horizontal" action="columns.php" method="post">
 
-                        <div class="row align-items-center mb-1">
-                            <div class="col-md-11 text-right pr-5 ml-3">
-                                <input type="checkbox" id="checkall">
-                                <label for="checkall">Check/uncheck all</label>
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-3">
+                                    <input type="checkbox" id="checkall" class="mr-1">
+                                    <label for="checkall">Check/uncheck all</label>
+                                </div>
                             </div>
                         </div>
-
 
                         <fieldset>
                             <?php
