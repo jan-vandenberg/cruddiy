@@ -94,7 +94,7 @@ To run a specific test:
 vendor/bin/behat --config tests/behat/behat.yml tests/behat/features/admin/relations/schema.feature
 ```
 
-# How to update the coverage list?
+# 6. How to update the coverage list?
 
 ## Admin test suite for generated CRUD pages:
 
@@ -128,8 +128,27 @@ vendor/bin/behat --config tests/behat/behat.yml --suite public --dry-run --no-sn
 ```
 
 
-# Test database schema
+
+
+
+
+
+
+# 7. Test database schema
 
 - For the tests we have a small structure with Products, Brands, and Suppliers
 - `schema/Tests - Admin.sql` is the (nearly) blank structure, it is used to reset the test database every time you run the Admin test suite. It is also used to self-test the "Import Database Schema" feature.
 - `schema/Tests - Public.sql` is a dump of the test DB after the Admin test suite has been run. It cleans up the DB every time the Public test suite is run (because the suite is performing CRUD operations, which would invalidate some tests when re-run).
+
+
+
+
+
+
+
+
+# 8. Adding new tests
+
+- To find a list of predefined assertions from the Mink extension, open `vendor\behat\mink-extension\src\Behat\MinkExtension\Context\MinkContext.php`
+- Test your `.feature` files individually
+- Then add them to the queue in `behat.yml`
