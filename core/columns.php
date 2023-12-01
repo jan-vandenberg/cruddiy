@@ -106,6 +106,32 @@ if (isset($_POST['table'])) {
     }
 }
 
+// Check if a table is referenced in another table (look for foreign keys)
+function is_table_referenced($table_name) {
+    global $db_server;
+    global $db_user;
+    global $db_password;
+    global $db_name;
+
+    /* Attempt to connect to MySQL database */
+	$link = mysqli_connect($db_server, $db_user, $db_password, 'information_schema');
+	// Check connection
+	if($link === false)
+		die("ERROR: Could not connect. " . mysqli_connect_error());
+
+    $sql = "SELECT * FROM KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '" . $table_name . "' AND REFERENCED_TABLE_SCHEMA = '" . $db_name . "'";
+
+    $result = mysqli_query($link,$sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        mysqli_close($link);
+        return true;
+    } else {
+        mysqli_close($link);
+        return false;
+    }
+}
+
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -166,6 +192,7 @@ if (isset($_POST['table'])) {
                         </div>
 
                         <?php foreach ($tablesData as $table): ?>
+                            <?php $is_table_referenced = is_table_referenced($table['name']) ?>
                             <?php
                             // echo '<pre>';
                             // print_r($table);
@@ -252,16 +279,20 @@ if (isset($_POST['table'])) {
                                     <div class="col-md-2">
                                         <!-- Visible in preview checkbox -->
                                         <?php
-                                        $checked = '';
-                                        $whitelist_checked_colums = array('name', 'reference', 'id');
-                                        foreach($whitelist_checked_colums as $term) {
-                                            if (strstr($column['name'], $term)) {
-                                                $checked = 'checked';
+                                        if (!$is_table_referenced):
+                                            echo !$i ? '<small>No FK linked to this table</small>' : '';
+                                        else:
+                                            $checked = '';
+                                            $whitelist_checked_colums = array('name', 'reference', 'id');
+                                            foreach($whitelist_checked_colums as $term) {
+                                                if (strstr($column['name'], $term)) {
+                                                    $checked = 'checked';
+                                                }
                                             }
-                                        }
-                                        ?>
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" <?php echo $checked ?>>
-                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Show in FK</label>
+                                            ?>
+                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" <?php echo $checked ?>>
+                                            <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Show in FK</label>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
