@@ -796,7 +796,7 @@ function generate($postdata) {
                             $is_special_column_type = false;
 
                             // Check if the column is a file upload
-                            if ($tables_and_columns_names[$tablename]['columns'][$columnname]['is_file']) {
+                            if (isset($tables_and_columns_names[$tablename]['columns'][$columnname]['is_file']) && $tables_and_columns_names[$tablename]['columns'][$columnname]['is_file']) {
                                 $is_special_column_type = true;
                                 $column_input = "\n" . '<input type="file" name="' . $columnname . '" id="' . $columnname . '" class="form-control">' . "\n";
                                 $column_input .= '<input type="hidden" name="cruddiy_backup_' . $columnname . '" id="cruddiy_backup_' . $columnname . '" value="<?php echo @' . $create_record . '; ?>">' . "\n";
