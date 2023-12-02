@@ -309,7 +309,16 @@ function generate_read($tablename, $column_id, $read_records, $foreign_key_refer
 }
 
 function generate_delete($tablename, $column_id){
-    global $deletefile;
+
+    // Load template
+    $template = "templates/entity-delete.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $deletefile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
     global $CSS_REFS;
     global $JS_REFS;
 
