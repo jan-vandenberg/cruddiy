@@ -41,6 +41,7 @@ CREATE TABLE `products` (
   `packaging_details` text,
   `recycled_material_incorporation` decimal(5,2) DEFAULT NULL,
   `hazardous_substance_presence` tinyint(1) DEFAULT NULL,
+  `packshot_file` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ean` (`ean`),
   KEY `supplier_id` (`supplier_id`),
@@ -48,9 +49,6 @@ CREATE TABLE `products` (
   CONSTRAINT `products_ibfk_1` FOREIGN KEY (`brand_id`) REFERENCES `brands` (`id`),
   CONSTRAINT `products_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-ALTER TABLE `products`
-ADD `packshot_file` text COLLATE 'utf8_general_ci' NULL;
 
 
 
@@ -64,11 +62,10 @@ DROP TABLE IF EXISTS `suppliers`;
 CREATE TABLE `suppliers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL,
+  `logo` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-ALTER TABLE `suppliers`
-ADD `logo` text COLLATE 'utf8_general_ci' NULL;
 
--- 2023-11-30 13:48:04
+-- 2023-12-02 23:09:57
