@@ -8,6 +8,8 @@ use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Dotenv\Dotenv;
 
+
+
 class FeatureContext extends MinkContext implements Context {
 
     private $pdo;
@@ -153,6 +155,52 @@ class FeatureContext extends MinkContext implements Context {
             throw new ExpectationException("Expected to find the text '$text' only once, found $occurrences times.", $this->getSession()->getDriver());
         }
     }
+
+
+
+    /**
+     * @AfterStep
+     */
+    public function logAfterFailedStep(AfterStepScope $scope) {
+        if (!$scope->getTestResult()->isPassed()) {
+            // Get the driver interface
+            $driver = $this->getSession()->getDriver();
+
+            // Make sure it's a Goutte driver
+            if ($driver instanceof \Behat\Mink\Driver\GoutteDriver) {
+                // Get the client from the driver
+                $client = $driver->getClient();
+
+                // Get the response
+                $response = $client->getResponse();
+
+                // Get response headers
+                $headers = $response->getHeaders();
+
+                // Format the headers as HTML comments
+                $formattedHeaders = "\n<!--\n";
+                foreach ($headers as $key => $values) {
+                    $formattedHeaders .= $key . ": " . implode(', ', $values) . "\n";
+                }
+                $formattedHeaders .= "-->\n";
+
+                // Get only the response body
+                $responseBody = $response->getContent();
+
+                // Define a log file path
+                $logFilePath = 'tests/logs/log.html';
+                @unlink($logFilePath);
+
+                // Append the formatted headers and response body to the log file
+                file_put_contents($logFilePath, $formattedHeaders . $responseBody, FILE_APPEND);
+            }
+        }
+    }
+
+
+
+
+
 
 
 
