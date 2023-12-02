@@ -1118,7 +1118,7 @@ function recursiveCopy($src, $dst) {
                 <a href="app/index.php" target="_blank" rel="noopener noreferrer">Go to your app</a> (this will open your app in a new tab).<br><br>
                 You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
                 <hr>
-                If you need further instructions please visit <a href="http://cruddiy.com">cruddiy.com</a>
+                If you need further instructions please visit <a href="http://cruddiy.com" target="_blank">cruddiy.com</a> or ask on our <a href="https://github.com/jan-vandenberg/cruddiy" target="_blank">GitHub</a> project.
 
             </div>
         </div>
