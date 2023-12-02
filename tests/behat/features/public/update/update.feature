@@ -43,6 +43,7 @@ Feature: Check public update page content
     Then the response status code should be 200
 
 
+  # @javascript
   Scenario: Preserve existing attachment when updating a record without picking a new file
     Given I am on "/core/app/products-update.php?id=2"
     And I fill in "product_name" with "Test Product Name 2 with preserved file"

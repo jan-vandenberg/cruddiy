@@ -6,7 +6,9 @@
     "require-dev": {
         "behat/behat": "^3.8",
         "behat/mink-extension": "^2.3",
-        "behat/mink-goutte-driver": "^1.2"
+        "behat/mink-goutte-driver": "^1.2",
+        "dmore/chrome-mink-driver": "^2.9",
+        "dmore/behat-chrome-extension": "^1.4"
     },
     "require": {
         "vlucas/phpdotenv": "^5.6"

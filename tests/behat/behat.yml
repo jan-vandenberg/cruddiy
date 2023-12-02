@@ -20,9 +20,21 @@ default:
         - features/public/update/update.feature
         - features/public/delete/delete.feature
   extensions:
+    DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension: ~
     Behat\MinkExtension:
+      base_url: 'http://cruddiy.localhost'
       goutte:
         guzzle_parameters:
           curl.options:
             CURLOPT_TIMEOUT: 5
-      base_url: 'http://cruddiy.localhost'
+      sessions:
+        default:
+          goutte: ~
+        javascript:
+          chrome:
+            api_url: "http://127.0.0.1:9222"
+            download_behavior: allow
+            download_path: ~/Downloads
+            validate_certificate: false
+            socket_timeout: 5
+            dom_wait_timeout: 1000
