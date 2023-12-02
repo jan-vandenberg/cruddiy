@@ -17,55 +17,21 @@ Feature: Check admin tables mapping form
     And I press "Select columns from tables"
 
 
-  # Scenari after submitting the relations.php form
-  # We can't put these tests in tables-and-columns/page.feature
-  # because the POST history is not remembered as tests are stateless
-  # that's also why we dont write a "Given I am on /core/columns.php" statement below
 
-  Scenario: After submit tables, check for errors on the Columns page
+  Scenario: Check for errors on the Columns page
     Then I should see "All Available Columns"
     And I should see "The Brands (brands)"
     And I should see "The Products (products)"
     And I should see "The Suppliers (suppliers)"
 
-
-
-  Scenario: After submit tables, check for tables continuity on the Columns page
+  Scenario: Check for form continuity on the Columns page
     And I should see "Table: The Brands (brands)"
     And I should see "Table: The Products (products)"
     And I should see "Table: The Suppliers (suppliers)"
 
 
 
-  Scenario: After submit tables, check for column types and emojis on Columns page
-    # id
-    And the label for "products-0" should have class "is-primary"
-    And the label for "products-0" should have class "is-auto"
-    And the label for "products-0" should not have class "is-foreignkey"
-    And the label for "products-0" should not have class "is-nullable"
-
-    # ean
-    And the label for "products-1" should not have class "is-primary"
-    And the label for "products-1" should not have class "is-auto"
-    And the label for "products-1" should not have class "is-foreignkey"
-    And the label for "products-1" should not have class "is-nullable"
-
-    # brand_id
-    And the label for "products-3" should not have class "is-primary"
-    And the label for "products-3" should not have class "is-auto"
-    And the label for "products-3" should have class "is-foreignkey"
-    And the label for "products-3" should have class "is-nullable"
-
-    # packaging_details
-    And the label for "products-6" should not have class "is-primary"
-    And the label for "products-6" should not have class "is-auto"
-    And the label for "products-6" should not have class "is-foreignkey"
-    And the label for "products-6" should have class "is-nullable"
-
-
-
-
-  Scenario: After submit tables, check for POST values continuity between Tables and Columns
+  Scenario: Check for default checkboxes and states, fill the Columns form
     # brands
 
     # id
@@ -83,48 +49,47 @@ Feature: Check admin tables mapping form
 
     # id
     And I check "productscolumns[0][columnvisible]"
-    And I check "productscolumns[0][columninpreview]"
+    Then I should not see a "#productscolumns\[0\]\[columninpreview\]" element
 
     # ean
     And I fill in "productscolumns[1][columndisplay]" with "EAN-13"
     And I check "productscolumns[1][columnvisible]"
-    And I check "productscolumns[1][columninpreview]"
+    Then I should not see a "#productscolumns\[1\]\[columninpreview\]" element
 
     # product_name
     And I fill in "productscolumns[2][columndisplay]" with "Name"
     And I check "productscolumns[2][columnvisible]"
-    And I check "productscolumns[2][columninpreview]"
+    Then I should not see a "#productscolumns\[2\]\[columninpreview\]" element
 
     # brand_id
     And I fill in "productscolumns[3][columndisplay]" with "Brand name"
     And I check "productscolumns[3][columnvisible]"
-    And I check "productscolumns[3][columninpreview]"
+    Then I should not see a "#productscolumns\[3\]\[columninpreview\]" element
 
     # supplier_id
     And I fill in "productscolumns[4][columndisplay]" with "Supplier name"
     And I check "productscolumns[4][columnvisible]"
-    And I check "productscolumns[4][columninpreview]"
+    Then I should not see a "#productscolumns\[4\]\[columninpreview\]" element
 
     # visual_url
     And I fill in "productscolumns[5][columndisplay]" with "Photo URL"
     And I check "productscolumns[5][columnvisible]"
-    And I check "productscolumns[5][columninpreview]"
+    Then I should not see a "#productscolumns\[5\]\[columninpreview\]" element
 
     # packaging_details
     And I fill in "productscolumns[6][columndisplay]" with "Packaging details"
     And I check "productscolumns[6][columnvisible]"
-    And I check "productscolumns[6][columninpreview]"
+    Then I should not see a "#productscolumns\[6\]\[columninpreview\]" element
 
     # recycled_material_incorporation
     And I fill in "productscolumns[7][columndisplay]" with "Contains recycled material?"
     And I check "productscolumns[7][columnvisible]"
-    And I check "productscolumns[7][columninpreview]"
+    Then I should not see a "#productscolumns\[7\]\[columninpreview\]" element
 
     # hazardous_substance_presence
     And I fill in "productscolumns[8][columndisplay]" with "Contains hazardous substance?"
     And I check "productscolumns[8][columnvisible]"
-    And I check "productscolumns[8][columninpreview]"
-
+    Then I should not see a "#productscolumns\[8\]\[columninpreview\]" element
 
 
     # suppliers
@@ -140,7 +105,79 @@ Feature: Check admin tables mapping form
 
 
 
-    # Other
+
+  Scenario: Check auto-detection of input type=file elements (guesslist)
+    # brands
+    And I should not see a "file_brands-0" element
+    And the checkbox "file_brands-1" should not be checked
+
+    # products
+    And I should not see a "file_products-0" element
+    And the checkbox "file_products-1" should not be checked
+    And the checkbox "file_products-2" should not be checked
+    And I should not see a "file_products-3" element
+    And I should not see a "file_products-4" element
+    And the checkbox "file_products-5" should not be checked
+    And the checkbox "file_products-6" should not be checked
+    And I should not see a "file_products-7" element
+    And I should not see a "file_products-8" element
+    And the checkbox "file_products-9" should be checked
+
+    # suppliers
+    And I should not see a "#file_suppliers-0" element
+    And the checkbox "file_suppliers-1" should not be checked
+    And the checkbox "file_suppliers-2" should be checked
+
+
+
+
+  Scenario: Check the Visibility checkboxes in "This table"
+    # by default they are all checked
+    And the checkbox "checkboxes_brands-0" should be checked
+    And the checkbox "checkboxes_brands-1" should be checked
+
+    And the checkbox "checkboxes_products-0" should be checked
+    And the checkbox "checkboxes_products-2" should be checked
+    And the checkbox "checkboxes_products-3" should be checked
+    And the checkbox "checkboxes_products-4" should be checked
+    And the checkbox "checkboxes_products-5" should be checked
+    And the checkbox "checkboxes_products-6" should be checked
+    And the checkbox "checkboxes_products-7" should be checked
+    And the checkbox "checkboxes_products-8" should be checked
+    And the checkbox "checkboxes_products-9" should be checked
+
+    And the checkbox "checkboxes_suppliers-0" should be checked
+    And the checkbox "checkboxes_suppliers-1" should be checked
+    And the checkbox "checkboxes_suppliers-2" should be checked
+
+
+
+
+
+  Scenario: Check the Visibility checkboxes in "Related tables"
+    # by default only the "id", "name", "reference" keywords are checked
+    And the checkbox "checkboxes_brands-0-2" should be checked
+    And the checkbox "checkboxes_brands-1-2" should be checked
+
+    And the checkbox "checkboxes_suppliers-0-2" should be checked
+    And the checkbox "checkboxes_suppliers-1-2" should be checked
+    And the checkbox "checkboxes_suppliers-2-2" should not be checked
+
+    # there should be no visibility checkbox for products as this table is not referenced
+    And I should not see a "checkboxes_products-0-2" element
+    And I should not see a "checkboxes_products-1-2" element
+    And I should not see a "checkboxes_products-2-2" element
+    And I should not see a "checkboxes_products-3-2" element
+    And I should not see a "checkboxes_products-4-2" element
+    And I should not see a "checkboxes_products-5-2" element
+    And I should not see a "checkboxes_products-6-2" element
+    And I should not see a "checkboxes_products-7-2" element
+    And I should not see a "checkboxes_products-8-2" element
+    And I should not see a "checkboxes_products-9-2" element
+
+
+
+  Scenario: Submit the "Generate pages" form (launch the generator)
     And I uncheck "keep_startpage"
     And I uncheck "append_links"
 
@@ -149,6 +186,10 @@ Feature: Check admin tables mapping form
     Then I should not see "Parse error"
     And I should not see "Fatal error"
 
+
+
+
+  Scenario: Check for POST data continuity
     And I should see "Deleting existing files"
     And I should see "Table: The Brands"
     And I should see "Table: The Products"

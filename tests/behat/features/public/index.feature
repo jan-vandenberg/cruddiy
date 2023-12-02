@@ -1,4 +1,4 @@
-@cleanDB
+@cleanTestRecordsAndUploads
 Feature: Check public index page content
 
   Scenario: Check Brands list

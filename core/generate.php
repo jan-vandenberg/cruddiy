@@ -1,4 +1,9 @@
 <?php
+// Debug POST data
+// echo '<pre>';
+// print_r($_POST);
+// echo '</pre>';
+// exit();
 
 $total_postvars = count($_POST, COUNT_RECURSIVE);
 $max_postvars = ini_get("max_input_vars");
@@ -196,8 +201,8 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
                 } else {
                     echo '- Appending '.$start_page_link.'<br>';
                     array_push($navbarfile_links[1], $start_page_link);
-                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $tables_columns_names["'.$key.'"]["name"] ?></a>'."\n\t".$buttons_delimiter;
-                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo (!empty($tables_columns_names["'.$key.'"]["name"])) ? $tables_columns_names["'.$key.'"]["name"] : "'.$key.'" ?></a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo $tables_and_columns_names["'.$key.'"]["name"] ?></a>'."\n\t".$buttons_delimiter;
+                    $button_string = "\t".'<a class="dropdown-item" href="'.$start_page_link.'"><?php echo (!empty($tables_and_columns_names["'.$key.'"]["name"])) ? $tables_and_columns_names["'.$key.'"]["name"] : "'.$key.'" ?></a>'."\n\t".$buttons_delimiter;
                     $step0 = str_replace($buttons_delimiter, $button_string, $navbarfile);
                     $step1 = str_replace("{APP_NAME}", $appname, $step0 );
                     if (!file_put_contents($startpage_filename, $step1, LOCK_EX)) {
@@ -212,7 +217,16 @@ function append_links_to_navbar($navbarfile, $start_page, $startpage_filename, $
 
 
 function generate_index($tablename,$tabledisplay,$index_table_headers,$index_table_rows,$column_id, $columns_available, $index_sql_search, $join_columns, $join_clauses) {
-    global $indexfile;
+
+    // Load template
+    $template = "templates/entity-index.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $indexfile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
     global $appname;
     global $CSS_REFS;
     global $JS_REFS;
@@ -266,7 +280,16 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
 }
 
 function generate_read($tablename, $column_id, $read_records, $foreign_key_references, $join_columns, $join_clauses){
-    global $readfile;
+
+    // Load template
+    $template = "templates/entity-read.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $readfile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
     global $CSS_REFS;
     global $JS_REFS;
 
@@ -286,7 +309,16 @@ function generate_read($tablename, $column_id, $read_records, $foreign_key_refer
 }
 
 function generate_delete($tablename, $column_id){
-    global $deletefile;
+
+    // Load template
+    $template = "templates/entity-delete.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $deletefile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
     global $CSS_REFS;
     global $JS_REFS;
 
@@ -302,7 +334,17 @@ function generate_delete($tablename, $column_id){
 }
 
 function generate_create($tablename,$create_records, $create_err_records, $create_sqlcolumns, $column_id, $create_numberofparams, $create_sql_params, $create_html, $create_postvars) {
-    global $createfile;
+
+    // Load template
+    $template = "templates/entity-create.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $createfile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
+
     global $CSS_REFS;
     global $JS_REFS;
 
@@ -325,7 +367,16 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
 }
 
 function generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns){
-    global $updatefile;
+
+    // Load template
+    $template = "templates/entity-update.php";
+    if (file_exists($template)) {
+        // Read the file's content into a variable
+        $updatefile = file_get_contents($template);
+    } else {
+        exit("File $template does not exist.");
+    }
+
     global $CSS_REFS;
     global $JS_REFS;
 
@@ -494,7 +545,10 @@ function generate($postdata) {
                             $columndisplay = $columns['columnname'];
                         }
 
-                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname] = $columndisplay;
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columndisplay'] = $columndisplay;
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['is_file'] = isset($columns['file']) && $columns['file'] ? 1 : 0;
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columnvisible'] = isset($columns['columnvisible']) && $columns['columnvisible'] ? 1 : 0;
+                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columninpreview'] = isset($columns['columninpreview']) && $columns['columninpreview'] ? 1 : 0;
 
                         if (!empty($columns['columncomment'])){
                             $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
@@ -531,7 +585,21 @@ function generate($postdata) {
                         }
                         else if ($type == 1) // Text
                         {
-                            $index_table_rows .= 'echo "<td>" . nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? "")) . "</td>";'."\n\t\t\t\t\t\t\t\t\t\t";
+                            $index_table_rows .= 'echo "<td>";'."\n";
+                            $index_table_rows .= '// Check if the column is file upload'."\n";
+                            $index_table_rows .= "// echo '<pre>';"."\n";
+                            $index_table_rows .= '// print_r($tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . ']);'."\n";
+                            $index_table_rows .= "// echo '</pre>';"."\n";
+
+                            $index_table_rows .= '$is_file = $tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . '][\'is_file\'];'."\n";
+                            $index_table_rows .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_'. $columnname .'">\' : \'\';'."\n";
+                            $index_table_rows .= 'echo $link_file;' . "\n";
+
+                            $index_table_rows .= 'echo nl2br(htmlspecialchars($row['. "'" . $columnname . "'" . '] ?? ""));'."\n";
+
+                            $index_table_rows .= 'echo $is_file ? "</a>" : "";'."\n";
+
+                            $index_table_rows .= 'echo "</td>"."\n\t\t\t\t\t\t\t\t\t\t";';
                         }
                         else if ($type == 4) // TinyInt / Bool
                         {
@@ -717,83 +785,106 @@ function generate($postdata) {
 
                         //$type = column_type($columns['columntype']);
 
-                        switch($type) {
-                        //TEXT
-                        case 1:
-                            $column_input = '<textarea name="'. $columnname .'" id="'. $columnname .'" class="form-control"><?php echo @'. $create_record. '; ?></textarea>';
-                        break;
 
-                        //ENUM types
-                        case 2:
-                        //Make sure on the update form that the previously selected type is also selected from the list
+                        // Check for a specific configuration of the column
+                        // echo '<pre>';
+                        // print_r($tables_and_columns_names[$tablename]['columns'][$columnname]);
+                        // echo '</pre>';
+                        $is_special_column_type = false;
 
-                            $html = '<select name="'.$columnname.'" class="form-control" id="'.$columnname .'">';
-                            if ($columns['columnnullable'])
-                            {
-                                $html .= '<option value="">Null</option>';
-                            }
+                        // Check if the column is a file upload
+                        if ($tables_and_columns_names[$tablename]['columns'][$columnname]['is_file']) {
+                            $is_special_column_type = true;
+                            $column_input  = "\n".'<input type="file" name="' . $columnname . '" id="' . $columnname . '" class="form-control">'."\n";
+                            $column_input .= '<input type="hidden" name="cruddiy_backup_' . $columnname . '" id="cruddiy_backup_' . $columnname . '" value="<?php echo @' . $create_record . '; ?>">'."\n";
+                            $column_input .= '<?php if (isset(' . $create_record . ') && !empty(' . $create_record . ')) : ?>' . "\n";
+                            $column_input .= '<div class="custom-control custom-checkbox">'."\n";
+                            $column_input .= '    <input type="checkbox" class="custom-control-input" id="cruddiy_delete_' . $columnname . '" name="cruddiy_delete_' . $columnname . '" value="1">'."\n";
+                            $column_input .= '    <label class="custom-control-label" for="cruddiy_delete_' . $columnname . '"><?php translate(\'Delete File\', true, \'<a href="uploads/\' . ' . @$create_record . ' . \'" target="_blank">\' . ' . @$create_record . ' . \'</a>\') ?></label>'."\n";
+                            $column_input .= '</div>'."\n";
+                            $column_input .= '<?php endif ?>' . "\n";
+                        }
 
-                            $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
+
+
+
+                        if (!$is_special_column_type) {
+                            switch ($type) {
+                                //TEXT
+                                case 1:
+                                    $column_input = '<textarea name="' . $columnname . '" id="' . $columnname . '" class="form-control"><?php echo @' . $create_record . '; ?></textarea>';
+                                    break;
+
+                                //ENUM types
+                                case 2:
+                                    //Make sure on the update form that the previously selected type is also selected from the list
+
+                                    $html = '<select name="' . $columnname . '" class="form-control" id="' . $columnname . '">';
+                                    if ($columns['columnnullable']) {
+                                        $html .= '<option value="">Null</option>';
+                                    }
+
+                                    $sql_enum = "SELECT COLUMN_TYPE as AllPossibleEnumValues
                             FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$tablename' AND COLUMN_NAME = '$columnname';";
-                            $result = mysqli_query($link, $sql_enum);
-                            $row = mysqli_fetch_array($result, MYSQLI_NUM);
-                            preg_match('/enum\((.*)\)$/', $row[0], $matches);
-                            $html .= "<?php \n\t\t\t\t\t\t\t \$enum_$columnname = array(" . $matches[1] . ");";
-                            $html .= "
+                                    $result = mysqli_query($link, $sql_enum);
+                                    $row = mysqli_fetch_array($result, MYSQLI_NUM);
+                                    preg_match('/enum\((.*)\)$/', $row[0], $matches);
+                                    $html .= "<?php \n\t\t\t\t\t\t\t \$enum_$columnname = array(" . $matches[1] . ");";
+                                    $html .= "
                                 foreach (\$enum_$columnname as " . ' $val){
-                                    if ($val == $'.$columnname.'){
+                                    if ($val == $' . $columnname . '){
                                     echo \'<option value="\' . $val . \'" selected="selected">\' . $val . \'</option>\';
                                     } else
                                     echo \'<option value="\' . $val . \'">\' . $val . \'</option>\';
                                             }
                             ?></select>';
 
-                            $column_input = $html;
-                            unset($html);
-                        break;
-                        //VARCHAR
-                        case 3:
-                            preg_match('#\((.*?)\)#', $columns['columntype'], $match);
-                            $maxlength = $match[1];
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" maxlength="'.$maxlength.'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
-                        break;
+                                    $column_input = $html;
+                                    unset($html);
+                                    break;
+                                //VARCHAR
+                                case 3:
+                                    preg_match('#\((.*?)\)#', $columns['columntype'], $match);
+                                    $maxlength = $match[1];
+                                    $column_input = '<input type="text" name="' . $columnname . '" id="' . $columnname . '" maxlength="' . $maxlength . '" class="form-control" value="<?php echo @' . $create_record . '; ?>">';
+                                    break;
 
-                        //TINYINT (bool)
-                        case 4:
-                            $regex = "/'(.*?)'/";
-                            preg_match_all( $regex , $columns['columntype'] , $enum_array );
-                            $html = '<select name="'.$columnname.'" id="'. $columnname .'" class="form-control" id="'.$columnname .'">';
-                                if ($columns['columnnullable'])
-                                {
-                                    $html .= '<option value="">Null</option>';
-                                }
-                            $html   .= '    <option value="0" <?php echo !@' . $create_record . ' ? "selected": ""; ?> >False</option>';
-                            $html   .= '    <option value="1" <?php echo @' . $create_record . ' ? "selected": ""; ?> >True</option>';
-                            $html   .= '</select>';
-                                $column_input = $html;
-                            unset($html);
-                        break;
-                        //INT
-                        case 5:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
-                        break;
+                                //TINYINT (bool)
+                                case 4:
+                                    $regex = "/'(.*?)'/";
+                                    preg_match_all($regex, $columns['columntype'], $enum_array);
+                                    $html = '<select name="' . $columnname . '" id="' . $columnname . '" class="form-control" id="' . $columnname . '">';
+                                    if ($columns['columnnullable']) {
+                                        $html .= '<option value="">Null</option>';
+                                    }
+                                    $html .= '    <option value="0" <?php echo !@' . $create_record . ' ? "selected": ""; ?> >False</option>';
+                                    $html .= '    <option value="1" <?php echo @' . $create_record . ' ? "selected": ""; ?> >True</option>';
+                                    $html .= '</select>';
+                                    $column_input = $html;
+                                    unset($html);
+                                    break;
+                                //INT
+                                case 5:
+                                    $column_input = '<input type="number" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo @' . $create_record . '; ?>">';
+                                    break;
 
-                        //DECIMAL
-                        case 6:
-                            $column_input = '<input type="number" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>" step="any">';
-                        break;
-                        //DATE
-                        case 7:
-                            $column_input = '<input type="date" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
-                        break;
-                        //DATETIME
-                        case 8:
-                            $column_input = '<input type="datetime-local" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo empty('. $create_record. ') ? "" : date("Y-m-d\TH:i:s", strtotime(@'. $create_record. ')); ?>">';
-                        break;
+                                //DECIMAL
+                                case 6:
+                                    $column_input = '<input type="number" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo @' . $create_record . '; ?>" step="any">';
+                                    break;
+                                //DATE
+                                case 7:
+                                    $column_input = '<input type="date" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo @' . $create_record . '; ?>">';
+                                    break;
+                                //DATETIME
+                                case 8:
+                                    $column_input = '<input type="datetime-local" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo empty(' . $create_record . ') ? "" : date("Y-m-d\TH:i:s", strtotime(@' . $create_record . ')); ?>">';
+                                    break;
 
-                        default:
-                            $column_input = '<input type="text" name="'. $columnname .'" id="'. $columnname .'" class="form-control" value="<?php echo @'. $create_record. '; ?>">';
-                        break;
+                                default:
+                                    $column_input = '<input type="text" name="' . $columnname . '" id="' . $columnname . '" class="form-control" value="<?php echo @' . $create_record . '; ?>">';
+                                    break;
+                            }
                         }
                     }
 
@@ -801,9 +892,20 @@ function generate($postdata) {
                     $create_html [] = '<div class="form-group">
                     <label for="'.$columnname.'">'.$columndisplay.'</label>
                     '. $column_input .'</div>';
+
+                    $read_records .= '<?php'."\n";
+                    $read_records .= '// Check if the column is file upload'."\n";
+                    $read_records .= "// echo '<pre>';"."\n";
+                    $read_records .= '// print_r($tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . ']);'."\n";
+                    $read_records .= "// echo '</pre>';"."\n";
+                    $read_records .= '$is_file = $tables_and_columns_names['. "'" . $tablename . "'" . ']["columns"]['. "'" . $columnname . "'" . '][\'is_file\'];'."\n";
+                    $read_records .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row['. "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_'. $columnname .'">\' : \'\';'."\n";
+                    $read_records .= '$end_link_file = $is_file ? "</a>" : "";'."\n";
+                    $read_records .= '?>'."\n";
+
                     $read_records .= '<div class="form-group">
                         <h4>'.$columndisplay.'</h4>
-                        <p class="form-control-static">' . $column_value .'</p></div>';
+                        <p class="form-control-static"><?php echo $link_file ?>' . $column_value . '<?php echo $end_link_file ?></p></div>';
 
                     // Different Layout
                     // $create_html [] = '<div class="form-group row">
@@ -847,14 +949,32 @@ function generate($postdata) {
                         $forced_deletion = true;
                         echo '<h3>Deleting existing files</h3>';
                         $keep = array('config.php', 'helpers.php', 'config-tables-columns.php', 'locales');
-                        foreach( glob("app/*") as $file ) {
-                            if( !in_array(basename($file), $keep) ){
-                                if (unlink($file)) {
-                                    echo $file.'<br>';
+                        foreach (glob("app/*") as $file) {
+                            if (!in_array(basename($file), $keep)) {
+                                if (is_file($file)) {
+                                    if (unlink($file)) {
+                                        echo $file . '<br>';
+                                    }
                                 }
                             }
                         }
+
                         echo '<br>';
+                        global $upload_target_dir;
+                        global $upload_persistent_dir;
+                        echo '<h3>Deleting upload directory</h3>';
+                        if (!$upload_persistent_dir) {
+                            deleteDirectory("app/$upload_target_dir");
+                            echo "app/$upload_target_dir was deleted (set <code>\$upload_persistent_dir=true</code> in app/config.php to preserve next time)";
+                        } else {
+                            echo "app/$upload_target_dir was preserved due to <code>\$upload_persistent_dir=true</code> in app/config.php";
+                        }
+
+                        // always delete the locales directory as we may need to regenerate the translations
+                        deleteDirectory("app/locales");
+                        recursiveCopy('locales', 'app/locales');
+
+                        echo '<br><br>';
                     }
 
                     generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay, $key);
@@ -894,8 +1014,8 @@ function extractTableName($post_key) {
 
 
 
-// Save table names to config
-function updateTableAndColumnsNames($tables_columns_names) {
+// Save table and columns configuration
+function updateTableAndColumnsNames($tables_and_columns_names) {
 
     $configTableNamesFilePath     = 'app/config-tables-columns.php';
     $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
@@ -905,7 +1025,7 @@ function updateTableAndColumnsNames($tables_columns_names) {
     $templateContent = file_get_contents($configTableNamesTemplatePath);
 
     // Prepare the new tables array as a string
-    $new_table_names = var_export($tables_columns_names, true);
+    $new_table_names = var_export($tables_and_columns_names, true);
 
     // Replace placeholders with actual values
     $replacements = [
@@ -920,6 +1040,63 @@ function updateTableAndColumnsNames($tables_columns_names) {
     if (fwrite($configfile, $templateContent) === false) die("Error writing Config file for table names!");
     fclose($configfile);
 }
+
+
+
+function deleteDirectory($dirPath) {
+    echo "delete : $dirPath";
+    if (!is_dir($dirPath)) {
+        // throw new InvalidArgumentException("$dirPath must be a directory");
+        return false;
+    }
+    if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
+        $dirPath .= '/';
+    }
+
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($files as $fileInfo) {
+        if ($fileInfo->isDir()) {
+            rmdir($fileInfo->getRealPath());
+        } else {
+            unlink($fileInfo->getRealPath());
+        }
+    }
+
+    rmdir($dirPath);
+}
+
+
+function recursiveCopy($src, $dst) {
+    // Create the destination directory if it doesn't exist
+    if (!file_exists($dst)) {
+        mkdir($dst, 0777, true);
+    }
+
+    // Open the source directory
+    $dir = opendir($src);
+
+    // Loop through the files in the source directory
+    while (($file = readdir($dir)) !== false) {
+        if (($file != '.') && ($file != '..')) {
+            // If it's a directory, recursively copy it
+            if (is_dir($src . '/' . $file)) {
+                recursiveCopy($src . '/' . $file, $dst . '/' . $file);
+            }
+            // If it's a file, copy it
+            else {
+                copy($src . '/' . $file, $dst . '/' . $file);
+            }
+        }
+    }
+
+    // Close the source directory
+    closedir($dir);
+}
+
 
 ?>
 <!doctype html>

@@ -18,6 +18,8 @@ return array(
     'update_record_instructions' => '入力値を編集して記録を更新してください。',
 
     // delete records
+    'Delete' => '削除',
+    'Delete File' => '%sを削除',
     'Delete Record' => '記録を削除',
     'delete_record_confirm' => 'この記録を削除してもよろしいですか？',
 
@@ -31,6 +33,9 @@ return array(
     'Search this table' => 'このテーブルを検索',
     'First' => '最初',
     'Last' => '最後',
+    'total_results' => '%s件の結果 - %sページ中の%sページ目',
+    'Prev' => '前',
+    'Next' => '次',
 
     // buttons
     'Yes' => 'はい',

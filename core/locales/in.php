@@ -18,6 +18,8 @@ return array(
     'update_record_instructions' => 'कृपया इनपुट मानों को संपादित करें और रिकॉर्ड को अपडेट करने के लिए सबमिट करें।',
 
     // delete records
+    'Delete' => 'Hapus',
+    'Delete File' => 'Hapus %s',
     'Delete Record' => 'रिकॉर्ड हटाएं',
     'delete_record_confirm' => 'क्या आप वाकई इस रिकॉर्ड को हटाना चाहते हैं?',
 
@@ -31,6 +33,9 @@ return array(
     'Search this table' => 'इस तालिका को खोजें',
     'First' => 'पहला',
     'Last' => 'अंतिम',
+    'total_results' => '%s hasil - Halaman %s dari %s',
+    'Prev' => 'Sebelumnya',
+    'Next' => 'Berikutnya',
 
     // buttons
     'Yes' => 'हाँ',

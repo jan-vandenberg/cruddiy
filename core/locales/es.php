@@ -18,6 +18,8 @@ return array(
     'update_record_instructions'   => 'Edite los valores y envíe para actualizar el registro.',
 
     // delete records
+    'Delete' => 'Eliminar',
+    'Delete File' => 'Eliminar %s',
     'Delete Record'                => 'Eliminar registro',
     'delete_record_confirm'        => '¿Está seguro de que desea eliminar este registro?',
 
@@ -31,6 +33,9 @@ return array(
     'Search this table'            => 'Buscar en esta tabla',
     'First'                        => 'Primero',
     'Last'                         => 'Último',
+    'total_results' => '%s resultados - Página %s de %s',
+    'Prev' => 'Anterior',
+    'Next' => 'Siguiente',
 
     // buttons
     'Yes'                          => 'Sí',

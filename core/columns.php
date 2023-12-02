@@ -106,6 +106,32 @@ if (isset($_POST['table'])) {
     }
 }
 
+// Check if a table is referenced in another table (look for foreign keys)
+function is_table_referenced($table_name) {
+    global $db_server;
+    global $db_user;
+    global $db_password;
+    global $db_name;
+
+    /* Attempt to connect to MySQL database */
+	$link = mysqli_connect($db_server, $db_user, $db_password, 'information_schema');
+	// Check connection
+	if($link === false)
+		die("ERROR: Could not connect. " . mysqli_connect_error());
+
+    $sql = "SELECT * FROM KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '" . $table_name . "' AND REFERENCED_TABLE_SCHEMA = '" . $db_name . "'";
+
+    $result = mysqli_query($link,$sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        mysqli_close($link);
+        return true;
+    } else {
+        mysqli_close($link);
+        return false;
+    }
+}
+
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -126,22 +152,34 @@ if (isset($_POST['table'])) {
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-8"></div>
-                    <div class="col-2">
-                        <input type="checkbox" id="checkall-1" checked>
-                        <label for="checkall-1">Check/uncheck all</label>
-                    </div>
-                    <div class="col-2">
-                        <input type="checkbox" id="checkall-2" checked>
-                        <label for="checkall-2">Check/uncheck all</label>
-                    </div>
-                </div>
+
 
                 <form class="form-horizontal" action="generate.php" method="post">
                     <fieldset>
 
+                        <div class="row">
+                            <div class="col-8">
+                            </div>
+                            <div class="col-4 text-center pb-3">
+                                <strong>Visibility</strong>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-2">
+                                <input type="checkbox" id="checkall-1" checked>
+                                <label for="checkall-1">Check/uncheck all</label>
+                            </div>
+                            <div class="col-2">
+                                <input type="checkbox" id="checkall-2" checked>
+                                <label for="checkall-2">Check/uncheck all</label>
+                            </div>
+                        </div>
+
                         <?php foreach ($tablesData as $table): ?>
+                            <?php $is_table_referenced = is_table_referenced($table['name']) ?>
                             <?php
                             // echo '<pre>';
                             // print_r($table);
@@ -149,7 +187,7 @@ if (isset($_POST['table'])) {
                             ?>
                             <div class="row">
                                 <div class="col-3"></div>
-                                <div class="col-9 my-4">
+                                <div class="col-4 my-4">
                                     <?php
                                     $configTableNamesFilePath = 'app/config-tables-columns.php';
                                     if (file_exists($configTableNamesFilePath)) {
@@ -157,6 +195,15 @@ if (isset($_POST['table'])) {
                                     }
                                     ?>
                                     <strong>Table: <?= htmlspecialchars($table['display']) ?> (<?= htmlspecialchars($table['name']) ?>)</strong>
+                                </div>
+                                <div class="col-1"></div>
+                                <div class="col-2 my-4">
+                                    <strong><abbr title="Check to display the selected column in the list view of this table.">This table</abbr></strong>
+                                </div>
+                                <div class="col-2 my-4">
+                                    <?php if ($is_table_referenced) : ?>
+                                        <strong><abbr title="Check to display the selected column when it is referenced as foreign key in another table. Columns keys id, name, reference are checked by default.">Related tables</abbr></strong>
+                                    <?php endif ?>
                                 </div>
                             </div>
 
@@ -203,7 +250,7 @@ if (isset($_POST['table'])) {
                                         </label>
 
                                     </div>
-                                    <div class="col-md-5">
+                                    <div class="col-md-4">
                                         <?php
                                         // echo '<pre>';
                                         // print_r($table);
@@ -232,23 +279,61 @@ if (isset($_POST['table'])) {
                                         <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columncomment]" value="<?= htmlspecialchars($column['comment']) ?>"/>
                                         <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnnullable]" value="<?php echo $column['nullable'] ?>"/>
 
+                                        <?php
+                                        // Debug a row
+                                        // echo '<pre>';
+                                        // print_r($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']);
+                                        // echo '</pre>';
+                                        ?>
                                         <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>"
                                                 name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columndisplay]"
                                                 type="text"
                                                 placeholder="Display field name in frontend"
                                                 class="form-control rounded-0"
-                                                <?php echo isset($tables_columns_names[$table['name']]['columns'][$column['name']]) ? 'value="'.addslashes(htmlspecialchars($tables_columns_names[$table['name']]['columns'][$column['name']])).'"' : '' ?>
+                                                <?php echo isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ? 'value="'.addslashes(htmlspecialchars($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])).'"' : '' ?>
                                                 >
+                                    </div>
+                                    <div class="col-md-1">
+                                        <!-- Upload checkbox -->
+                                        <?php
+                                        if (!$column['isForeignKey'] && (
+                                                strstr($column['type'], 'char') ||
+                                                strstr($column['type'], 'text') ||
+                                                strstr($column['type'], 'blob')
+                                                )
+                                            ) :
+                                            $checked = '';
+                                            $guesslist_checked_colums = array('file', 'image', 'logo', 'picture', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
+                                            foreach($guesslist_checked_colums as $term) {
+                                                if (strstr($column['name'], $term)) {
+                                                    $checked = 'checked';
+                                                }
+                                            }
+                                            ?>
+                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" <?php echo $checked ?>>
+                                            <label for="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>">File</label>
+                                        <?php endif ?>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in overview checkbox -->
                                         <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" checked>
-                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>">Visible in overview?</label>
+                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>">Show column</label>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in preview checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" checked>
-                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Visible in preview?</label>
+                                        <?php
+                                        if ($is_table_referenced):
+                                            $checked = '';
+                                            $guesslist_checked_colums = array('name', 'reference', 'id');
+                                            foreach($guesslist_checked_colums as $term) {
+                                                if (strstr($column['name'], $term)) {
+                                                    $checked = 'checked';
+                                                }
+                                            }
+                                            ?>
+                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" <?php echo $checked ?>>
+                                            <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Show in FK</label>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
