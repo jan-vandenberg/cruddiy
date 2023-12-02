@@ -961,8 +961,9 @@ function generate($postdata) {
                             echo "app/$upload_target_dir was preserved due to <code>\$upload_persistent_dir=true</code> in app/config.php";
                         }
 
-                        // also delete the locales directory as we may need to regenerate the translations
+                        // always delete the locales directory as we may need to regenerate the translations
                         deleteDirectory("app/locales");
+                        recursiveCopy('locales', 'app/locales');
 
                         echo '<br><br>';
                     }
@@ -1034,8 +1035,10 @@ function updateTableAndColumnsNames($tables_and_columns_names) {
 
 
 function deleteDirectory($dirPath) {
+    echo "delete : $dirPath";
     if (!is_dir($dirPath)) {
-        throw new InvalidArgumentException("$dirPath must be a directory");
+        // throw new InvalidArgumentException("$dirPath must be a directory");
+        return false;
     }
     if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
         $dirPath .= '/';
@@ -1056,6 +1059,35 @@ function deleteDirectory($dirPath) {
 
     rmdir($dirPath);
 }
+
+
+function recursiveCopy($src, $dst) {
+    // Create the destination directory if it doesn't exist
+    if (!file_exists($dst)) {
+        mkdir($dst, 0777, true);
+    }
+
+    // Open the source directory
+    $dir = opendir($src);
+
+    // Loop through the files in the source directory
+    while (($file = readdir($dir)) !== false) {
+        if (($file != '.') && ($file != '..')) {
+            // If it's a directory, recursively copy it
+            if (is_dir($src . '/' . $file)) {
+                recursiveCopy($src . '/' . $file, $dst . '/' . $file);
+            }
+            // If it's a file, copy it
+            else {
+                copy($src . '/' . $file, $dst . '/' . $file);
+            }
+        }
+    }
+
+    // Close the source directory
+    closedir($dir);
+}
+
 
 ?>
 <!doctype html>
