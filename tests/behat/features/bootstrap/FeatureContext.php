@@ -10,7 +10,6 @@ use Behat\Testwork\Tester\Result\TestResult;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\ElementNotFoundException;
-use Behat\Testwork\Tester\Result\TestResult;
 use Dotenv\Dotenv;
 
 
@@ -225,6 +224,44 @@ class FeatureContext extends MinkContext implements Context {
         echo "HTML content logged to: " . $logFilename . PHP_EOL;
     }
 
+
+    /**
+     * @Then /^the label for "(?P<forValue>[^"]*)" should have class "(?P<expectedClass>[^"]*)"$/
+     */
+    public function theLabelForShouldHaveClass($forValue, $expectedClass)
+    {
+        $page = $this->getSession()->getPage();
+        $label = $page->find('xpath', "//label[@for='{$forValue}']");
+
+        if (null === $label) {
+            throw new \Exception(sprintf('No label found for "%s"', $forValue));
+        }
+
+        $classes = $label->getAttribute('class');
+        if (strpos($classes, $expectedClass) === false) {
+            throw new \Exception(sprintf('The label for "%s" does not have the class "%s"', $forValue, $expectedClass));
+        }
+    }
+
+
+
+    /**
+     * @Then /^the label for "(?P<forValue>[^"]*)" should not have class "(?P<expectedClass>[^"]*)"$/
+     */
+    public function theLabelForShouldNotHaveClass($forValue, $expectedClass)
+    {
+        $page = $this->getSession()->getPage();
+        $label = $page->find('xpath', "//label[@for='{$forValue}']");
+
+        if (null === $label) {
+            throw new \Exception(sprintf('No label found for "%s"', $forValue));
+        }
+
+        $classes = $label->getAttribute('class');
+        if (strpos($classes, $expectedClass) !== false) {
+            throw new \Exception(sprintf('The label for "%s" unexpectedly has the class "%s"', $forValue, $expectedClass));
+        }
+    }
 
 
 
