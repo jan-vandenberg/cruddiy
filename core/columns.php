@@ -252,8 +252,9 @@ function is_table_referenced($table_name) {
                                         ?>
 
                                         <label class="col-form-label <?= htmlspecialchars($labelClassString) ?>" for="<?= htmlspecialchars($table['name']) . '-' . $i ?>">
-                                            <?= htmlspecialchars($column['name']) ?>
-                                            <?= implode(' ', $labelAttributes['emojis']) ?>
+                                            <abbr title="<?= htmlspecialchars($column['name']) ?>, <?php echo $column['type'] ?>"><?= truncate(htmlspecialchars($column['name']), 25) ?></abbr>
+
+                                            <span title="<?= htmlspecialchars($labelClassString) ?>"><?= implode(' ', $labelAttributes['emojis']) ?></span>
                                         </label>
 
                                     </div>
