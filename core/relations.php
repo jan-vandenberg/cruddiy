@@ -1,5 +1,6 @@
 <?php
 $configfilePath = 'app/config.php';
+$configfilePath = 'helpers.php';
 
 if(isset($_POST['index'])) {
 

@@ -1,6 +1,6 @@
     <?php
     include "app/config.php";
-    include "app/helpers.php";
+    include "helpers.php";
     ?>
     <!doctype html>
     <html lang="en">

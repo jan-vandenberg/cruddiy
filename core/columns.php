@@ -1,5 +1,12 @@
 <?php
 include "app/config.php";
+include "helpers.php";
+
+// Debug info
+// echo '<pre>';
+// print_r($_POST);
+// echo '</pre>';
+
 
 function get_primary_key($table){
     global $link;

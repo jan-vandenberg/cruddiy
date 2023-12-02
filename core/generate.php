@@ -17,6 +17,7 @@ if ($total_postvars >= $max_postvars) {
 
 require "app/config.php";
 require "templates.php";
+require "helpers.php";
 $tablename = '';
 $tabledisplay = '';
 $columnname = '' ;

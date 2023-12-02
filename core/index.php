@@ -2,6 +2,7 @@
 if (file_exists("app/config.php")) {
     include("app/config.php");
 }
+include("helpers.php");
 ?>
 <!doctype html>
 <html lang="en">
