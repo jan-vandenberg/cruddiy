@@ -277,11 +277,11 @@ function is_table_referenced($table_name) {
                                     <div class="col-md-1">
                                         <!-- Upload checkbox -->
                                         <?php
-                                        if (!$column['isForeignKey'] &&
-                                            !$column['isPrimary'] && (
-                                            strstr(lowercase($column['type']), 'char') ||
-                                            strstr(lowercase($column['type']), 'text') ||
-                                            strstr(lowercase($column['type']), 'blog'))
+                                        if (!$column['isForeignKey'] && (
+                                                strstr($column['type'], 'char') ||
+                                                strstr($column['type'], 'text') ||
+                                                strstr($column['type'], 'blob')
+                                                )
                                             ) :
                                             $checked = '';
                                             $guesslist_checked_colums = array('file', 'image', 'logo', 'picture', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
