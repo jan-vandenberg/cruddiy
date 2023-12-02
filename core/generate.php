@@ -590,21 +590,26 @@ function generate($postdata) {
                         }
                         else if ($type == 1) // Text
                         {
-                            $index_table_rows .= 'echo "<td>";' . "\n";
-                            $index_table_rows .= '// Check if the column is file upload' . "\n";
-                            $index_table_rows .= "// echo '<pre>';" . "\n";
-                            $index_table_rows .= '// print_r($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . ']);' . "\n";
-                            $index_table_rows .= "// echo '</pre>';" . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'echo "<td>";' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '// Check if the column is file upload' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . "// echo '<pre>';" . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '// print_r($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . ']);' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . "// echo '</pre>';" . "\n";
 
-                            $index_table_rows .= '$is_file = $tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\'];' . "\n";
-                            $index_table_rows .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row[' . "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_' . $columnname . '">\' : \'\';' . "\n";
-                            $index_table_rows .= 'echo $link_file;' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '$has_link_file = isset($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\']) ? true : false;' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'if ($has_link_file){' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '    $is_file = $tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\'];' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '    $link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row[' . "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_' . $columnname . '">\' : \'\';' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '    echo $link_file;' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '}' . "\n";
 
-                            $index_table_rows .= 'echo nl2br(htmlspecialchars($row[' . "'" . $columnname . "'" . '] ?? ""));' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'echo nl2br(htmlspecialchars($row[' . "'" . $columnname . "'" . '] ?? ""));' . "\n";
 
-                            $index_table_rows .= 'echo $is_file ? "</a>" : "";' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'if ($has_link_file){' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '    echo $is_file ? "</a>" : "";' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '}' . "\n";
 
-                            $index_table_rows .= 'echo "</td>"."\n\t\t\t\t\t\t\t\t\t\t";';
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'echo "</td>"."\n\t\t\t\t\t\t\t\t\t\t";';
                         }
                         else if ($type == 4) // TinyInt / Bool
                         {
@@ -893,22 +898,31 @@ function generate($postdata) {
 
                         // Regular layout
                         $create_html[] = '<div class="form-group">
-                                                            <label for="' . $columnname . '">' . $columndisplay . '</label>
-                                                            ' . $column_input . '</div>';
+                                            <label for="' . $columnname . '">' . $columndisplay . '</label>
+                                            ' . $column_input . '
+                                        </div>';
 
-                        $read_records .= '<?php' . "\n";
-                        $read_records .= '// Check if the column is file upload' . "\n";
-                        $read_records .= "// echo '<pre>';" . "\n";
-                        $read_records .= '// print_r($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . ']);' . "\n";
-                        $read_records .= "// echo '</pre>';" . "\n";
-                        $read_records .= '$is_file = $tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\'];' . "\n";
-                        $read_records .= '$link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row[' . "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_' . $columnname . '">\' : \'\';' . "\n";
-                        $read_records .= '$end_link_file = $is_file ? "</a>" : "";' . "\n";
-                        $read_records .= '?>' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '<?php' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '// Check if the column is file upload' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . "// echo '<pre>';" . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '// print_r($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . ']);' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . "// echo '</pre>';" . "\n";
 
-                        $read_records .= '<div class="form-group">
-                                                            <h4>' . $columndisplay . '</h4>
-                                                            <p class="form-control-static"><?php echo $link_file ?>' . $column_value . '<?php echo $end_link_file ?></p></div>';
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '$has_link_file = isset($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\']) ? true : false;' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . 'if ($has_link_file){' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '    $is_file = $tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\'];' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '    $link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row[' . "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_' . $columnname . '">\' : \'\';' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '    $end_link_file = $is_file ? "</a>" : "";' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '}' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '?>' . "\n";
+
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '<div class="form-group">' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '    <h4>' . $columndisplay . '</h4>' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '    <?php if ($has_link_file): ?>' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '        <p class="form-control-static"><?php echo $link_file ?>' . $column_value . '<?php echo $end_link_file ?></p>' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '    <?php endif ?>' . "\n";
+                        $read_records .= "\t\t\t\t\t\t\t\t\t" . '</div>';
+
 
                         // Different Layout
                         // $create_html [] = '<div class="form-group row">
