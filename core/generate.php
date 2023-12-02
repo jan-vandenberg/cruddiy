@@ -961,6 +961,9 @@ function generate($postdata) {
                             echo "app/$upload_target_dir was preserved due to <code>\$upload_persistent_dir=true</code> in app/config.php";
                         }
 
+                        // also delete the locales directory as we may need to regenerate the translations
+                        deleteDirectory("app/locales");
+
                         echo '<br><br>';
                     }
 
