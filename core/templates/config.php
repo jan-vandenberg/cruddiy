@@ -7,7 +7,7 @@ $db_password            = '{{db_password}}';
 $no_of_records_per_page = '{{no_of_records_per_page}}';
 $appname                = '{{appname}}';
 $language               = '{{language}}';
-$translations           = include('locales/{{language}}.php');
+$translations           = include("locales/$language.php");
 
 
 $upload_max_size        = 5000000; // default 5MB
