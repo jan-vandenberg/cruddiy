@@ -33,6 +33,9 @@ return array(
     'Search this table' => 'Zoek in deze tabel',
     'First' => 'Eerste',
     'Last' => 'Laatste',
+    'total_results' => '%s resultaten - Pagina %s van %s',
+    'Prev' => 'Vorige',
+    'Next' => 'Volgende',
 
     // buttons
     'Yes' => 'Ja',

@@ -33,6 +33,9 @@ return array(
     'Search this table' => 'इस तालिका को खोजें',
     'First' => 'पहला',
     'Last' => 'अंतिम',
+    'total_results' => '%s hasil - Halaman %s dari %s',
+    'Prev' => 'Sebelumnya',
+    'Next' => 'Berikutnya',
 
     // buttons
     'Yes' => 'हाँ',

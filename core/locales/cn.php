@@ -33,6 +33,9 @@ return array(
     'Search this table' => '搜索此表',
     'First' => '首页',
     'Last' => '尾页',
+    'total_results' => '%s个结果 - 第%s页，共%s页',
+    'Prev' => '上一页',
+    'Next' => '下一页',
 
     // buttons
     'Yes' => '是',

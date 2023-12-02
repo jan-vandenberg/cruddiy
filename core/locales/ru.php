@@ -33,6 +33,9 @@ return array(
     'Search this table'            => 'Поиск по таблице',
     'First'                        => 'Первая',
     'Last'                         => 'Последняя',
+    'total_results' => '%s результатов - Страница %s из %s',
+    'Prev' => 'Предыдущая',
+    'Next' => 'Следующая',
 
     // buttons
     'Yes'                          => 'Да',

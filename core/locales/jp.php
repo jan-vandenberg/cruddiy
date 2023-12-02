@@ -33,6 +33,9 @@ return array(
     'Search this table' => 'このテーブルを検索',
     'First' => '最初',
     'Last' => '最後',
+    'total_results' => '%s件の結果 - %sページ中の%sページ目',
+    'Prev' => '前',
+    'Next' => '次',
 
     // buttons
     'Yes' => 'はい',

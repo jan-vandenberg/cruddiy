@@ -33,6 +33,9 @@ return array(
     'Search this table' => 'Cerca in questa tabella',
     'First' => 'Primo',
     'Last' => 'Ultimo',
+    'total_results' => '%s risultati - Pagina %s di %s',
+    'Prev' => 'Precedente',
+    'Next' => 'Successivo',
 
     // buttons
     'Yes' => 'Sì',

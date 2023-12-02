@@ -33,6 +33,9 @@ return array(
     'Search this table' => 'Vyhledávat v této tabulce',
     'First' => 'První',
     'Last' => 'Poslední',
+    'total_results' => '%s výsledků - Strana %s z %s',
+    'Prev' => 'Předchozí',
+    'Next' => 'Další',
 
     // buttons
     'Yes' => 'Ano',
