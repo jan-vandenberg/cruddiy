@@ -28,14 +28,14 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                 // If the upload was successful, update $_POST
                 if (!in_array(true, array_column($this_upload, 'error')) && !array_key_exists('error', $this_upload)) {
                     $_POST[$originalKey] = $this_upload['success'];
+
+                    // And we can safely delete the previous file
+                    unlink($upload_target_dir . $_POST['cruddiy_backup_' . $originalKey]);
                 }
             } else {
                 // No file uploaded, use the backup
                 $_POST[$originalKey] = $value;
             }
-
-            // Remove the cruddiy_backup_ entry from $_POST
-            unset($_POST[$key]);
         }
 
 
@@ -48,7 +48,7 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
                 $_POST[$deleteKey] = '';
 
                 // And we can safely delete the file
-                unlink($upload_target_dir . $_POST['cruddiy_backup_' . $deleteKey]) or die('fu');
+                @unlink($upload_target_dir . $_POST['cruddiy_backup_' . $deleteKey]);
             }
         }
     }
