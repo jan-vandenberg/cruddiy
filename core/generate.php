@@ -940,14 +940,28 @@ function generate($postdata) {
                         $forced_deletion = true;
                         echo '<h3>Deleting existing files</h3>';
                         $keep = array('config.php', 'helpers.php', 'config-tables-columns.php', 'locales');
-                        foreach( glob("app/*") as $file ) {
-                            if( !in_array(basename($file), $keep) ){
-                                if (unlink($file)) {
-                                    echo $file.'<br>';
+                        foreach (glob("app/*") as $file) {
+                            if (!in_array(basename($file), $keep)) {
+                                if (is_file($file)) {
+                                    if (unlink($file)) {
+                                        echo $file . '<br>';
+                                    }
                                 }
                             }
                         }
+
                         echo '<br>';
+                        global $upload_target_dir;
+                        global $upload_persistent_dir;
+                        echo '<h3>Deleting upload directory</h3>';
+                        if (!$upload_persistent_dir) {
+                            deleteDirectory("app/$upload_target_dir");
+                            echo "app/$upload_target_dir was deleted (set <code>\$upload_persistent_dir=true</code> in app/config.php to preserve next time)";
+                        } else {
+                            echo "app/$upload_target_dir was preserved due to <code>\$upload_persistent_dir=true</code> in app/config.php";
+                        }
+
+                        echo '<br><br>';
                     }
 
                     generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay, $key);
@@ -1012,6 +1026,32 @@ function updateTableAndColumnsNames($tables_and_columns_names) {
     $configfile = fopen($configTableNamesFilePath, "w") or die("Unable to open Config file for table names! Please check your file permissions.");
     if (fwrite($configfile, $templateContent) === false) die("Error writing Config file for table names!");
     fclose($configfile);
+}
+
+
+
+function deleteDirectory($dirPath) {
+    if (!is_dir($dirPath)) {
+        throw new InvalidArgumentException("$dirPath must be a directory");
+    }
+    if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
+        $dirPath .= '/';
+    }
+
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($dirPath, RecursiveDirectoryIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($files as $fileInfo) {
+        if ($fileInfo->isDir()) {
+            rmdir($fileInfo->getRealPath());
+        } else {
+            unlink($fileInfo->getRealPath());
+        }
+    }
+
+    rmdir($dirPath);
 }
 
 ?>
