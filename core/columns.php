@@ -277,16 +277,23 @@ function is_table_referenced($table_name) {
                                     <div class="col-md-1">
                                         <!-- Upload checkbox -->
                                         <?php
-                                        $checked = '';
-                                        $guesslist_checked_colums = array('file', 'image', 'logo', 'picture', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
-                                        foreach($guesslist_checked_colums as $term) {
-                                            if (strstr($column['name'], $term)) {
-                                                $checked = 'checked';
+                                        if (!$column['isForeignKey'] &&
+                                            !$column['isPrimary'] && (
+                                            strstr(lowercase($column['type']), 'char') ||
+                                            strstr(lowercase($column['type']), 'text') ||
+                                            strstr(lowercase($column['type']), 'blog'))
+                                            ) :
+                                            $checked = '';
+                                            $guesslist_checked_colums = array('file', 'image', 'logo', 'picture', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
+                                            foreach($guesslist_checked_colums as $term) {
+                                                if (strstr($column['name'], $term)) {
+                                                    $checked = 'checked';
+                                                }
                                             }
-                                        }
-                                        ?>
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" <?php echo $checked ?>>
-                                        <label for="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>">File</label>
+                                            ?>
+                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" <?php echo $checked ?>>
+                                            <label for="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>">File</label>
+                                        <?php endif ?>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in overview checkbox -->
