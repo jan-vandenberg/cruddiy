@@ -162,7 +162,7 @@ function handleFileUpload($FILE) {
     global $upload_disallowed_exts;
 
     $upload_results     = array();
-    $sanitized_fileName = sanitizeFileName(basename($FILE["name"]));
+    $sanitized_fileName = sanitize(basename($FILE["name"]));
     $unique_filename    = generateUniqueFileName($sanitized_fileName);
     $target_file        = $upload_target_dir . $unique_filename;
     $extension          = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -210,7 +210,7 @@ function handleFileUpload($FILE) {
 
 
 
-function sanitizeFileName($fileName) {
+function sanitize($fileName) {
     // Remove illegal file system characters
     $fileName = str_replace(array('<', '>', ':', '"', '/', '\\', '|', '?', '*'), '', $fileName);
 

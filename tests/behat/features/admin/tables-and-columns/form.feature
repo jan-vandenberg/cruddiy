@@ -5,14 +5,14 @@ Feature: Check admin tables mapping form
     Then I should not see "Parse error"
     And I should not see "Fatal error"
 
-    And I fill in "table[0][tabledisplay]" with "The Brands"
-    And I check "checkboxes-0"
+    And I fill in "textinput_brands" with "The Brands"
+    And I check "generate-brands"
 
-    And I fill in "table[1][tabledisplay]" with "The Products"
-    And I check "checkboxes-1"
+    And I fill in "textinput_products" with "The Products"
+    And I check "generate-products"
 
-    And I fill in "table[2][tabledisplay]" with "The Suppliers"
-    And I check "checkboxes-2"
+    And I fill in "textinput_suppliers" with "The Suppliers"
+    And I check "generate-suppliers"
 
     And I press "Select columns from tables"
 
