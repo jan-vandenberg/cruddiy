@@ -42,7 +42,7 @@ class FeatureContext extends MinkContext implements Context {
      */
     public function resetDB(BeforeScenarioScope $scope) {
 
-        $this->deleteTestUploads();
+        $this->deleteTestUploads($scope);
 
         // Delete the test database and let the test suite re-create it
         try {

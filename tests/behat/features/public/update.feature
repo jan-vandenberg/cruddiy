@@ -55,3 +55,38 @@ Feature: Check public update page content
     And I should see a ".uploaded_file" element
     And I follow "link_packshot_file"
     Then the response status code should be 200
+
+
+
+  Scenario: Successfully updating a product file
+    Given I am on "/core/app/products-update.php?id=2"
+    When I attach the file "./tests/assets/cruddiy_test_image.jpg" to "packshot_file"
+    And I press "Edit"
+    Then I should see "cruddiy_test_image.jpg"
+
+  Scenario: Attempting to upload a product file but leaving the file input empty
+    Given I am on "/core/app/products-update.php?id=2"
+    When I press "Edit"
+    Then I should see "cruddiy_test_image.jpg"
+
+  Scenario: Using a backup file for a product when no file is uploaded
+    Given I am on "/core/app/products-update.php?id=2"
+    When I attach the file "" to "packshot_file"
+    And I press "Edit"
+    Then I should see "cruddiy_test_image.jpg"
+
+  Scenario: Deleting an uploaded product file
+    Given I am on "/core/app/products-update.php?id=2"
+    When I check "cruddiy_delete_packshot_file"
+    And I press "Edit"
+    Then I should not see "cruddiy_test_image.jpg"
+
+  Scenario: Attempting to delete a product file that does not exist
+    Given I am on "/core/app/products-update.php?id=2"
+    Then I should not see a "cruddiy_backup_packshot_file" element
+
+  Scenario: Successfully updating a new product file
+    Given I am on "/core/app/products-update.php?id=2"
+    When I attach the file "./tests/assets/cruddiy_test_image.jpg" to "packshot_file"
+    And I press "Edit"
+    Then I should see "cruddiy_test_image.jpg"
