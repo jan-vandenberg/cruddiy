@@ -18,6 +18,8 @@ return array(
     'update_record_instructions' => 'Bewerk de waarden en dien in om het record bij te werken.',
 
     // delete records
+    'Delete' => 'Verwijderen',
+    'Delete File' => 'Verwijderen %s',
     'Delete Record' => 'Record verwijderen',
     'delete_record_confirm' => 'Weet u zeker dat u dit record wilt verwijderen?',
 

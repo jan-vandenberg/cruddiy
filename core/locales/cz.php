@@ -18,6 +18,8 @@ return array(
     'update_record_instructions' => 'Upravte hodnoty a odešlete k aktualizaci záznamu.',
 
     // delete records
+    'Delete' => 'Smazat',
+    'Delete File' => 'Smazat %s',
     'Delete Record' => 'Smazat záznam',
     'delete_record_confirm' => 'Jste si jisti, že chcete tento záznam smazat?',
 

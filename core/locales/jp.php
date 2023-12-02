@@ -18,6 +18,8 @@ return array(
     'update_record_instructions' => '入力値を編集して記録を更新してください。',
 
     // delete records
+    'Delete' => '削除',
+    'Delete File' => '%sを削除',
     'Delete Record' => '記録を削除',
     'delete_record_confirm' => 'この記録を削除してもよろしいですか？',
 

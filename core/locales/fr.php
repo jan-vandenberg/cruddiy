@@ -19,6 +19,8 @@ return array(
     'Edit' => 'Éditer',
 
     // delete records
+    'Delete' => 'Supprimer',
+    'Delete File' => 'Supprimer %s',
     'Delete Record' => "Supprimer enregistrement",
     'delete_record_confirm' => "Êtes-vous sûr de vouloir supprimer cet enregistrement ?",
 

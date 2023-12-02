@@ -18,6 +18,8 @@ return array(
     'update_record_instructions' => '请编辑输入值并提交以更新记录。',
 
     // delete records
+    'Delete' => '删除',
+    'Delete File' => '删除%s',
     'Delete Record' => '删除记录',
     'delete_record_confirm' => '您确定要删除此记录吗？',
 

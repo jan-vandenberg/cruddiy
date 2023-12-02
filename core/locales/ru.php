@@ -18,6 +18,8 @@ return array(
     'update_record_instructions'   => 'Измените значения и отправьте, чтобы обновить запись.',
 
     // delete records
+    'Delete' => 'Удалить',
+    'Delete File' => 'Удалить %s',
     'Delete Record'                => 'Удалить запись',
     'delete_record_confirm'        => 'Вы уверены, что хотите удалить эту запись?',
 

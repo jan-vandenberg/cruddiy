@@ -18,6 +18,8 @@ return array(
     'update_record_instructions'   => 'Bearbeiten Sie die Werte und senden Sie sie, um den Datensatz zu aktualisieren.',
 
     // delete records
+    'Delete' => 'Löschen',
+    'Delete File' => '%s löschen',
     'Delete Record'                => 'Datensatz löschen',
     'delete_record_confirm'        => 'Sind Sie sicher, dass Sie diesen Datensatz löschen möchten?',
 

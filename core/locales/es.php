@@ -18,6 +18,8 @@ return array(
     'update_record_instructions'   => 'Edite los valores y envíe para actualizar el registro.',
 
     // delete records
+    'Delete' => 'Eliminar',
+    'Delete File' => 'Eliminar %s',
     'Delete Record'                => 'Eliminar registro',
     'delete_record_confirm'        => '¿Está seguro de que desea eliminar este registro?',
 

@@ -19,6 +19,8 @@ return array(
     'Edit' => 'Edit',
 
     // delete records
+    'Delete' => 'Delete',
+    'Delete File' => "Delete %s",
     'Delete Record' => 'Delete Record',
     'delete_record_confirm' => "Are you sure you want to delete this record?",
 
