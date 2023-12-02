@@ -1,0 +1,28 @@
+default:
+  suites:
+    default:
+      contexts:
+        - FeatureContext: []
+    admin:
+      paths:
+        - features/admin/index/page.feature
+        - features/admin/index/form.feature
+        - features/admin/relations/page.feature
+        - features/admin/relations/schema.feature
+        - features/admin/relations/form.feature
+        - features/admin/tables-and-columns/page.feature
+        - features/admin/tables-and-columns/form.feature
+    public:
+      paths:
+        - features/public/index/list.feature
+        - features/public/read/read.feature
+        - features/public/create/create.feature
+        - features/public/update/update.feature
+        - features/public/delete/delete.feature
+  extensions:
+    Behat\MinkExtension:
+      goutte:
+        guzzle_parameters:
+          curl.options:
+            CURLOPT_TIMEOUT: 5
+      base_url: 'http://cruddiy.localhost'

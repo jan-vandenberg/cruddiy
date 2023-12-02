@@ -167,7 +167,7 @@ if(isset($_POST['addkey'])){
                           <thead>
                             <tr>
                               <?php
-                                $sql = "SELECT i.TABLE_NAME as 'Table Name', k.COLUMN_NAME as 'Foreign Key',
+                                $sql = "SELECT DISTINCT  i.TABLE_NAME as 'Table Name', k.COLUMN_NAME as 'Foreign Key',
                                     k.REFERENCED_TABLE_NAME as 'Primary Table', k.REFERENCED_COLUMN_NAME as 'Primary Key',
                                     i.CONSTRAINT_NAME as 'Constraint Name', 'Delete' as 'Delete'
                                         FROM information_schema.TABLE_CONSTRAINTS i
