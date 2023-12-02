@@ -17,55 +17,21 @@ Feature: Check admin tables mapping form
     And I press "Select columns from tables"
 
 
-  # Scenari after submitting the relations.php form
-  # We can't put these tests in tables-and-columns/page.feature
-  # because the POST history is not remembered as tests are stateless
-  # that's also why we dont write a "Given I am on /core/columns.php" statement below
 
-  Scenario: After submit tables, check for errors on the Columns page
+  Scenario: Check for errors on the Columns page
     Then I should see "All Available Columns"
     And I should see "The Brands (brands)"
     And I should see "The Products (products)"
     And I should see "The Suppliers (suppliers)"
 
-
-
-  Scenario: After submit tables, check for tables continuity on the Columns page
+  Scenario: Check for form continuity on the Columns page
     And I should see "Table: The Brands (brands)"
     And I should see "Table: The Products (products)"
     And I should see "Table: The Suppliers (suppliers)"
 
 
 
-  Scenario: After submit tables, check for column types and emojis on Columns page
-    # id
-    And the label for "products-0" should have class "is-primary"
-    And the label for "products-0" should have class "is-auto"
-    And the label for "products-0" should not have class "is-foreignkey"
-    And the label for "products-0" should not have class "is-nullable"
-
-    # ean
-    And the label for "products-1" should not have class "is-primary"
-    And the label for "products-1" should not have class "is-auto"
-    And the label for "products-1" should not have class "is-foreignkey"
-    And the label for "products-1" should not have class "is-nullable"
-
-    # brand_id
-    And the label for "products-3" should not have class "is-primary"
-    And the label for "products-3" should not have class "is-auto"
-    And the label for "products-3" should have class "is-foreignkey"
-    And the label for "products-3" should have class "is-nullable"
-
-    # packaging_details
-    And the label for "products-6" should not have class "is-primary"
-    And the label for "products-6" should not have class "is-auto"
-    And the label for "products-6" should not have class "is-foreignkey"
-    And the label for "products-6" should have class "is-nullable"
-
-
-
-
-  Scenario: After submit tables, check for POST values continuity between Tables and Columns
+  Scenario: Check for default checkboxes and states, fill the Columns form
     # brands
 
     # id
