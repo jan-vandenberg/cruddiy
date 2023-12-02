@@ -14,6 +14,9 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 
     // Use the backup fields to look for submitted files, if any
     foreach ($_POST as $key => $value) {
+
+        // Check for $_POST cruddiy_backup_xxx to determine $_FILES xxx
+        // We don't loop through $_FILES directly to handle value backup more easily
         if (substr($key, 0, 15) === 'cruddiy_backup_') {
             $originalKey = substr($key, 15);
             // Check if a file was uploaded for this field
@@ -33,6 +36,20 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 
             // Remove the cruddiy_backup_ entry from $_POST
             unset($_POST[$key]);
+        }
+
+
+        // Check for cruddiy_delete_xxx and set corresponding $_POST['xxx'] to blank
+        if (substr($key, 0, 15) === 'cruddiy_delete_') {
+            $deleteKey = substr($key, 15);
+
+            if (isset($_POST['cruddiy_delete_' . $deleteKey]) && $_POST['cruddiy_delete_' . $deleteKey]) {
+                // Set the corresponding field to blank
+                $_POST[$deleteKey] = '';
+
+                // And we can safely delete the file
+                unlink($upload_target_dir . $_POST['cruddiy_backup_' . $deleteKey]) or die('fu');
+            }
         }
     }
 

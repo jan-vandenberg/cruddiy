@@ -786,8 +786,14 @@ function generate($postdata) {
                         // Check if the column is a file upload
                         if ($tables_and_columns_names[$tablename]['columns'][$columnname]['is_file']) {
                             $is_special_column_type = true;
-                            $column_input = '<?php //echo @' . $create_record . '; ?><input type="file" name="' . $columnname . '" id="' . $columnname . '" class="form-control">';
-                            $column_input .= '<input type="hidden" name="cruddiy_backup_' . $columnname . '" id="cruddiy_backup_' . $columnname . '" value="<?php echo @' . $create_record . '; ?>">';
+                            $column_input  = "\n".'<input type="file" name="' . $columnname . '" id="' . $columnname . '" class="form-control">'."\n";
+                            $column_input .= '<input type="hidden" name="cruddiy_backup_' . $columnname . '" id="cruddiy_backup_' . $columnname . '" value="<?php echo @' . $create_record . '; ?>">'."\n";
+                            $column_input .= '<?php if (isset(' . $create_record . ') && !empty(' . $create_record . ')) : ?>' . "\n";
+                            $column_input .= '<div class="custom-control custom-checkbox">'."\n";
+                            $column_input .= '    <input type="checkbox" class="custom-control-input" id="cruddiy_delete_' . $columnname . '" name="cruddiy_delete_' . $columnname . '" value="1">'."\n";
+                            $column_input .= '    <label class="custom-control-label" for="cruddiy_delete_' . $columnname . '">Delete <a href="uploads/<?php echo @' . $create_record . ' ?>" target="_blank"><?php echo @' . $create_record . ' ?></a></label>'."\n";
+                            $column_input .= '</div>'."\n";
+                            $column_input .= '<?php endif ?>' . "\n";
                         }
 
 
