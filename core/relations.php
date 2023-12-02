@@ -1,6 +1,5 @@
 <?php
 $configfilePath = 'app/config.php';
-$configfilePath = 'config.php';
 
 if(isset($_POST['index'])) {
 
