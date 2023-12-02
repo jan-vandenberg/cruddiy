@@ -10,29 +10,29 @@ if(isset($_POST["{COLUMN_ID}"]) && !empty($_POST["{COLUMN_ID}"])){
 
     // Checking for upload fields
     $upload_results = array();
-    if (!empty($_FILES)) {
-        foreach ($_FILES as $key => $value) {
-            // Check if the file was actually uploaded
-            // echo '<pre>';
-            // print_r($value);
-            // echo '</pre>';
-            if ($value['error'] == UPLOAD_ERR_OK ) {
-                // echo "Field " . $key . " is a file upload.\n";
-                $this_upload = handleFileUpload($_FILES[$key]);
+    $upload_errors = array();
+
+    // Use the backup fields to look for submitted files, if any
+    foreach ($_POST as $key => $value) {
+        if (substr($key, 0, 15) === 'cruddiy_backup_') {
+            $originalKey = substr($key, 15);
+            // Check if a file was uploaded for this field
+            if (isset($_FILES[$originalKey]) && $_FILES[$originalKey]['error'] == UPLOAD_ERR_OK) {
+                // Handle the file upload
+                $this_upload = handleFileUpload($_FILES[$originalKey]);
                 $upload_results[] = $this_upload;
-                // Put the filename in the POST data to save it in DB
+
+                // If the upload was successful, update $_POST
                 if (!in_array(true, array_column($this_upload, 'error')) && !array_key_exists('error', $this_upload)) {
-                    $_POST[$key] = $this_upload['success'];
+                    $_POST[$originalKey] = $this_upload['success'];
                 }
+            } else {
+                // No file uploaded, use the backup
+                $_POST[$originalKey] = $value;
             }
-            // When no file was provided, we keep the existing one
-            elseif ($value['error'] == UPLOAD_ERR_NO_FILE) {
-                $_POST[$key] = $_POST['cruddiy_backup_' . $key];
-            }
-            // Other errors
-            else {
-                $upload_errors[] = array('error' => getUploadResultByErrorCode($value['error']));
-            }
+
+            // Remove the cruddiy_backup_ entry from $_POST
+            unset($_POST[$key]);
         }
     }
 
