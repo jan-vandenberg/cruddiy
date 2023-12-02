@@ -22,6 +22,14 @@ INSERT INTO `brands` (`id`, `name`) VALUES
 (8,	'Reebok'),
 (3,	'Under Armour');
 
+
+
+
+
+
+
+
+
 DROP TABLE IF EXISTS `products`;
 CREATE TABLE `products` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -41,6 +49,16 @@ CREATE TABLE `products` (
   CONSTRAINT `products_ibfk_2` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `products`
+ADD `packshot_file` text COLLATE 'utf8_general_ci' NULL;
+
+
+
+
+
+
+
+
 
 DROP TABLE IF EXISTS `suppliers`;
 CREATE TABLE `suppliers` (
@@ -50,5 +68,7 @@ CREATE TABLE `suppliers` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+ALTER TABLE `suppliers`
+ADD `logo` text COLLATE 'utf8_general_ci' NULL;
 
 -- 2023-11-30 13:48:04

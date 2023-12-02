@@ -19,6 +19,8 @@ return array(
     'Edit' => 'Éditer',
 
     // delete records
+    'Delete' => 'Supprimer',
+    'Delete File' => 'Supprimer %s',
     'Delete Record' => "Supprimer enregistrement",
     'delete_record_confirm' => "Êtes-vous sûr de vouloir supprimer cet enregistrement ?",
 
@@ -33,7 +35,7 @@ return array(
     'Search this table' => "Rechercher",
     'First' => "Début",
     'Last' => "Fin",
-    'total_results' => "%s resultats - Page %s sur %s",
+    'total_results' => '%s résultats - Page %s sur %s',
     'Prev' => 'Précédent',
     'Next' => 'Suivant',
 

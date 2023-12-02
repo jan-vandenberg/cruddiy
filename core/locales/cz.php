@@ -18,6 +18,8 @@ return array(
     'update_record_instructions' => 'Upravte hodnoty a odešlete k aktualizaci záznamu.',
 
     // delete records
+    'Delete' => 'Smazat',
+    'Delete File' => 'Smazat %s',
     'Delete Record' => 'Smazat záznam',
     'delete_record_confirm' => 'Jste si jisti, že chcete tento záznam smazat?',
 
@@ -31,6 +33,9 @@ return array(
     'Search this table' => 'Vyhledávat v této tabulce',
     'First' => 'První',
     'Last' => 'Poslední',
+    'total_results' => '%s výsledků - Strana %s z %s',
+    'Prev' => 'Předchozí',
+    'Next' => 'Další',
 
     // buttons
     'Yes' => 'Ano',

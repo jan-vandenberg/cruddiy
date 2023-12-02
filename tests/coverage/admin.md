@@ -17,4 +17,9 @@
   -   Scenario: Check checkboxes
   -   Scenario: Check for errors on the Columns page
   -   Scenario: Check for form continuity on the Columns page
-  -   Scenario: Check for POST data continuity between Tables and Columns
+  -   Scenario: Check for default checkboxes and states, fill the Columns form
+  -   Scenario: Check auto-detection of input type=file elements (guesslist)
+  -   Scenario: Check the Visibility checkboxes in "This table"
+  -   Scenario: Check the Visibility checkboxes in "Related tables"
+  -   Scenario: Submit the "Generate pages" form (launch the generator)
+  -   Scenario: Check for POST data continuity

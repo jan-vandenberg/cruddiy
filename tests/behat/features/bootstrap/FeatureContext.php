@@ -10,8 +10,10 @@ use Behat\Testwork\Tester\Result\TestResult;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\ElementNotFoundException;
-
+use Behat\Testwork\Tester\Result\TestResult;
 use Dotenv\Dotenv;
+
+
 
 class FeatureContext extends MinkContext implements Context {
 
@@ -45,6 +47,8 @@ class FeatureContext extends MinkContext implements Context {
      */
     public function resetDB(BeforeScenarioScope $scope) {
 
+        $this->deleteTestUploads($scope);
+
         // Delete the test database and let the test suite re-create it
         try {
             $this->pdo->exec("DROP DATABASE IF EXISTS `" . $_ENV['DB_BASE'] . "`");
@@ -61,13 +65,33 @@ class FeatureContext extends MinkContext implements Context {
 
 
     /**
-     * @BeforeScenario @cleanDB
+     * @BeforeScenario @cleanTestRecordsAndUploads
      */
-    public function cleanDB(BeforeScenarioScope $scope) {
+    public function cleanTestRecordsAndUploads(BeforeScenarioScope $scope) {
+        $this->cleanDB($scope);
+        $this->deleteTestUploads($scope);
+    }
 
-        // Delete the test database and re-import what was created by the Admin test suite
-        // This is useful to run the Public test suite multiple times, whithout encounting errors
-        // because the Public test suites performs operations that invalidates the tests.
+
+
+    // Delete files uploaded by the Public test suite
+    private function deleteTestUploads(BeforeScenarioScope $scope) {
+        $directory = __DIR__ . '/../../../../core/app/uploads';
+        $substring = '_cruddiy_test_image.jpg';
+
+        foreach (glob($directory . '/*') as $file) {
+            if (is_file($file) && strpos(basename($file), $substring) !== false) {
+                unlink($file);
+            }
+        }
+    }
+
+
+
+    // Delete the test database and re-import what was created by the Admin test suite
+    // This is useful to run the Public test suite multiple times, whithout encounting errors
+    // because the Public test suites performs operations that invalidates the tests.
+    private function cleanDB(BeforeScenarioScope $scope) {
         try {
             $dir_schema = realpath(__DIR__ . '/../../../../schema');
             $file_schema = 'Tests - Public.sql';
@@ -136,46 +160,6 @@ class FeatureContext extends MinkContext implements Context {
 
         if ($occurrences !== 1) {
             throw new ExpectationException("Expected to find the text '$text' only once, found $occurrences times.", $this->getSession()->getDriver());
-        }
-    }
-
-
-
-    /**
-     * @Then /^the label for "(?P<forValue>[^"]*)" should have class "(?P<expectedClass>[^"]*)"$/
-     */
-    public function theLabelForShouldHaveClass($forValue, $expectedClass)
-    {
-        $page = $this->getSession()->getPage();
-        $label = $page->find('xpath', "//label[@for='{$forValue}']");
-
-        if (null === $label) {
-            throw new \Exception(sprintf('No label found for "%s"', $forValue));
-        }
-
-        $classes = $label->getAttribute('class');
-        if (strpos($classes, $expectedClass) === false) {
-            throw new \Exception(sprintf('The label for "%s" does not have the class "%s"', $forValue, $expectedClass));
-        }
-    }
-
-
-
-    /**
-     * @Then /^the label for "(?P<forValue>[^"]*)" should not have class "(?P<expectedClass>[^"]*)"$/
-     */
-    public function theLabelForShouldNotHaveClass($forValue, $expectedClass)
-    {
-        $page = $this->getSession()->getPage();
-        $label = $page->find('xpath', "//label[@for='{$forValue}']");
-
-        if (null === $label) {
-            throw new \Exception(sprintf('No label found for "%s"', $forValue));
-        }
-
-        $classes = $label->getAttribute('class');
-        if (strpos($classes, $expectedClass) !== false) {
-            throw new \Exception(sprintf('The label for "%s" unexpectedly has the class "%s"', $forValue, $expectedClass));
         }
     }
 

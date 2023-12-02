@@ -68,7 +68,7 @@ if (file_exists("app/config.php")) {
                         <select class="custom-select" id="language" name="language">
                             <option value="0"></option>Pick</option>
                             <?php
-                            $directory = 'locales'; // Replace with the path to your directory
+                            $directory = 'locales';
                             $phpFiles = glob($directory . '/*.php');
                             foreach ($phpFiles as $file) :
                                 ?>
