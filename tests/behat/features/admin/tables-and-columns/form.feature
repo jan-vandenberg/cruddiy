@@ -107,28 +107,25 @@ Feature: Check admin tables mapping form
 
 
   Scenario: Check auto-detection of input type=file elements (guesslist)
-    And the checkbox "file_brands-0" should not be checked
+    # brands
+    And I should not see a "file_brands-0" element
     And the checkbox "file_brands-1" should not be checked
 
-    And the checkbox "file_products-0" should not be checked
+    # products
+    And I should not see a "file_products-0" element
     And the checkbox "file_products-1" should not be checked
     And the checkbox "file_products-2" should not be checked
-    And the checkbox "file_products-3" should not be checked
-    And the checkbox "file_products-4" should not be checked
+    And I should not see a "file_products-3" element
+    And I should not see a "file_products-4" element
     And the checkbox "file_products-5" should not be checked
     And the checkbox "file_products-6" should not be checked
-    And the checkbox "file_products-7" should not be checked
-    And the checkbox "file_products-8" should not be checked
-
-    # file
-    And I should see a "#file_products-9" element
+    And I should not see a "file_products-7" element
+    And I should not see a "file_products-8" element
     And the checkbox "file_products-9" should be checked
 
-    And the checkbox "file_suppliers-0" should not be checked
+    # suppliers
+    And I should not see a "#file_suppliers-0" element
     And the checkbox "file_suppliers-1" should not be checked
-
-    # logo
-    And I should see a "#file_suppliers-2" element
     And the checkbox "file_suppliers-2" should be checked
 
 
