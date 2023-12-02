@@ -1116,7 +1116,7 @@ function recursiveCopy($src, $dst) {
                 <?php generate($_POST); ?>
                 <hr>
                 <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
-                <a href="app/index.php" target="_blank" rel="noopener noreferrer">Go to your app</a> (this will open your app in a new tab).<br><br>
+                <a href="app/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a><br><br>
                 You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
                 <hr>
                 If you need further instructions please visit <a href="http://cruddiy.com" target="_blank">cruddiy.com</a> or ask on our <a href="https://github.com/jan-vandenberg/cruddiy" target="_blank">GitHub</a> project.
@@ -1125,6 +1125,7 @@ function recursiveCopy($src, $dst) {
         </div>
     </div>
 </section>
+<script src="https://kit.fontawesome.com/6b773fe9e4.js" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
 </html>
