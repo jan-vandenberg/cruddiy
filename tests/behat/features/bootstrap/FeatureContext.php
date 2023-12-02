@@ -6,6 +6,7 @@ use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Testwork\Tester\Result\TestResult;
 use Dotenv\Dotenv;
 
 
@@ -161,42 +162,63 @@ class FeatureContext extends MinkContext implements Context {
 
 
     /**
-     * @AfterStep
+     * @BeforeSuite
      */
-    public function logAfterFailedStep(AfterStepScope $scope) {
-        if (!$scope->getTestResult()->isPassed()) {
-            // Get the driver interface
-            $driver = $this->getSession()->getDriver();
+    public static function cleanLogDirectory() {
+        // Cleanup old logs when a test suite runs
+        // see logPageContent() for logging.
+        $logDirectory = __DIR__ . '/../../logs';
 
-            // Make sure it's a Goutte driver
-            if ($driver instanceof \Behat\Mink\Driver\GoutteDriver) {
-                // Get the client from the driver
-                $client = $driver->getClient();
-
-                // Get the response
-                $response = $client->getResponse();
-
-                // Get response headers
-                $headers = $response->getHeaders();
-
-                // Format the headers as HTML comments
-                $formattedHeaders = "\n<!--\n";
-                foreach ($headers as $key => $values) {
-                    $formattedHeaders .= $key . ": " . implode(', ', $values) . "\n";
+        if (file_exists($logDirectory)) {
+            $files = glob($logDirectory . '/*');
+            foreach ($files as $file) {
+                if (is_file($file) && basename($file) !== '.gitkeep') {
+                    unlink($file);
                 }
-                $formattedHeaders .= "-->\n";
-
-                // Get only the response body
-                $responseBody = $response->getContent();
-
-                // Define a log file path
-                $logFilePath = 'tests/logs/log.html';
-                @unlink($logFilePath);
-
-                // Append the formatted headers and response body to the log file
-                file_put_contents($logFilePath, $formattedHeaders . $responseBody, FILE_APPEND);
             }
         }
+    }
+
+
+
+
+    /**
+     * @AfterStep
+     */
+    public function logFailedStep(AfterStepScope $scope) {
+        if ($scope->getTestResult()->getResultCode() !== TestResult::PASSED) {
+            $this->logPageContent($scope);
+        }
+    }
+
+    // Log HTML page if the step has not passed
+    public function logPageContent($scope) {
+        $feature = $scope->getFeature()->getFile();
+        $line = $scope->getStep()->getLine();
+
+        $logDirectory = __DIR__ . '/../../logs';
+        if (!file_exists($logDirectory)) {
+            mkdir($logDirectory, 0777, true);
+        }
+
+        // Identify the directory separator and build the features string accordingly
+        $dirSeparator = DIRECTORY_SEPARATOR;
+        $featuresString = $dirSeparator . "features" . $dirSeparator;
+        $featuresPos = strpos($feature, $featuresString) + strlen($featuresString);
+        $relativePath = substr($feature, $featuresPos);
+
+        // Replace directory separators with underscores and remove the .feature extension
+        $filename = str_replace($dirSeparator, '_', $relativePath);
+        $filename = basename($filename, '.feature');
+
+        // Construct the log filename
+        $logFilename = $logDirectory . '/' . $filename . '-' . $line . '.html';
+
+        // Save the page content to the log file
+        file_put_contents($logFilename, $this->getSession()->getPage()->getContent());
+
+        // Display the log filename in test results
+        echo "HTML content logged to: " . $logFilename . PHP_EOL;
     }
 
 

@@ -7,8 +7,8 @@ schema/*
 !schema/Tests - Admin.sql
 !schema/Tests - Public.sql
 
-tests/logs/*
-!tests/logs/.gitkeep
+tests/behat/logs/*
+!tests/behat/logs/.gitkeep
 
 /vendor/
 **/.env
