@@ -158,19 +158,6 @@ function is_table_referenced($table_name) {
                     <fieldset>
 
                         <div class="row">
-                            <div class="col-3">
-                            </div>
-                            <div class="col-9">
-                                <small><br>
-                                <p><strong>Visibility in this table:</strong> Check the "Show column" box to display the selected column in the list view of this table.</p>
-                                <p><strong>Visibility in related tables:</strong> Check the "Show in FK" box to display the selected column when it is referenced as foreign key in another table. Columns keys "id", "name", "reference" are checked by default.</p>
-                                <p><strong>File:</strong> Check to activate file upload feature.</p>
-                                </small>
-                            </div>
-                        </div>
-
-
-                        <div class="row">
                             <div class="col-8">
                             </div>
                             <div class="col-4 text-center pb-3">
@@ -211,11 +198,11 @@ function is_table_referenced($table_name) {
                                 </div>
                                 <div class="col-1"></div>
                                 <div class="col-2 my-4">
-                                    <strong>This table</strong>
+                                    <strong><abbr title="Check to display the selected column in the list view of this table.">This table</abbr></strong>
                                 </div>
                                 <div class="col-2 my-4">
                                     <?php if ($is_table_referenced) : ?>
-                                        <strong>Related tables</strong>
+                                        <strong><abbr title="Check to display the selected column when it is referenced as foreign key in another table. Columns keys id, name, reference are checked by default.">Related tables</abbr></strong>
                                     <?php endif ?>
                                 </div>
                             </div>
