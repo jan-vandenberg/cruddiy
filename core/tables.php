@@ -20,13 +20,15 @@
 
                     <form class="form-horizontal" action="columns.php" method="post">
 
-                        <div class="row align-items-center mb-1">
-                            <div class="col-md-11 text-right pr-5 ml-3">
-                                <input type="checkbox" id="checkall">
-                                <label for="checkall">Check/uncheck all</label>
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-3">
+                                    <input type="checkbox" id="checkall" class="mr-1">
+                                    <label for="checkall">Check/uncheck all</label>
+                                </div>
                             </div>
                         </div>
-
 
                         <fieldset>
                             <?php
@@ -81,9 +83,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <script>
     $(document).ready(function () {
-        $('#checkall').click(function(e) {
-            var chb = $('.form-horizontal').find('input[type="checkbox"]');
-            chb.prop('checked', !chb.prop('checked'));
+        $('#checkall').click(function() {
+            var isChecked = $(this).prop('checked');
+            $('.form-horizontal').find('input[type="checkbox"]').prop('checked', isChecked);
         });
     });
     </script>
