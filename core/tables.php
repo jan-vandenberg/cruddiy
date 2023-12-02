@@ -61,7 +61,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <input type="hidden" name="table[<?= $i ?>][tablename]" value="<?= htmlspecialchars($table) ?>"/>
-                                            <input id="textinput_<?= sanitize($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($tables_and_columns_names[$table]['name']) ? 'value="'.$tables_and_columns_names[$table]['name'].'"' : '' ?>>
+                                            <input id="text-<?= sanitize($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($tables_and_columns_names[$table]['name']) ? 'value="'.$tables_and_columns_names[$table]['name'].'"' : '' ?>>
                                         </div>
                                         <div class="col-md-3">
                                             <input class="mr-1" type="checkbox" name="table[<?= $i ?>][tablecheckbox]" id="generate-<?= sanitize($table) ?>" value="1">

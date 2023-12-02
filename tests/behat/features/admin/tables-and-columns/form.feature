@@ -1,179 +1,135 @@
 Feature: Check admin tables mapping form
 
-  Scenario: Check checkboxes
+  Scenario: Name and select tables
     Given I am on "/core/tables.php"
     Then I should not see "Parse error"
     And I should not see "Fatal error"
 
-    And I fill in "textinput_brands" with "The Brands"
+    And I fill in "text-brands" with "The Brands"
     And I check "generate-brands"
 
-    And I fill in "textinput_products" with "The Products"
+    And I fill in "text-products" with "The Products"
     And I check "generate-products"
 
-    And I fill in "textinput_suppliers" with "The Suppliers"
+    And I fill in "text-suppliers" with "The Suppliers"
     And I check "generate-suppliers"
 
     And I press "Select columns from tables"
+    Then I should see "All Available Columns"
 
 
 
   Scenario: Check for errors on the Columns page
-    Then I should see "All Available Columns"
-    And I should see "The Brands (brands)"
-    And I should see "The Products (products)"
-    And I should see "The Suppliers (suppliers)"
-
-  Scenario: Check for form continuity on the Columns page
-    And I should see "Table: The Brands (brands)"
-    And I should see "Table: The Products (products)"
-    And I should see "Table: The Suppliers (suppliers)"
+    Then I should not see "Parse error"
+    And I should not see "Fatal error"
 
 
 
-  Scenario: Check for default checkboxes and states, fill the Columns form
+  Scenario: Name and select Brands columns
+
     # brands
+    And I should see "The Brands (brands)"
 
-    # id
-    When I check "checkboxes_brands-0"
-    And I check "checkboxes_brands-0-2"
+    And the "text-brands-id" field should contain "id"
+    And I should not see a "file-brands-id" element
+    And the "visibility-brands-id" checkbox should be checked
+    And the "visibility-fk-brands-id" checkbox should be checked
 
-    # name
-    And I fill in "brandscolumns[1][columndisplay]" with "Brand name"
-    And I check "brandscolumns[1][columnvisible]"
-    And I check "brandscolumns[1][columninpreview]"
+    And I fill in "text-brands-name" with "Brand name"
+    And the checkbox "file-brands-name" should not be checked
+    And the "visibility-brands-name" checkbox should be checked
+    And the "visibility-fk-brands-name" checkbox should be checked
+
 
 
 
     # products
+    And I should see "The Products (products)"
 
     # id
-    And I check "productscolumns[0][columnvisible]"
-    Then I should not see a "#productscolumns\[0\]\[columninpreview\]" element
+    And the "text-products-id" field should contain "id"
+    And I should not see a "file-products-id" element
+    And the "visibility-products-id" checkbox should be checked
+    And I should not see a "visibility-fk-products-id" element
 
     # ean
-    And I fill in "productscolumns[1][columndisplay]" with "EAN-13"
-    And I check "productscolumns[1][columnvisible]"
-    Then I should not see a "#productscolumns\[1\]\[columninpreview\]" element
+    And the "text-products-ean" field should contain "ean"
+    And I fill in "text-products-ean" with "EAN-13"
+    And the checkbox "file-products-ean" should not be checked
+    And the checkbox "visibility-products-ean" should be checked
+    Then I should not see a "visibility-fk-products-ean" element
 
     # product_name
-    And I fill in "productscolumns[2][columndisplay]" with "Name"
-    And I check "productscolumns[2][columnvisible]"
-    Then I should not see a "#productscolumns\[2\]\[columninpreview\]" element
+    And the "text-products-product_name" field should contain "product_name"
+    And I fill in "text-products-product_name" with "Product name"
+    And the checkbox "file-products-product_name" should not be checked
+    And the checkbox "visibility-products-product_name" should be checked
+    Then I should not see a "visibility-fk-products-product_name" element
 
     # brand_id
-    And I fill in "productscolumns[3][columndisplay]" with "Brand name"
-    And I check "productscolumns[3][columnvisible]"
-    Then I should not see a "#productscolumns\[3\]\[columninpreview\]" element
+    And the "text-products-brand_id" field should contain "brand_id"
+    And I fill in "text-products-brand_id" with "Brand"
+    And I should not see a "file-products-brand_id" element
+    And the checkbox "visibility-products-brand_id" should be checked
+    Then I should not see a "visibility-fk-products-brand_id" element
 
     # supplier_id
-    And I fill in "productscolumns[4][columndisplay]" with "Supplier name"
-    And I check "productscolumns[4][columnvisible]"
-    Then I should not see a "#productscolumns\[4\]\[columninpreview\]" element
+    And the "text-products-supplier_id" field should contain "supplier_id"
+    And I fill in "text-products-supplier_id" with "Supplier"
+    And I should not see a "file-products-supplier_id" element
+    And the checkbox "visibility-products-supplier_id" should be checked
+    Then I should not see a "visibility-fk-products-supplier_id" element
 
     # visual_url
-    And I fill in "productscolumns[5][columndisplay]" with "Photo URL"
-    And I check "productscolumns[5][columnvisible]"
-    Then I should not see a "#productscolumns\[5\]\[columninpreview\]" element
+    And the "text-products-visual_url" field should contain "visual_url"
+    And I fill in "text-products-visual_url" with "Visual URL"
+    And the checkbox "file-products-visual_url" should not be checked
+    And the checkbox "visibility-products-visual_url" should be checked
+    Then I should not see a "visibility-fk-products-visual_url" element
 
     # packaging_details
-    And I fill in "productscolumns[6][columndisplay]" with "Packaging details"
-    And I check "productscolumns[6][columnvisible]"
-    Then I should not see a "#productscolumns\[6\]\[columninpreview\]" element
+    And the "text-products-packaging_details" field should contain "packaging_details"
+    And I fill in "text-products-packaging_details" with "Packaging details"
+    And the checkbox "file-products-packaging_details" should not be checked
+    And the checkbox "visibility-products-packaging_details" should be checked
+    And I uncheck "visibility-products-packaging_details"
+    Then I should not see a "visibility-fk-products-packaging_details" element
 
     # recycled_material_incorporation
-    And I fill in "productscolumns[7][columndisplay]" with "Contains recycled material?"
-    And I check "productscolumns[7][columnvisible]"
-    Then I should not see a "#productscolumns\[7\]\[columninpreview\]" element
+    And the "text-products-recycled_material_incorporation" field should contain "recycled_material_incorporation"
+    And I fill in "text-products-recycled_material_incorporation" with "Recycled materials"
+    And I should not see a "file-products-recycled_material_incorporation" element
+    And the checkbox "visibility-products-recycled_material_incorporation" should be checked
+    And I uncheck "visibility-products-recycled_material_incorporation"
+    Then I should not see a "visibility-fk-products-recycled_material_incorporation" element
 
     # hazardous_substance_presence
-    And I fill in "productscolumns[8][columndisplay]" with "Contains hazardous substance?"
-    And I check "productscolumns[8][columnvisible]"
-    Then I should not see a "#productscolumns\[8\]\[columninpreview\]" element
+    And the "text-products-hazardous_substance_presence" field should contain "hazardous_substance_presence"
+    And I fill in "text-products-hazardous_substance_presence" with "Hazardous substance"
+    And I should not see a "file-products-hazardous_substance_presence" element
+    And the checkbox "visibility-products-hazardous_substance_presence" should be checked
+    And I uncheck "visibility-products-hazardous_substance_presence"
+    Then I should not see a "visibility-fk-products-hazardous_substance_presence" element
+
 
 
     # suppliers
+    And I should see "The Suppliers (suppliers)"
 
-    # id
-    And I check "supplierscolumns[0][columnvisible]"
-    And I check "supplierscolumns[0][columninpreview]"
+    And the "text-suppliers-id" field should contain "id"
+    And I should not see a "file-suppliers-id" element
+    And the "visibility-suppliers-id" checkbox should be checked
+    And the "visibility-fk-suppliers-id" checkbox should be checked
 
-    # name
-    And I fill in "supplierscolumns[1][columndisplay]" with "Supplier name"
-    And I check "supplierscolumns[1][columnvisible]"
-    And I check "supplierscolumns[1][columninpreview]"
+    And I fill in "text-suppliers-name" with "Supplier name"
+    And the checkbox "file-suppliers-name" should not be checked
+    And the "visibility-suppliers-name" checkbox should be checked
+    And the "visibility-fk-suppliers-name" checkbox should be checked
 
-
-
-
-  Scenario: Check auto-detection of input type=file elements (guesslist)
-    # brands
-    And I should not see a "file_brands-0" element
-    And the checkbox "file_brands-1" should not be checked
-
-    # products
-    And I should not see a "file_products-0" element
-    And the checkbox "file_products-1" should not be checked
-    And the checkbox "file_products-2" should not be checked
-    And I should not see a "file_products-3" element
-    And I should not see a "file_products-4" element
-    And the checkbox "file_products-5" should not be checked
-    And the checkbox "file_products-6" should not be checked
-    And I should not see a "file_products-7" element
-    And I should not see a "file_products-8" element
-    And the checkbox "file_products-9" should be checked
-
-    # suppliers
-    And I should not see a "#file_suppliers-0" element
-    And the checkbox "file_suppliers-1" should not be checked
-    And the checkbox "file_suppliers-2" should be checked
-
-
-
-
-  Scenario: Check the Visibility checkboxes in "This table"
-    # by default they are all checked
-    And the checkbox "checkboxes_brands-0" should be checked
-    And the checkbox "checkboxes_brands-1" should be checked
-
-    And the checkbox "checkboxes_products-0" should be checked
-    And the checkbox "checkboxes_products-2" should be checked
-    And the checkbox "checkboxes_products-3" should be checked
-    And the checkbox "checkboxes_products-4" should be checked
-    And the checkbox "checkboxes_products-5" should be checked
-    And the checkbox "checkboxes_products-6" should be checked
-    And the checkbox "checkboxes_products-7" should be checked
-    And the checkbox "checkboxes_products-8" should be checked
-    And the checkbox "checkboxes_products-9" should be checked
-
-    And the checkbox "checkboxes_suppliers-0" should be checked
-    And the checkbox "checkboxes_suppliers-1" should be checked
-    And the checkbox "checkboxes_suppliers-2" should be checked
-
-
-
-
-
-  Scenario: Check the Visibility checkboxes in "Related tables"
-    # by default only the "id", "name", "reference" keywords are checked
-    And the checkbox "checkboxes_brands-0-2" should be checked
-    And the checkbox "checkboxes_brands-1-2" should be checked
-
-    And the checkbox "checkboxes_suppliers-0-2" should be checked
-    And the checkbox "checkboxes_suppliers-1-2" should be checked
-    And the checkbox "checkboxes_suppliers-2-2" should not be checked
-
-    # there should be no visibility checkbox for products as this table is not referenced
-    And I should not see a "checkboxes_products-0-2" element
-    And I should not see a "checkboxes_products-1-2" element
-    And I should not see a "checkboxes_products-2-2" element
-    And I should not see a "checkboxes_products-3-2" element
-    And I should not see a "checkboxes_products-4-2" element
-    And I should not see a "checkboxes_products-5-2" element
-    And I should not see a "checkboxes_products-6-2" element
-    And I should not see a "checkboxes_products-7-2" element
-    And I should not see a "checkboxes_products-8-2" element
-    And I should not see a "checkboxes_products-9-2" element
+    And I fill in "text-suppliers-logo" with "Logo"
+    And the checkbox "file-suppliers-logo" should be checked
+    And the "visibility-suppliers-logo" checkbox should be checked
+    And the "visibility-fk-suppliers-logo" checkbox should not be checked
 
 
 
@@ -185,7 +141,6 @@ Feature: Check admin tables mapping form
 
     Then I should not see "Parse error"
     And I should not see "Fatal error"
-
 
 
 

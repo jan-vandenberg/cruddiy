@@ -290,10 +290,11 @@ function is_table_referenced($table_name) {
                                         <?php
                                         // Debug a row
                                         // echo '<pre>';
+                                        // print_r($column);
                                         // print_r($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']);
                                         // echo '</pre>';
                                         ?>
-                                        <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>"
+                                        <input id="text-<?= sanitize($table['name']) . '-' . sanitize($column['name']) ?>"
                                                 name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columndisplay]"
                                                 type="text"
                                                 placeholder="Display field name in frontend"
@@ -318,14 +319,14 @@ function is_table_referenced($table_name) {
                                                 }
                                             }
                                             ?>
-                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" <?php echo $checked ?>>
-                                            <label for="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>">File</label>
+                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>" value="1" <?php echo $checked ?>>
+                                            <label for="file-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">File</label>
                                         <?php endif ?>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in overview checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" checked>
-                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>">Show column</label>
+                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="visibility-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>" value="1" checked>
+                                        <label for="visibility-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">Show column</label>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in preview checkbox -->
@@ -339,8 +340,8 @@ function is_table_referenced($table_name) {
                                                 }
                                             }
                                             ?>
-                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" <?php echo $checked ?>>
-                                            <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Show in FK</label>
+                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="visibility-fk-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>" value="1" <?php echo $checked ?>>
+                                            <label for="visibility-fk-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">Show in FK</label>
                                         <?php endif; ?>
                                     </div>
                                 </div>
