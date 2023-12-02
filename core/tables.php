@@ -18,15 +18,16 @@
                         <h4 class="h1 border-bottom pb-2">All Available Tables</h4>
                     </div>
 
-                    <div class="row align-items-center mb-1">
-                        <div class="col-md-11 text-right pr-5 ml-3">
-                            <input type="checkbox" id="checkall">
-                            <label for="checkall">Check/uncheck all</label>
-                        </div>
-                    </div>
-
-
                     <form class="form-horizontal" action="columns.php" method="post">
+
+                        <div class="row align-items-center mb-1">
+                            <div class="col-md-11 text-right pr-5 ml-3">
+                                <input type="checkbox" id="checkall">
+                                <label for="checkall">Check/uncheck all</label>
+                            </div>
+                        </div>
+
+
                         <fieldset>
                             <?php
                             //Get all tables

@@ -210,13 +210,13 @@ if (isset($_POST['table'])) {
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in overview checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="checkboxes-<?= $i ?>" value="1" checked>
-                                        <label for="checkboxes-<?= $i ?>">Visible in overview?</label>
+                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" checked>
+                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>">Visible in overview?</label>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in preview checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes-<?= $i ?>-2" value="1" checked>
-                                        <label for="checkboxes-<?= $i ?>-2">Visible in preview?</label>
+                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" checked>
+                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Visible in preview?</label>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
