@@ -6,9 +6,18 @@
 - Feature: Check public create page content
   -   Scenario: Add supplier
   -   Scenario: Add product
+  -   Scenario: Add product with upload file
 - Feature: Check public update page content
   -   Scenario: Go to Brands item
   -   Scenario: Update a record
+  -   Scenario: Update a record with a file upload
+  -   Scenario: Preserve existing attachment when updating a record without picking a new file
+  -   Scenario: Successfully updating a product file
+  -   Scenario: Attempting to upload a product file but leaving the file input empty
+  -   Scenario: Using a backup file for a product when no file is uploaded
+  -   Scenario: Deleting an uploaded product file
+  -   Scenario: Attempting to delete a product file that does not exist
+  -   Scenario: Successfully updating a new product file
 - Feature: Check public delete page content
   -   Scenario: Check if there is a warning before deletion
   -   Scenario: Delete a Suppliers record
