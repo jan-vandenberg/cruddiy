@@ -257,3 +257,21 @@ function getUploadResultByErrorCode($code) {
     );
     return $phpFileUploadErrors[$code];
 }
+
+
+
+function truncate($string, $length = 15) {
+    // Decode HTML entities to ensure they are not cut in the middle
+    $decodedString = html_entity_decode($string);
+
+    // Check if the string needs to be truncated
+    if (mb_strlen($decodedString) > $length) {
+        // Truncate the string and encode HTML entities
+        $truncated = htmlspecialchars(mb_substr($decodedString, 0, $length)) . '...';
+    } else {
+        // No need to truncate, just encode HTML entities
+        $truncated = htmlspecialchars($string);
+    }
+
+    return $truncated;
+}
