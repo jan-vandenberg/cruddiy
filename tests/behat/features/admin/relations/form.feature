@@ -7,6 +7,9 @@ Feature: Check admin relations creation form
 
     And I should see "products_ibfk_1" only once
 
+
+
+
   Scenario: Check that we can add a relation
     Given I am on "/core/relations.php"
 

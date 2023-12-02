@@ -6,6 +6,15 @@ _We're only using the Goutte driver at the moment, but I'm keeping the existing 
 
 > **You can safely bypass steps 2 and 3.**
 
+
+
+
+
+
+
+
+
+
 ## 1. Install Behat, Mink, and other dependencies in the project
 
 Go to the root of the project and run:
@@ -13,6 +22,15 @@ Go to the root of the project and run:
 ```
 composer install
 ```
+
+
+
+
+
+
+
+
+
 
 ## 2. Install the Selenium server on your computer
 
@@ -38,6 +56,14 @@ https://www.selenium.dev/downloads/
 Download and install Selenium Server (Grid) `selenium-server-4.15.0.jar`
 
 
+
+
+
+
+
+
+
+
 ## 3. Run Selenium Grid (the Selenium server)
 
 Open cmd:
@@ -54,6 +80,14 @@ You can check:
 - http://localhost:4444/wd/hub/status
 
 
+
+
+
+
+
+
+
+
 ## 4. Edit mock database credentials
 
 - We use the file `tests/.env` to store the database credentials for the tests.
@@ -61,6 +95,13 @@ You can check:
 - To create one, duplicate `tests/.env.dist` and edit credentials to suit your need.
 - You don't have to create the mock database (default: `cruddiy_tests`), creating it is part of the tests.
 - If your test user does not have the privileges to create a database, just create it and fill the credentials in the `.env`. If the database exists, we will not attempt to re-create it.
+
+
+
+
+
+
+
 
 
 ## 5. Run the tests
@@ -94,7 +135,37 @@ To run a specific test:
 vendor/bin/behat --config tests/behat/behat.yml tests/behat/features/admin/relations/schema.feature
 ```
 
-# How to update the coverage list?
+
+
+
+
+
+
+# 6. Logging
+
+When a step does not pass, a log file of the markup is created in `tests/logs`.
+The file is named after the sub-folder and filename under the `features/` directory.
+Then the line number of the step is appended.
+The file name is displayed after the failed step in the tests output:
+Ex:
+
+```
+Scenario: Check for column types and emojis on Columns page            # features\admin\relations\form.feature:35
+    And the label for "products-0" should have class "is-primary"        # FeatureContext::theLabelForShouldHaveClass()
+      No label found for "products-0" (Exception)
+    │
+    │  HTML content logged to: D:\Sites\cruddiy\tests\behat\features\bootstrap/../../logs/admin_relations_form-37.html
+    │
+    │
+    └─ @AfterStep # FeatureContext::logFailedStep()
+```
+
+Old logs will be cleaned when a test suite runs.
+
+
+
+
+# 7. How to update the coverage list?
 
 ## Admin test suite for generated CRUD pages:
 
@@ -128,7 +199,15 @@ vendor/bin/behat --config tests/behat/behat.yml --suite public --dry-run --no-sn
 ```
 
 
-# Test database schema
+
+
+
+
+
+
+
+
+# 8. Test database schema
 
 - For the tests we have a small structure with Products, Brands, and Suppliers
 - `schema/Tests - Admin.sql` is the (nearly) blank structure, it is used to reset the test database every time you run the Admin test suite. It is also used to self-test the "Import Database Schema" feature.

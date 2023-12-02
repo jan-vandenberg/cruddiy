@@ -163,13 +163,45 @@ if (isset($_POST['table'])) {
                             <?php foreach ($table['columns'] as $i => $column): ?>
                                 <div class="row align-items-center mb-2">
                                     <div class="col-3 text-right">
-                                        <label class="col-form-label" for="<?= htmlspecialchars($table['name']) . '-' . $i ?>">
+                                        <?php
+                                        // Initialize an array to hold classes and emojis
+                                        $labelAttributes = [
+                                            'classes' => [],
+                                            'emojis'  => []
+                                        ];
+
+                                        // Define the conditions, classes, and emojis
+                                        $conditions = [
+                                            'isPrimary'    => ['class' => 'is-primary'   , 'emoji' => '🔑'],
+                                            'isAuto'       => ['class' => 'is-auto'      , 'emoji' => '🔒'],
+                                            'isForeignKey' => ['class' => 'is-foreignkey', 'emoji' => '🛅'],
+                                            'nullable'     => ['class' => 'is-nullable'  , 'emoji' => '🫙']
+                                        ];
+
+                                        // Iterate over conditions and update label attributes
+                                        foreach ($conditions as $key => $attributes) {
+                                            // echo $key .' / '. $column['name'].' / '.print_r($column[$key], true) . '<br>';
+                                            if ($key === 'isPrimary' && $column['name'] == $column['isPrimary']) {
+                                                // Primary key column
+                                                $labelAttributes['classes'][] = $attributes['class'];
+                                                $labelAttributes['emojis'][] = $attributes['emoji'];
+                                            } elseif ($key === 'isPrimary' && $column['name'] != $column['isPrimary']) {
+                                                // Not a primary key
+                                            } elseif (!empty($column[$key])) {
+                                                $labelAttributes['classes'][] = $attributes['class'];
+                                                $labelAttributes['emojis'][]  = $attributes['emoji'];
+                                            }
+                                        }
+
+                                        // Convert classes array into a space-separated string
+                                        $labelClassString = implode(' ', $labelAttributes['classes']);
+                                        ?>
+
+                                        <label class="col-form-label <?= htmlspecialchars($labelClassString) ?>" for="<?= htmlspecialchars($table['name']) . '-' . $i ?>">
                                             <?= htmlspecialchars($column['name']) ?>
-                                            <?= $column['isPrimary'] ? '🔑' : '' ?>
-                                            <?= $column['isAuto'] ? '🔒' : '' ?>
-                                            <?= $column['isForeignKey'] ? '🛅' : '' ?>
-                                            <?= $column['nullable'] ? '🫙' : '' ?>
+                                            <?= implode(' ', $labelAttributes['emojis']) ?>
                                         </label>
+
                                     </div>
                                     <div class="col-md-5">
                                         <?php

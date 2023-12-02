@@ -1,11 +1,16 @@
 <?php
 
 use Behat\Behat\Context\Context;
+
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\AfterStepScope;
+
+use Behat\Testwork\Tester\Result\TestResult;
+
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Mink\Exception\ElementNotFoundException;
+
 use Dotenv\Dotenv;
 
 class FeatureContext extends MinkContext implements Context {
@@ -133,6 +138,113 @@ class FeatureContext extends MinkContext implements Context {
             throw new ExpectationException("Expected to find the text '$text' only once, found $occurrences times.", $this->getSession()->getDriver());
         }
     }
+
+
+
+    /**
+     * @Then /^the label for "(?P<forValue>[^"]*)" should have class "(?P<expectedClass>[^"]*)"$/
+     */
+    public function theLabelForShouldHaveClass($forValue, $expectedClass)
+    {
+        $page = $this->getSession()->getPage();
+        $label = $page->find('xpath', "//label[@for='{$forValue}']");
+
+        if (null === $label) {
+            throw new \Exception(sprintf('No label found for "%s"', $forValue));
+        }
+
+        $classes = $label->getAttribute('class');
+        if (strpos($classes, $expectedClass) === false) {
+            throw new \Exception(sprintf('The label for "%s" does not have the class "%s"', $forValue, $expectedClass));
+        }
+    }
+
+
+
+    /**
+     * @Then /^the label for "(?P<forValue>[^"]*)" should not have class "(?P<expectedClass>[^"]*)"$/
+     */
+    public function theLabelForShouldNotHaveClass($forValue, $expectedClass)
+    {
+        $page = $this->getSession()->getPage();
+        $label = $page->find('xpath', "//label[@for='{$forValue}']");
+
+        if (null === $label) {
+            throw new \Exception(sprintf('No label found for "%s"', $forValue));
+        }
+
+        $classes = $label->getAttribute('class');
+        if (strpos($classes, $expectedClass) !== false) {
+            throw new \Exception(sprintf('The label for "%s" unexpectedly has the class "%s"', $forValue, $expectedClass));
+        }
+    }
+
+
+
+    /**
+     * @BeforeSuite
+     */
+    public static function cleanLogDirectory() {
+        // Cleanup old logs when a test suite runs
+        // see logPageContent() for logging.
+        $logDirectory = __DIR__ . '/../../logs';
+
+        if (file_exists($logDirectory)) {
+            $files = glob($logDirectory . '/*');
+            foreach ($files as $file) {
+                if (is_file($file) && basename($file) !== '.gitkeep') {
+                    unlink($file);
+                }
+            }
+        }
+    }
+
+
+
+
+    /**
+     * @AfterStep
+     */
+    public function logFailedStep(AfterStepScope $scope) {
+        if ($scope->getTestResult()->getResultCode() !== TestResult::PASSED) {
+            $this->logPageContent($scope);
+        }
+    }
+
+    // Log HTML page if the step has not passed
+    public function logPageContent($scope) {
+        $feature = $scope->getFeature()->getFile();
+        $line = $scope->getStep()->getLine();
+
+        $logDirectory = __DIR__ . '/../../logs';
+        if (!file_exists($logDirectory)) {
+            mkdir($logDirectory, 0777, true);
+        }
+
+        // Identify the directory separator and build the features string accordingly
+        $dirSeparator = DIRECTORY_SEPARATOR;
+        $featuresString = $dirSeparator . "features" . $dirSeparator;
+        $featuresPos = strpos($feature, $featuresString) + strlen($featuresString);
+        $relativePath = substr($feature, $featuresPos);
+
+        // Replace directory separators with underscores and remove the .feature extension
+        $filename = str_replace($dirSeparator, '_', $relativePath);
+        $filename = basename($filename, '.feature');
+
+        // Construct the log filename
+        $logFilename = $logDirectory . '/' . $filename . '-' . $line . '.html';
+
+        // Save the page content to the log file
+        file_put_contents($logFilename, $this->getSession()->getPage()->getContent());
+
+        // Display the log filename in test results
+        echo "HTML content logged to: " . $logFilename . PHP_EOL;
+    }
+
+
+
+
+
 
 
 
