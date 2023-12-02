@@ -42,6 +42,8 @@ class FeatureContext extends MinkContext implements Context {
      */
     public function resetDB(BeforeScenarioScope $scope) {
 
+        $this->deleteTestUploads();
+
         // Delete the test database and let the test suite re-create it
         try {
             $this->pdo->exec("DROP DATABASE IF EXISTS `" . $_ENV['DB_BASE'] . "`");
@@ -62,13 +64,13 @@ class FeatureContext extends MinkContext implements Context {
      */
     public function cleanTestRecordsAndUploads(BeforeScenarioScope $scope) {
         $this->cleanDB($scope);
-        $this->cleanUploads($scope);
+        $this->deleteTestUploads($scope);
     }
 
 
 
     // Delete files uploaded by the Public test suite
-    private function cleanUploads(BeforeScenarioScope $scope) {
+    private function deleteTestUploads(BeforeScenarioScope $scope) {
         $directory = __DIR__ . '/../../../../core/app/uploads';
         $substring = '_cruddiy_test_image.jpg';
 
