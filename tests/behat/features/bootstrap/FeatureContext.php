@@ -5,7 +5,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
-use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 use Behat\Testwork\Tester\Result\TestResult;
 use Dotenv\Dotenv;
 
@@ -13,8 +13,8 @@ use Dotenv\Dotenv;
 
 class FeatureContext extends MinkContext implements Context {
 
-    private $pdo;
-    private $dotenv;
+    protected $pdo;
+    protected $dotenv;
 
     /**
      * Initializes context.
@@ -38,83 +38,28 @@ class FeatureContext extends MinkContext implements Context {
 
 
 
-    /**
-     * @BeforeScenario @resetDB
-     */
-    public function resetDB(BeforeScenarioScope $scope) {
-
-        $this->deleteTestUploads($scope);
-
-        // Delete the test database and let the test suite re-create it
-        try {
-            $this->pdo->exec("DROP DATABASE IF EXISTS `" . $_ENV['DB_BASE'] . "`");
-            $this->pdo->exec("CREATE DATABASE IF NOT EXISTS `" . $_ENV['DB_BASE'] . "`  COLLATE '" . $_ENV['DB_CHAR'] . "'");
-            $this->pdo->exec("GRANT ALL ON `" . $_ENV['DB_BASE'] . "`.* TO '" . $_ENV['DB_USER'] . "'@'localhost'");
-            $this->pdo->exec("FLUSH PRIVILEGES");
-            // $this->showDatabases();
-        } catch (PDOException $e) {
-            // Handle the exception
-            throw new \RuntimeException('Database creation failed: ' . $e->getMessage());
-        }
-    }
-
-
 
     /**
-     * @BeforeScenario @cleanTestRecordsAndUploads
+     * @BeforeSuite
      */
-    public function cleanTestRecordsAndUploads(BeforeScenarioScope $scope) {
-        $this->cleanDB($scope);
-        $this->deleteTestUploads($scope);
+    public static function BeforeSuite(BeforeSuiteScope $scope) {
+        self::emptyLogDirectory($scope);
     }
 
 
 
-    // Delete files uploaded by the Public test suite
-    private function deleteTestUploads(BeforeScenarioScope $scope) {
-        $directory = __DIR__ . '/../../../../core/app/uploads';
-        $substring = '_cruddiy_test_image.jpg';
+    public static function emptyLogDirectory(BeforeSuiteScope $scope) {
+        // Cleanup old logs when a test suite runs
+        // see logPageContent() for logging.
+        $logDirectory = __DIR__ . '/../../logs';
 
-        foreach (glob($directory . '/*') as $file) {
-            if (is_file($file) && strpos(basename($file), $substring) !== false) {
-                unlink($file);
+        if (file_exists($logDirectory)) {
+            $files = glob($logDirectory . '/*');
+            foreach ($files as $file) {
+                if (is_file($file) && basename($file) !== '.gitkeep') {
+                    unlink($file);
+                }
             }
-        }
-    }
-
-
-
-    // Delete the test database and re-import what was created by the Admin test suite
-    // This is useful to run the Public test suite multiple times, whithout encounting errors
-    // because the Public test suites performs operations that invalidates the tests.
-    private function cleanDB(BeforeScenarioScope $scope) {
-        try {
-            $dir_schema = realpath(__DIR__ . '/../../../../schema');
-            $file_schema = 'Tests - Public.sql';
-
-            // Use realpath() to get the absolute path of the file
-            $dump_file = realpath($dir_schema . '/' . $file_schema);
-
-            if ($dump_file === false) {
-                die("Schema file not found for Public tests!");
-            }
-
-            // Now read the contents of the file
-            $dump_contents = file_get_contents($dump_file);
-            if ($dump_contents === false) {
-                die("Unable to read schema for Public tests!");
-            }
-            // print_r($dump_contents);
-
-            $this->pdo->exec("DROP DATABASE IF EXISTS `" . $_ENV['DB_BASE'] . "`");
-            $this->pdo->exec("CREATE DATABASE IF NOT EXISTS `" . $_ENV['DB_BASE'] . "`  COLLATE '" . $_ENV['DB_CHAR'] . "'");
-            $this->pdo->exec("GRANT ALL ON `" . $_ENV['DB_BASE'] . "`.* TO '" . $_ENV['DB_USER'] . "'@'localhost'");
-            $this->pdo->exec("FLUSH PRIVILEGES");
-            $this->pdo->exec("USE `" . $_ENV['DB_BASE'] . "`;\n". $dump_contents);
-            // $this->showDatabases();
-        } catch (PDOException $e) {
-            // Handle the exception
-            throw new \RuntimeException('Database creation failed: ' . $e->getMessage());
         }
     }
 
@@ -139,6 +84,8 @@ class FeatureContext extends MinkContext implements Context {
 
         if ($envValue === null) {
             throw new \Exception("Environment variable '$envVariable' is not set.");
+        } else {
+            // echo "$envVariable: $envValue";
         }
 
         $this->fillField($field, $envValue);
@@ -158,27 +105,6 @@ class FeatureContext extends MinkContext implements Context {
             throw new ExpectationException("Expected to find the text '$text' only once, found $occurrences times.", $this->getSession()->getDriver());
         }
     }
-
-
-
-    /**
-     * @BeforeSuite
-     */
-    public static function cleanLogDirectory() {
-        // Cleanup old logs when a test suite runs
-        // see logPageContent() for logging.
-        $logDirectory = __DIR__ . '/../../logs';
-
-        if (file_exists($logDirectory)) {
-            $files = glob($logDirectory . '/*');
-            foreach ($files as $file) {
-                if (is_file($file) && basename($file) !== '.gitkeep') {
-                    unlink($file);
-                }
-            }
-        }
-    }
-
 
 
 
@@ -224,8 +150,17 @@ class FeatureContext extends MinkContext implements Context {
 
 
 
+    // Delete files uploaded by the Public test suite
+    public function deleteTestUploads() {
+        $directory = __DIR__ . '/../../../../core/app/uploads';
+        $substring = '_cruddiy_test_image.jpg';
 
-
+        foreach (glob($directory . '/*') as $file) {
+            if (is_file($file) && strpos(basename($file), $substring) !== false) {
+                unlink($file);
+            }
+        }
+    }
 
 
 }
