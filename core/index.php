@@ -54,26 +54,29 @@ include("helpers.php");
 
                     <!-- Number records per page-->
                     <div class="form-group">
-                        <label class="col-form-label" for="recordsperpage">Items per generated page</label>
+                        <label class="col-form-label" for="numrecordsperpage">Items per generated page</label>
                         <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="10" value="<?php if(isset($no_of_records_per_page)) echo $no_of_records_per_page ?>">
                     </div>
 
                     <div class="form-group">
-                        <label class="col-form-label" for="textinput">App Name</label>
+                        <label class="col-form-label" for="appname">App Name</label>
                         <input id="appname" name="appname" type="text" placeholder="Name for your app (optional)" class="form-control " value="<?php if(isset($appname)) echo $appname; ?>">
                     </div>
 
                     <!-- Language -->
                     <div class="form-group">
-                        <label class="language" for="textinput">Language for the generated public files</label>
+                        <label class="language" for="language">Language for the generated public files</label>
                         <select class="custom-select" id="language" name="language">
                             <option value="0"></option>Pick</option>
                             <?php
                             $directory = 'locales';
                             $phpFiles = glob($directory . '/*.php');
+
+                            $language = isset($language) ? $language :'en';
+
                             foreach ($phpFiles as $file) :
                                 ?>
-                                <option value="<?php echo str_replace('.php', '', basename($file)) ?>" <?php echo (isset($language) && $language == str_replace('.php', '', basename($file))) ? 'selected' : '' ?>>
+                                <option value="<?php echo str_replace('.php', '', basename($file)) ?>" <?php echo $language == str_replace('.php', '', basename($file)) ? 'selected' : '' ?>>
                                     <?php echo str_replace('.php', '', basename($file)) ?>
                                 </option>
                                 <?php
