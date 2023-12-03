@@ -107,3 +107,13 @@ vendor/bin/behat --config tests/behat/behat.yml --dry-run --no-snippets \
 - The name of the log file mimics the Behat files in the `features/` directory, eg.:
   - Step fails in tests\behat\features\admin\relations\schema.feature line 16
   - Name of the log file: admin_relations_schema-16.html
+
+
+
+# 6. Write your own tests
+
+All developers are encouraged to write tests as they contribute to the project, it's easy and fun! And satisfactory!
+
+- Read about [the Gherkin syntax](https://cucumber.io/docs/gherkin/reference/)
+- [More tips](https://cucumber.io/docs/bdd/better-gherkin/)
+- Generate .feature files by recording your actions with the [Nimbal User Journey](https://chrome.google.com/webstore/detail/nimbal-user-journey/baebbjkppggomeppdnpocfneijhmnfhj/related?hl=fr) Chrome extension
