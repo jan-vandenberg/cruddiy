@@ -162,7 +162,7 @@ function handleFileUpload($FILE) {
     global $upload_disallowed_exts;
 
     $upload_results     = array();
-    $sanitized_fileName = sanitizeFileName(basename($FILE["name"]));
+    $sanitized_fileName = sanitize(basename($FILE["name"]));
     $unique_filename    = generateUniqueFileName($sanitized_fileName);
     $target_file        = $upload_target_dir . $unique_filename;
     $extension          = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -210,7 +210,7 @@ function handleFileUpload($FILE) {
 
 
 
-function sanitizeFileName($fileName) {
+function sanitize($fileName) {
     // Remove illegal file system characters
     $fileName = str_replace(array('<', '>', ':', '"', '/', '\\', '|', '?', '*'), '', $fileName);
 
@@ -256,4 +256,22 @@ function getUploadResultByErrorCode($code) {
         8 => 'A PHP extension stopped the file upload.',
     );
     return $phpFileUploadErrors[$code];
+}
+
+
+
+function truncate($string, $length = 15) {
+    // Decode HTML entities to ensure they are not cut in the middle
+    $decodedString = html_entity_decode($string);
+
+    // Check if the string needs to be truncated
+    if (mb_strlen($decodedString) > $length) {
+        // Truncate the string and encode HTML entities
+        $truncated = htmlspecialchars(mb_substr($decodedString, 0, $length)) . '...';
+    } else {
+        // No need to truncate, just encode HTML entities
+        $truncated = htmlspecialchars($string);
+    }
+
+    return $truncated;
 }

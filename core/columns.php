@@ -1,5 +1,13 @@
 <?php
 include "app/config.php";
+include "helpers.php";
+
+// Debug info
+// echo '<pre>';
+// print_r($_POST);
+// echo '</pre>';
+// exit();
+
 
 function get_primary_key($table){
     global $link;
@@ -67,8 +75,38 @@ function get_foreign_keys($table){
     return $fks;
 }
 
+
+function read_tables_and_columns_config_file() {
+
+    if (file_exists("app/config-tables-columns.php")) {
+        include("app/config-tables-columns.php");
+    } else {
+        return null;
+    }
+
+    $tmp = [
+        'table' => [],
+    ];
+
+    foreach ($tables_and_columns_names as $tablename => $tableinfo) {
+        $tmp['table'][] = [
+            'tablename' => $tablename,
+            'tabledisplay' => $tableinfo['name'],
+            'tablecheckbox' => 1
+        ];
+    }
+
+    return $tmp;
+}
+
 $tablesData = [];
 $checked_tables_counter=0;
+if (!isset($_POST['table'])) {
+    if (file_exists("app/config-tables-columns.php")) {
+        include("app/config-tables-columns.php");
+        $_POST = read_tables_and_columns_config_file();
+    }
+}
 
 if (isset($_POST['table'])) {
     foreach ($_POST['table'] as $table) {
@@ -245,8 +283,9 @@ function is_table_referenced($table_name) {
                                         ?>
 
                                         <label class="col-form-label <?= htmlspecialchars($labelClassString) ?>" for="<?= htmlspecialchars($table['name']) . '-' . $i ?>">
-                                            <?= htmlspecialchars($column['name']) ?>
-                                            <?= implode(' ', $labelAttributes['emojis']) ?>
+                                            <abbr title="<?= htmlspecialchars($column['name']) ?>, <?php echo $column['type'] ?>"><?= truncate(htmlspecialchars($column['name']), 25) ?></abbr>
+
+                                            <span title="<?= htmlspecialchars($labelClassString) ?>"><?= implode(' ', $labelAttributes['emojis']) ?></span>
                                         </label>
 
                                     </div>
@@ -282,15 +321,19 @@ function is_table_referenced($table_name) {
                                         <?php
                                         // Debug a row
                                         // echo '<pre>';
+                                        // print_r($column);
                                         // print_r($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']);
                                         // echo '</pre>';
                                         ?>
-                                        <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>"
+                                        <input id="text-<?= sanitize($table['name']) . '-' . sanitize($column['name']) ?>"
                                                 name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columndisplay]"
                                                 type="text"
                                                 placeholder="Display field name in frontend"
                                                 class="form-control rounded-0"
-                                                <?php echo isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ? 'value="'.addslashes(htmlspecialchars($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])).'"' : '' ?>
+                                                value="<?php echo isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ?
+                                                                    addslashes(htmlspecialchars($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])) :
+                                                                    ''
+                                                        ?>"
                                                 >
                                     </div>
                                     <div class="col-md-1">
@@ -302,37 +345,66 @@ function is_table_referenced($table_name) {
                                                 strstr($column['type'], 'blob')
                                                 )
                                             ) :
-                                            $checked = '';
-                                            $guesslist_checked_colums = array('file', 'image', 'logo', 'picture', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
-                                            foreach($guesslist_checked_colums as $term) {
-                                                if (strstr($column['name'], $term)) {
-                                                    $checked = 'checked';
+
+                                            if (isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['is_file'])) {
+                                                $checked = $tables_and_columns_names[$table['name']]['columns'][$column['name']]['is_file'] ? 'checked' : '';
+                                            } else {
+                                                $checked = '';
+                                                $guesslist_checked_colums = array('file', 'image', 'logo', 'picture', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
+                                                foreach($guesslist_checked_colums as $term) {
+                                                    $checked = strstr($column['name'], $term) ? 'checked' : $checked;
                                                 }
                                             }
                                             ?>
-                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]" id="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" <?php echo $checked ?>>
-                                            <label for="file_<?= htmlspecialchars($table['name']) . '-' . $i ?>">File</label>
+                                            <input type="checkbox"
+                                                    name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]"
+                                                    id="file-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>"
+                                                    value="1"
+                                                    <?php echo $checked ?>
+                                            >
+                                            <label for="file-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">File</label>
                                         <?php endif ?>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in overview checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>" value="1" checked>
-                                        <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>">Show column</label>
+                                        <?php
+                                        if (isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columnvisible'])) {
+                                            $checked = $tables_and_columns_names[$table['name']]['columns'][$column['name']]['columnvisible'] ? 'checked' : '';
+                                        } else {
+                                            // TODO: do not check by default if it's a long content like TEXT, BLOB, etc...
+                                            $checked = 'checked';
+                                        }
+                                        ?>
+                                        <input type="checkbox"
+                                                name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]"
+                                                id="visibility-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>"
+                                                value="1"
+                                                <?php echo $checked ?>
+                                        >
+                                        <label for="visibility-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">Show column</label>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in preview checkbox -->
                                         <?php
                                         if ($is_table_referenced):
-                                            $checked = '';
-                                            $guesslist_checked_colums = array('name', 'reference', 'id');
-                                            foreach($guesslist_checked_colums as $term) {
-                                                if (strstr($column['name'], $term)) {
-                                                    $checked = 'checked';
+                                            if (isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columninpreview'])) {
+                                                $checked = $tables_and_columns_names[$table['name']]['columns'][$column['name']]['columninpreview'] ? 'checked' : '';
+                                            }
+                                            else {
+                                                $checked = '';
+                                                $guesslist_checked_colums = array('name', 'reference', 'id');
+                                                foreach ($guesslist_checked_colums as $term) {
+                                                    $checked = strstr($column['name'], $term) ? 'checked' : $checked;
                                                 }
                                             }
                                             ?>
-                                            <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2" value="1" <?php echo $checked ?>>
-                                            <label for="checkboxes_<?= htmlspecialchars($table['name']) . '-' . $i ?>-2">Show in FK</label>
+                                            <input type="checkbox"
+                                                    name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]"
+                                                    id="visibility-fk-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>"
+                                                    value="1"
+                                                    <?php echo $checked ?>
+                                            >
+                                            <label for="visibility-fk-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">Show in FK</label>
                                         <?php endif; ?>
                                     </div>
                                 </div>

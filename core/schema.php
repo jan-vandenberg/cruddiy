@@ -1,5 +1,6 @@
 <?php
 include "app/config.php";
+include "helpers.php";
 
 $errors = [];
 $schemaFiles = glob('../schema/*.sql');
