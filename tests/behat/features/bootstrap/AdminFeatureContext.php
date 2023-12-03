@@ -46,4 +46,23 @@ class AdminFeatureContext extends FeatureContext implements Context {
 
 
 
+    /**
+     * @BeforeScenario @reconfigure
+    */
+    public function reconfigure(BeforeScenarioScope $scope) {
+        $this->copyConfig();
+    }
+
+
+    public function copyConfig() {
+        $root = __DIR__ . '/../../../..';
+        $sourceFile = $root . '/tests/templates/config-tables-columns.php';
+        $destinationFile = $root . '/core/app/config-tables-columns.php';
+
+        // Copy the file
+        if (!copy($sourceFile, $destinationFile)) {
+            throw new \RuntimeException('File ' . $sourceFile . 'could not be copied.');
+        }
+
+    }
 }
