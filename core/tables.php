@@ -1,6 +1,11 @@
     <?php
     include "app/config.php";
     include "helpers.php";
+
+    $tables_and_columns_names = [];
+    if (file_exists("app/config-tables-columns.php")) {
+        include("app/config-tables-columns.php");
+    }
     ?>
     <!doctype html>
     <html lang="en">
@@ -64,7 +69,7 @@
                                             <input id="text-<?= sanitize($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($tables_and_columns_names[$table]['name']) ? 'value="'.$tables_and_columns_names[$table]['name'].'"' : '' ?>>
                                         </div>
                                         <div class="col-md-3">
-                                            <input class="mr-1" type="checkbox" name="table[<?= $i ?>][tablecheckbox]" id="generate-<?= sanitize($table) ?>" value="1">
+                                            <input class="mr-1" type="checkbox" name="table[<?= $i ?>][tablecheckbox]" id="generate-<?= sanitize($table) ?>" value="1" <?php echo array_key_exists($table, $tables_and_columns_names) ? 'checked' : '' ?>>
                                             <label for="generate-<?= sanitize($table) ?>">Generate CRUD</label>
                                         </div>
                                     </div>
