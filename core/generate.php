@@ -426,6 +426,11 @@ function generate($postdata) {
     // echo "<pre>";
     // print_r($postdata);
     // echo "</pre>";
+
+    // Generate app/config-tables-columns.php
+    extractTableAndColumnsNames($postdata);
+
+
     // Go trough the POST array
     // Every table is a key
     global $excluded_keys;
@@ -437,9 +442,10 @@ function generate($postdata) {
     // are selected to be include in previews, such as select foreign keys and foreign key preview.
     $preview_columns = array();
     foreach ($postdata as $key => $value) {
+
         if (!in_array($key, $excluded_keys)) {
             $tables_and_columns_names[extractTableName($key)]['name'] = $value[0]['tabledisplay'];
-            $tables_and_columns_names[extractTableName($key)]['columns'] = array();
+            // $tables_and_columns_names[extractTableName($key)]['columns'] = array();
             foreach ($_POST[$key] as $columns) {
                 if (isset($columns['columninpreview'])) {
                     $preview_columns[$columns['tablename']][] = $columns['columnname'];
@@ -534,6 +540,7 @@ function generate($postdata) {
 
                 $type = column_type($columns['columntype']);
 
+
                 //INDEXFILE VARIABLES
                 //Get the columns visible in the index file
                 if (isset($columns['columnvisible'])) {
@@ -548,11 +555,6 @@ function generate($postdata) {
                         else {
                             $columndisplay = $columns['columnname'];
                         }
-
-                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columndisplay'] = $columndisplay;
-                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['is_file'] = isset($columns['file']) && $columns['file'] ? 1 : 0;
-                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columnvisible'] = isset($columns['columnvisible']) && $columns['columnvisible'] ? 1 : 0;
-                        $tables_and_columns_names[extractTableName($key)]['columns'][$columnname]['columninpreview'] = isset($columns['columninpreview']) && $columns['columninpreview'] ? 1 : 0;
 
                         if (!empty($columns['columncomment'])) {
                             $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
@@ -1004,15 +1006,12 @@ function generate($postdata) {
                     generate_update($tablename, $create_records, $create_err_records, $create_postvars, $column_id, $create_html, $update_sql_params, $update_sql_id, $update_column_rows, $update_sql_columns);
                     generate_delete($tablename, $column_id);
                 }
+
             }
 
         }
 
     }
-
-
-    // Save table names to config
-    updateTableAndColumnsNames($tables_and_columns_names);
 }
 
 
@@ -1025,6 +1024,8 @@ function extractTableName($post_key) {
     if ($lastPos !== false) {
         // Remove the last occurrence of 'columns'
         $table_name = substr_replace($post_key, "", $lastPos, strlen("columns"));
+    } else {
+        $table_name = $post_key;
     }
 
     return $table_name;
@@ -1058,6 +1059,43 @@ function updateTableAndColumnsNames($tables_and_columns_names) {
     if (fwrite($configfile, $templateContent) === false) die("Error writing Config file for table names!");
     fclose($configfile);
 }
+
+
+
+/**
+ * Values to be saved in config-tables-columns.php
+ * so that we don't have to re-configure everything when we regenerate CRUD
+ * @param mixed $postdata
+ * @return void
+ */
+function extractTableAndColumnsNames($postdata) {
+
+    $tables_and_columns_names = [];
+
+    foreach($postdata as $table => $columns) {
+        if (isset($columns[0]['tabledisplay'])) {
+            $tables_and_columns_names[extractTableName($table)]['name'] = $columns[0]['tabledisplay'];
+            foreach($columns as $column) {
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']] = $column;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['is_file'] = isset($column['file']) && $column['file'] ? 1 : 0;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columnvisible'] = isset($column['columnvisible']) && $column['columnvisible'] ? 1 : 0;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columninpreview'] = isset($column['columninpreview']) && $column['columninpreview'] ? 1 : 0;
+                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['primary']);
+                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['auto']);
+                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['tablename']);
+                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['tabledisplay']);
+                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columntype']);
+                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columncomment']);
+                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columnnullable']);
+                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['fk']);
+            }
+        }
+    }
+
+    // Save all to a file in app/
+    updateTableAndColumnsNames($tables_and_columns_names);
+}
+
 
 
 
