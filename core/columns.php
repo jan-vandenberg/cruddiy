@@ -6,6 +6,7 @@ include "helpers.php";
 // echo '<pre>';
 // print_r($_POST);
 // echo '</pre>';
+// exit();
 
 
 function get_primary_key($table){
@@ -74,8 +75,38 @@ function get_foreign_keys($table){
     return $fks;
 }
 
+
+function read_tables_and_columns_config_file() {
+
+    if (file_exists("app/config-tables-columns.php")) {
+        include("app/config-tables-columns.php");
+    } else {
+        return null;
+    }
+
+    $tmp = [
+        'table' => [],
+    ];
+
+    foreach ($tables_and_columns_names as $tablename => $tableinfo) {
+        $tmp['table'][] = [
+            'tablename' => $tablename,
+            'tabledisplay' => $tableinfo['name'],
+            'tablecheckbox' => 1
+        ];
+    }
+
+    return $tmp;
+}
+
 $tablesData = [];
 $checked_tables_counter=0;
+if (!isset($_POST['table'])) {
+    if (file_exists("app/config-tables-columns.php")) {
+        include("app/config-tables-columns.php");
+        $_POST = read_tables_and_columns_config_file();
+    }
+}
 
 if (isset($_POST['table'])) {
     foreach ($_POST['table'] as $table) {
@@ -299,7 +330,10 @@ function is_table_referenced($table_name) {
                                                 type="text"
                                                 placeholder="Display field name in frontend"
                                                 class="form-control rounded-0"
-                                                <?php echo isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ? 'value="'.addslashes(htmlspecialchars($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])).'"' : '' ?>
+                                                value="<?php echo isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ?
+                                                                    addslashes(htmlspecialchars($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])) :
+                                                                    ''
+                                                        ?>"
                                                 >
                                     </div>
                                     <div class="col-md-1">
