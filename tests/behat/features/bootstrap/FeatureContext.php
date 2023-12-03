@@ -84,6 +84,8 @@ class FeatureContext extends MinkContext implements Context {
 
         if ($envValue === null) {
             throw new \Exception("Environment variable '$envVariable' is not set.");
+        } else {
+            // echo "$envVariable: $envValue";
         }
 
         $this->fillField($field, $envValue);
