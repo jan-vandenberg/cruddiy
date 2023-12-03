@@ -428,7 +428,8 @@ function generate($postdata) {
     // echo "</pre>";
 
     // Generate app/config-tables-columns.php
-    extractTableAndColumnsNames($postdata);
+    $tables_and_columns_names_preconfig = extractTableAndColumnsNames($postdata);
+
 
 
     // Go trough the POST array
@@ -436,6 +437,7 @@ function generate($postdata) {
     global $excluded_keys;
 
     // An indexed array of table names to display based on their system name
+    // Do not mix this variable with $tables_and_columns_names_preconfig!!!
     $tables_and_columns_names = [];
 
     // Array with structure $preview_columns[TABLE_NAME] where each instance contains an array of columns that
@@ -445,7 +447,7 @@ function generate($postdata) {
 
         if (!in_array($key, $excluded_keys)) {
             $tables_and_columns_names[extractTableName($key)]['name'] = $value[0]['tabledisplay'];
-            // $tables_and_columns_names[extractTableName($key)]['columns'] = array();
+            $tables_and_columns_names[extractTableName($key)]['columns'] = array();
             foreach ($_POST[$key] as $columns) {
                 if (isset($columns['columninpreview'])) {
                     $preview_columns[$columns['tablename']][] = $columns['columnname'];
@@ -798,12 +800,12 @@ function generate($postdata) {
 
                             // Check for a specific configuration of the column
                             // echo '<pre>';
-                            // print_r($tables_and_columns_names[$tablename]['columns'][$columnname]);
+                            // print_r($tables_and_columns_names_preconfig);
                             // echo '</pre>';
                             $is_special_column_type = false;
 
                             // Check if the column is a file upload
-                            if (isset($tables_and_columns_names[$tablename]['columns'][$columnname]['is_file']) && $tables_and_columns_names[$tablename]['columns'][$columnname]['is_file']) {
+                            if (isset($tables_and_columns_names_preconfig[$tablename]['columns'][$columnname]['is_file']) && $tables_and_columns_names_preconfig[$tablename]['columns'][$columnname]['is_file']) {
                                 $is_special_column_type = true;
                                 $column_input = "\n" . '<input type="file" name="' . $columnname . '" id="' . $columnname . '" class="form-control">' . "\n";
                                 $column_input .= '<input type="hidden" name="cruddiy_backup_' . $columnname . '" id="cruddiy_backup_' . $columnname . '" value="<?php echo @' . $create_record . '; ?>">' . "\n";
@@ -1058,6 +1060,8 @@ function updateTableAndColumnsNames($tables_and_columns_names) {
     $configfile = fopen($configTableNamesFilePath, "w") or die("Unable to open Config file for table names! Please check your file permissions.");
     if (fwrite($configfile, $templateContent) === false) die("Error writing Config file for table names!");
     fclose($configfile);
+
+    return $tables_and_columns_names;
 }
 
 
@@ -1076,7 +1080,7 @@ function extractTableAndColumnsNames($postdata) {
         if (isset($columns[0]['tabledisplay'])) {
             $tables_and_columns_names[extractTableName($table)]['name'] = $columns[0]['tabledisplay'];
             foreach($columns as $column) {
-                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columndisplay'] = $column['columndisplay'];
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columndisplay'] = $column['columndisplay'] ? $column['columndisplay'] : $column['columnname'];
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['is_file'] = isset($column['file']) && $column['file'] ? 1 : 0;
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columnvisible'] = isset($column['columnvisible']) && $column['columnvisible'] ? 1 : 0;
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columninpreview'] = isset($column['columninpreview']) && $column['columninpreview'] ? 1 : 0;
@@ -1085,7 +1089,7 @@ function extractTableAndColumnsNames($postdata) {
     }
 
     // Save all to a file in app/
-    updateTableAndColumnsNames($tables_and_columns_names);
+    return updateTableAndColumnsNames($tables_and_columns_names);
 }
 
 

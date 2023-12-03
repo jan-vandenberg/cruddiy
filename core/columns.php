@@ -387,8 +387,8 @@ function is_table_referenced($table_name) {
                                         <!-- Visible in preview checkbox -->
                                         <?php
                                         if ($is_table_referenced):
-                                            if (isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columnvisible'])) {
-                                                $checked = $tables_and_columns_names[$table['name']]['columns'][$column['name']]['columnvisible'] ? 'checked' : '';
+                                            if (isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columninpreview'])) {
+                                                $checked = $tables_and_columns_names[$table['name']]['columns'][$column['name']]['columninpreview'] ? 'checked' : '';
                                             }
                                             else {
                                                 $checked = '';
