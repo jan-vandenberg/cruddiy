@@ -57,6 +57,19 @@ default:
         - features/admin/generate/result.feature
 
 
+
+    # Test the generated CRUD files
+    public_after_regenerate:
+      contexts:
+        - PublicFeatureContext: []
+      paths:
+        - features/public/index.feature
+        - features/public/read.feature
+        - features/public/create.feature
+        - features/public/update.feature
+        - features/public/delete.feature
+
+
   extensions:
     DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension: ~
     Behat\MinkExtension:
