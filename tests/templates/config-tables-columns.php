@@ -73,21 +73,21 @@ $tables_and_columns_names = array(
             array(
               'columndisplay'   => 'Packaging details',
               'is_file'         => 0,
-              'columnvisible'   => 1,
+              'columnvisible'   => 0,
               'columninpreview' => 0,
             ),
           'recycled_material_incorporation' =>
             array(
               'columndisplay'   => 'Recycled materials',
               'is_file'         => 0,
-              'columnvisible'   => 1,
+              'columnvisible'   => 0,
               'columninpreview' => 0,
             ),
           'hazardous_substance_presence'    =>
             array(
               'columndisplay'   => 'Hazardous substance',
               'is_file'         => 0,
-              'columnvisible'   => 1,
+              'columnvisible'   => 0,
               'columninpreview' => 0,
             ),
           'packshot_file'                   =>
@@ -122,7 +122,7 @@ $tables_and_columns_names = array(
             array(
               'columndisplay'   => 'Supplier logo',
               'is_file'         => 1,
-              'columnvisible'   => 1,
+              'columnvisible'   => 0,
               'columninpreview' => 0,
             ),
         ),
