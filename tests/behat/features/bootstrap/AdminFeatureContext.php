@@ -10,11 +10,11 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 class AdminFeatureContext extends FeatureContext implements Context {
 
     /**
-     * @BeforeScenario @reset
+     * @BeforeScenario @deconfigure
     */
     public function reset(BeforeScenarioScope $scope) {
         $this->resetDatabase();
-        $this->resetConfig();
+        $this->deleteTablesColumnsConfig();
     }
 
 
@@ -34,7 +34,7 @@ class AdminFeatureContext extends FeatureContext implements Context {
 
 
 
-    public function resetConfig() {
+    public function deleteTablesColumnsConfig() {
         $directory = __DIR__ . '/../../../../core/app/';
         $files = array('config.php', 'config-tables-columns.php');
         foreach ($files as $file) {
@@ -46,23 +46,4 @@ class AdminFeatureContext extends FeatureContext implements Context {
 
 
 
-    /**
-     * @BeforeScenario @reconfigure
-    */
-    public function reconfigure(BeforeScenarioScope $scope) {
-        $this->copyConfig();
-    }
-
-
-    public function copyConfig() {
-        $root = __DIR__ . '/../../../..';
-        $sourceFile = $root . '/tests/templates/config-tables-columns.php';
-        $destinationFile = $root . '/core/app/config-tables-columns.php';
-
-        // Copy the file
-        if (!copy($sourceFile, $destinationFile)) {
-            throw new \RuntimeException('File ' . $sourceFile . 'could not be copied.');
-        }
-
-    }
 }

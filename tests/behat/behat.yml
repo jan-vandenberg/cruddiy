@@ -7,18 +7,19 @@ default:
       contexts:
         - AdminFeatureContext: []
       paths:
-        - features/admin/index/reset.feature
+        - features/admin/index/deconfigure.feature
         - features/admin/index/page.feature
-        - features/admin/index/form.feature
+        - features/admin/index/form.fill.feature
         - features/admin/relations/page.feature
         - features/admin/relations/schema.feature
         - features/admin/relations/form.feature
+        - features/admin/relations/form.fill.feature
         - features/admin/tables/page.feature
-        - features/admin/tables/form.feature
+        - features/admin/tables/form.fill.feature
         - features/admin/columns/page.feature
         - features/admin/columns/form.feature
         - features/admin/columns/form.fresh.feature
-        - features/admin/generate/form.submit.feature
+        - features/admin/columns/form.fill.feature
         - features/admin/generate/page.feature
         - features/admin/generate/result.feature
 
@@ -35,6 +36,25 @@ default:
         - features/public/update.feature
         - features/public/delete.feature
 
+
+
+    # Test an existing installation (the generator was run at least once)
+    regenerate:
+      contexts:
+        - AdminFeatureContext: []
+      paths:
+        - features/admin/index/page.feature
+        - features/admin/index/form.submit.feature
+        - features/admin/relations/page.feature
+        - features/admin/relations/form.feature
+        - features/admin/tables/page.feature
+        - features/admin/tables/form.reconfigure.feature
+        - features/admin/tables/form.submit.feature
+        - features/admin/columns/page.feature
+        - features/admin/columns/form.feature
+        - features/admin/columns/form.reconfigure.feature
+        - features/admin/generate/page.feature
+        - features/admin/generate/result.feature
 
 
   extensions:

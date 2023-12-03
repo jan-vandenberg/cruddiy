@@ -149,4 +149,18 @@ class FeatureContext extends MinkContext implements Context {
 
 
 
+
+    // Delete files uploaded by the Public test suite
+    public function deleteTestUploads() {
+        $directory = __DIR__ . '/../../../../core/app/uploads';
+        $substring = '_cruddiy_test_image.jpg';
+
+        foreach (glob($directory . '/*') as $file) {
+            if (is_file($file) && strpos(basename($file), $substring) !== false) {
+                unlink($file);
+            }
+        }
+    }
+
+
 }

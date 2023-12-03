@@ -1,6 +1,6 @@
 Feature: Reset the installation
 
-  @reset
+  @deconfigure
   Scenario: No existing credentials
     Given I am on "/core/index.php"
     Then the "server" field should contain ""

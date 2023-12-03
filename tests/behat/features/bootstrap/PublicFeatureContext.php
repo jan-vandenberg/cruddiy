@@ -8,26 +8,24 @@ use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
 
 class PublicFeatureContext extends FeatureContext implements Context {
 
-
     /**
-     * @BeforeSuite
-     */
-    public static function BeforeSuite(BeforeSuiteScope $scope) {
-        self::deleteTestUploads($scope);
-        // self::cleanDB($scope);
+     * @BeforeScenario @reconfigure
+    */
+    public function reconfigure(BeforeScenarioScope $scope) {
+        $this->deleteTestUploads();
+        $this->importPublicDatabase();
+        $this->importTablesColumnsConfig();
     }
 
 
+    public function importTablesColumnsConfig() {
+        $root = __DIR__ . '/../../../..';
+        $sourceFile = $root . '/tests/templates/config-tables-columns.php';
+        $destinationFile = $root . '/core/app/config-tables-columns.php';
 
-    // Delete files uploaded by the Public test suite
-    private static function deleteTestUploads(BeforeScenarioScope $scope) {
-        $directory = __DIR__ . '/../../../../core/app/uploads';
-        $substring = '_cruddiy_test_image.jpg';
-
-        foreach (glob($directory . '/*') as $file) {
-            if (is_file($file) && strpos(basename($file), $substring) !== false) {
-                unlink($file);
-            }
+        // Copy the file
+        if (!copy($sourceFile, $destinationFile)) {
+            throw new \RuntimeException('File ' . $sourceFile . 'could not be copied.');
         }
     }
 
@@ -36,7 +34,7 @@ class PublicFeatureContext extends FeatureContext implements Context {
     // Delete the test database and re-import what was created by the Admin test suite
     // This is useful to run the Public test suite multiple times, whithout encounting errors
     // because the Public test suites performs operations that invalidates the tests.
-    private static function cleanDB(BeforeScenarioScope $scope) {
+    private function importPublicDatabase() {
         try {
             $dir_schema = realpath(__DIR__ . '/../../../../schema');
             $file_schema = 'Tests - Public.sql';
@@ -55,18 +53,16 @@ class PublicFeatureContext extends FeatureContext implements Context {
             }
             // print_r($dump_contents);
 
-            self::pdo->exec("DROP DATABASE IF EXISTS `" . $_ENV['DB_BASE'] . "`");
-            self::pdo->exec("CREATE DATABASE IF NOT EXISTS `" . $_ENV['DB_BASE'] . "`  COLLATE '" . $_ENV['DB_CHAR'] . "'");
-            self::pdo->exec("GRANT ALL ON `" . $_ENV['DB_BASE'] . "`.* TO '" . $_ENV['DB_USER'] . "'@'localhost'");
-            self::pdo->exec("FLUSH PRIVILEGES");
-            self::pdo->exec("USE `" . $_ENV['DB_BASE'] . "`;\n". $dump_contents);
+            $this->pdo->exec("DROP DATABASE IF EXISTS `" . $_ENV['DB_BASE'] . "`");
+            $this->pdo->exec("CREATE DATABASE IF NOT EXISTS `" . $_ENV['DB_BASE'] . "`  COLLATE '" . $_ENV['DB_CHAR'] . "'");
+            $this->pdo->exec("GRANT ALL ON `" . $_ENV['DB_BASE'] . "`.* TO '" . $_ENV['DB_USER'] . "'@'localhost'");
+            $this->pdo->exec("FLUSH PRIVILEGES");
+            $this->pdo->exec("USE `" . $_ENV['DB_BASE'] . "`;\n". $dump_contents);
             // self::showDatabases();
         } catch (PDOException $e) {
             // Handle the exception
             throw new \RuntimeException('Database creation failed: ' . $e->getMessage());
         }
     }
-
-
 
 }
