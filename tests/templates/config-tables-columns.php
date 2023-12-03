@@ -15,7 +15,7 @@ $tables_and_columns_names = array(
             ),
           'name' =>
             array(
-              'columndisplay'   => 'name',
+              'columndisplay'   => 'Brand name',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 1,
@@ -36,63 +36,63 @@ $tables_and_columns_names = array(
             ),
           'ean'                             =>
             array(
-              'columndisplay'   => 'ean',
+              'columndisplay'   => 'EAN-13',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 0,
             ),
           'product_name'                    =>
             array(
-              'columndisplay'   => 'product_name',
+              'columndisplay'   => 'Product name',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 0,
             ),
           'brand_id'                        =>
             array(
-              'columndisplay'   => 'brand_id',
+              'columndisplay'   => 'Brand',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 0,
             ),
           'supplier_id'                     =>
             array(
-              'columndisplay'   => 'supplier_id',
+              'columndisplay'   => 'Supplier',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 0,
             ),
           'visual_url'                      =>
             array(
-              'columndisplay'   => 'visual_url',
+              'columndisplay'   => 'Visual URL',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 0,
             ),
           'packaging_details'               =>
             array(
-              'columndisplay'   => 'packaging_details',
+              'columndisplay'   => 'Packaging details',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 0,
             ),
           'recycled_material_incorporation' =>
             array(
-              'columndisplay'   => 'recycled_material_incorporation',
+              'columndisplay'   => 'Recycled materials',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 0,
             ),
           'hazardous_substance_presence'    =>
             array(
-              'columndisplay'   => 'hazardous_substance_presence',
+              'columndisplay'   => 'Hazardous substance',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 0,
             ),
           'packshot_file'                   =>
             array(
-              'columndisplay'   => 'packshot_file',
+              'columndisplay'   => 'Packshot',
               'is_file'         => 1,
               'columnvisible'   => 1,
               'columninpreview' => 0,
@@ -113,14 +113,14 @@ $tables_and_columns_names = array(
             ),
           'name' =>
             array(
-              'columndisplay'   => 'name',
+              'columndisplay'   => 'Supplier name',
               'is_file'         => 0,
               'columnvisible'   => 1,
               'columninpreview' => 1,
             ),
           'logo' =>
             array(
-              'columndisplay'   => 'logo',
+              'columndisplay'   => 'Supplier logo',
               'is_file'         => 1,
               'columnvisible'   => 1,
               'columninpreview' => 0,

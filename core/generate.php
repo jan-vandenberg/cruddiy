@@ -1076,18 +1076,10 @@ function extractTableAndColumnsNames($postdata) {
         if (isset($columns[0]['tabledisplay'])) {
             $tables_and_columns_names[extractTableName($table)]['name'] = $columns[0]['tabledisplay'];
             foreach($columns as $column) {
-                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']] = $column;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columndisplay'] = $column['columndisplay'];
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['is_file'] = isset($column['file']) && $column['file'] ? 1 : 0;
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columnvisible'] = isset($column['columnvisible']) && $column['columnvisible'] ? 1 : 0;
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columninpreview'] = isset($column['columninpreview']) && $column['columninpreview'] ? 1 : 0;
-                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['primary']);
-                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['auto']);
-                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['tablename']);
-                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['tabledisplay']);
-                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columntype']);
-                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columncomment']);
-                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columnnullable']);
-                unset($tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['fk']);
             }
         }
     }
