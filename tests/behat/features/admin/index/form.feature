@@ -1,4 +1,3 @@
-@resetDB
 Feature: Check admin index form submission
 
   Scenario: Read and inject environment variables and fill in the first form

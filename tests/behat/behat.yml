@@ -1,24 +1,42 @@
 default:
   suites:
-    default:
-      contexts:
-        - FeatureContext: []
+
+
+    # Test a fresh install (the generator has never been run)
     admin:
+      contexts:
+        - AdminFeatureContext: []
       paths:
+        - features/admin/index/reset.feature
         - features/admin/index/page.feature
         - features/admin/index/form.feature
         - features/admin/relations/page.feature
         - features/admin/relations/schema.feature
         - features/admin/relations/form.feature
-        - features/admin/tables-and-columns/page.feature
-        - features/admin/tables-and-columns/form.feature
+        - features/admin/tables/page.feature
+        - features/admin/tables/form.feature
+        - features/admin/columns/page.feature
+        - features/admin/columns/form.feature
+        - features/admin/columns/form.fresh.feature
+        - features/admin/generate/form.submit.feature
+        - features/admin/generate/page.feature
+        - features/admin/generate/result.feature
+
+
+
+    # Test the generated CRUD files
     public:
+      contexts:
+        - PublicFeatureContext: []
       paths:
         - features/public/index.feature
         - features/public/read.feature
         - features/public/create.feature
         - features/public/update.feature
         - features/public/delete.feature
+
+
+
   extensions:
     DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension: ~
     Behat\MinkExtension:
