@@ -15,6 +15,7 @@ class AdminFeatureContext extends FeatureContext implements Context {
     public function reset(BeforeScenarioScope $scope) {
         $this->resetDatabase();
         $this->deleteTablesColumnsConfig();
+        $this->deleteTestUploads();
     }
 
 
