@@ -20,15 +20,7 @@ INSERT INTO `brands` (`id`, `name`) VALUES
 (5,	'Nike'),
 (9,	'Puma'),
 (8,	'Reebok'),
-(3,	'Under Armour');
-
-
-
-
-
-
-
-
+(3,	'Under Armour updated');
 
 DROP TABLE IF EXISTS `products`;
 CREATE TABLE `products` (
@@ -51,13 +43,6 @@ CREATE TABLE `products` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-
-
-
-
-
-
-
 DROP TABLE IF EXISTS `suppliers`;
 CREATE TABLE `suppliers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -68,4 +53,4 @@ CREATE TABLE `suppliers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- 2023-12-02 23:09:57
+-- 2023-12-03 07:33:15
