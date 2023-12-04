@@ -656,7 +656,7 @@ function generate($postdata) {
                     }
 
                     if (!empty($columns['columncomment'])) {
-                        $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
+                        $columndisplay = $columndisplay . '<small class="form-text text-muted">' . $columns['columncomment'] . '</small>';
                     }
 
                     if (!empty($columns['auto'])) {
