@@ -55,6 +55,9 @@ function column_type($columnname){
         case (preg_match("/varchar/i", $columnname) ? true : false) :
             return 3;
         break;
+        case (preg_match("/char/i", $columnname) ? true : false) :
+            return 9;
+        break;
         case (preg_match("/tinyint\(1\)/i", $columnname) ? true : false) :
             return 4;
         break;
@@ -590,35 +593,35 @@ function generate($postdata) {
                                 }
                                 $join_column_name = $columnname . $fk_table . $fk_column;
                                 $is_primary_ref = is_primary_key($fk_table, $fk_column);
-                                $index_table_rows .= 'echo "<td>" . get_fk_url($row["' . $columnname . '"], "' . $fk_table . '", "' . $fk_column . '", $row["' . $join_column_name . '"], ' . $is_primary_ref . ', true) . "</td>";' . "\n\t\t\t\t\t\t\t\t\t\t";
+                                $index_table_rows .= 'echo "<td>" . get_fk_url($row["' . $columnname . '"], "' . $fk_table . '", "' . $fk_column . '", $row["' . $join_column_name . '"], ' . $is_primary_ref . ', true) . "</td>";' . "\n\t\t\t\t\t\t\t\t\t\t\t";
                             }
                         }
-                        else if ($type == 1) // Text
+                        else if ($type == 1 || $type == 3 || $type == 9) // Text
                         {
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'echo "<td>";' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '// Check if the column is file upload' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . "// echo '<pre>';" . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '// print_r($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . ']);' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . "// echo '</pre>';" . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . 'echo "<td>";' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '// Check if the column is file upload' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . "// echo '<pre>';" . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '// print_r($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . ']);' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . "// echo '</pre>';" . "\n";
 
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '$has_link_file = isset($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\']) ? true : false;' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'if ($has_link_file){' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '    $is_file = $tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\'];' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '    $link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row[' . "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_' . $columnname . '">\' : \'\';' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '    echo $link_file;' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '}' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '$has_link_file = isset($tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\']) ? true : false;' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . 'if ($has_link_file){' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '    $is_file = $tables_and_columns_names[' . "'" . $tablename . "'" . ']["columns"][' . "'" . $columnname . "'" . '][\'is_file\'];' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '    $link_file = $is_file ? \'<a href="uploads/\'. htmlspecialchars($row[' . "'" . $columnname . "'" . ']) .\'" target="_blank" class="uploaded_file" id="link_' . $columnname . '">\' : \'\';' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '    echo $link_file;' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '}' . "\n";
 
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'echo nl2br(htmlspecialchars($row[' . "'" . $columnname . "'" . '] ?? ""));' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . 'echo nl2br(htmlspecialchars($row[' . "'" . $columnname . "'" . '] ?? ""));' . "\n";
 
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'if ($has_link_file){' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '    echo $is_file ? "</a>" : "";' . "\n";
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . '}' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . 'if ($has_link_file){' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '    echo $is_file ? "</a>" : "";' . "\n";
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . '}' . "\n";
 
-                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t" . 'echo "</td>"."\n\t\t\t\t\t\t\t\t\t\t";';
+                            $index_table_rows .= "\t\t\t\t\t\t\t\t\t\t\t" . 'echo "</td>"."\n\t\t\t\t\t\t\t\t\t\t\t\t";';
                         }
                         else if ($type == 4) // TinyInt / Bool
                         {
-                            $index_table_rows .= 'echo "<td>" . convert_bool($row[' . "'" . $columnname . "'" . ']) . "</td>";' . "\n\t\t\t\t\t\t\t\t\t\t";
+                            $index_table_rows .= 'echo "<td>" . convert_bool($row[' . "'" . $columnname . "'" . ']) . "</td>";' . "\n\t\t\t\t\t\t\t\t\t\t\t\t";
                         }
                         else if ($type == 7) // Date
                         {
