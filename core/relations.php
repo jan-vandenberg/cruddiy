@@ -98,8 +98,6 @@ if(isset($_POST['addkey'])){
     $split_primary=explode('|', $primary);
     $split_fk=explode('|', $fk);
 
-    $fk_name = $split_fk[0].'_ibfk_1';
-
     $ondel_val = $_POST['ondelete'];
     $onupd_val = $_POST['onupdate'];
 
@@ -137,10 +135,34 @@ if(isset($_POST['addkey'])){
             $onupd = "";
     }
 
-    $sql = "ALTER TABLE $split_fk[0] ADD FOREIGN KEY $fk_name ($split_fk[1]) REFERENCES $split_primary[0]($split_primary[1]) $ondel $onupd;";
+    $sql = "ALTER TABLE $split_fk[0] ADD FOREIGN KEY ($split_fk[1]) REFERENCES $split_primary[0]($split_primary[1]) $ondel $onupd;";
 
     if ($result = mysqli_query($link, $sql)) {
-        echo "The foreign_key '$fk_name' was created from ' $split_fk[0]($split_fk[1])' to '$split_primary[0]($split_primary[1])'.";
+
+
+        $tableName = $split_fk[0];
+        $foreignKeyColumn = $split_fk[1];
+
+        $sqlFindConstraint = "SELECT CONSTRAINT_NAME
+                            FROM information_schema.KEY_COLUMN_USAGE
+                            WHERE TABLE_SCHEMA = DATABASE()
+                                AND TABLE_NAME = '$tableName'
+                                AND COLUMN_NAME = '$foreignKeyColumn'
+                                AND REFERENCED_COLUMN_NAME IS NOT NULL
+                                ORDER BY CONSTRAINT_NAME DESC
+                                LIMIT 0,1";
+
+        $resultFkName = mysqli_query($link, $sqlFindConstraint);
+
+        if ($resultFkName) {
+            $row = $resultFkName->fetch_assoc();
+            if ($row) {
+                $constraintName = $row['CONSTRAINT_NAME'];
+                echo "The foreign key " . $constraintName . " was created from ' $split_fk[0]($split_fk[1])' to '$split_primary[0]($split_primary[1])'.";
+            }
+        }
+
+
     } else {
          echo("Something went wrong. Error description: " . mysqli_error($link));
     }
