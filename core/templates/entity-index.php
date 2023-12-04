@@ -27,7 +27,13 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="page-header clearfix">
-                        <h2 class="float-left"><?php translate('%s Details', true, "'" . str_replace("'", "\\'", {TABLE_DISPLAY}) . "'") ?></h2>
+                        <?php
+                        // Prevent crash if $str contains single quotes
+                        $str = <<<'EOD'
+                        {TABLE_DISPLAY}
+                        EOD;
+                        ?>
+                        <h2 class="float-left"><?php translate('%s Details', true, $str) ?></h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right"><?php translate('Add New Record') ?></a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2"><?php translate('Reset View') ?></a>
                         <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2"><?php translate('Back') ?></a>
