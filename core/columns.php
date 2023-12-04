@@ -1,5 +1,13 @@
 <?php
 include "app/config.php";
+include "helpers.php";
+
+// Debug info
+// echo '<pre>';
+// print_r($_POST);
+// echo '</pre>';
+// exit();
+
 
 function get_primary_key($table){
     global $link;
@@ -67,8 +75,38 @@ function get_foreign_keys($table){
     return $fks;
 }
 
+
+function read_tables_and_columns_config_file() {
+
+    if (file_exists("app/config-tables-columns.php")) {
+        include("app/config-tables-columns.php");
+    } else {
+        return null;
+    }
+
+    $tmp = [
+        'table' => [],
+    ];
+
+    foreach ($tables_and_columns_names as $tablename => $tableinfo) {
+        $tmp['table'][] = [
+            'tablename' => $tablename,
+            'tabledisplay' => $tableinfo['name'],
+            'tablecheckbox' => 1
+        ];
+    }
+
+    return $tmp;
+}
+
 $tablesData = [];
 $checked_tables_counter=0;
+if (!isset($_POST['table'])) {
+    if (file_exists("app/config-tables-columns.php")) {
+        include("app/config-tables-columns.php");
+        $_POST = read_tables_and_columns_config_file();
+    }
+}
 
 if (isset($_POST['table'])) {
     foreach ($_POST['table'] as $table) {
@@ -106,6 +144,32 @@ if (isset($_POST['table'])) {
     }
 }
 
+// Check if a table is referenced in another table (look for foreign keys)
+function is_table_referenced($table_name) {
+    global $db_server;
+    global $db_user;
+    global $db_password;
+    global $db_name;
+
+    /* Attempt to connect to MySQL database */
+	$link = mysqli_connect($db_server, $db_user, $db_password, 'information_schema');
+	// Check connection
+	if($link === false)
+		die("ERROR: Could not connect. " . mysqli_connect_error());
+
+    $sql = "SELECT * FROM KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '" . $table_name . "' AND REFERENCED_TABLE_SCHEMA = '" . $db_name . "'";
+
+    $result = mysqli_query($link,$sql);
+
+    if (mysqli_num_rows($result) > 0) {
+        mysqli_close($link);
+        return true;
+    } else {
+        mysqli_close($link);
+        return false;
+    }
+}
+
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -126,22 +190,34 @@ if (isset($_POST['table'])) {
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-8"></div>
-                    <div class="col-2">
-                        <input type="checkbox" id="checkall-1" checked>
-                        <label for="checkall-1">Check/uncheck all</label>
-                    </div>
-                    <div class="col-2">
-                        <input type="checkbox" id="checkall-2" checked>
-                        <label for="checkall-2">Check/uncheck all</label>
-                    </div>
-                </div>
+
 
                 <form class="form-horizontal" action="generate.php" method="post">
                     <fieldset>
 
+                        <div class="row">
+                            <div class="col-8">
+                            </div>
+                            <div class="col-4 text-center pb-3">
+                                <strong>Visibility</strong>
+                            </div>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="col-md-8"></div>
+                            <div class="col-2">
+                                <input type="checkbox" id="checkall-1" checked>
+                                <label for="checkall-1">Check/uncheck all</label>
+                            </div>
+                            <div class="col-2">
+                                <input type="checkbox" id="checkall-2" checked>
+                                <label for="checkall-2">Check/uncheck all</label>
+                            </div>
+                        </div>
+
                         <?php foreach ($tablesData as $table): ?>
+                            <?php $is_table_referenced = is_table_referenced($table['name']) ?>
                             <?php
                             // echo '<pre>';
                             // print_r($table);
@@ -149,7 +225,7 @@ if (isset($_POST['table'])) {
                             ?>
                             <div class="row">
                                 <div class="col-3"></div>
-                                <div class="col-9 my-4">
+                                <div class="col-4 my-4">
                                     <?php
                                     $configTableNamesFilePath = 'app/config-tables-columns.php';
                                     if (file_exists($configTableNamesFilePath)) {
@@ -158,20 +234,62 @@ if (isset($_POST['table'])) {
                                     ?>
                                     <strong>Table: <?= htmlspecialchars($table['display']) ?> (<?= htmlspecialchars($table['name']) ?>)</strong>
                                 </div>
+                                <div class="col-1"></div>
+                                <div class="col-2 my-4">
+                                    <strong><abbr title="Check to display the selected column in the list view of this table.">This table</abbr></strong>
+                                </div>
+                                <div class="col-2 my-4">
+                                    <?php if ($is_table_referenced) : ?>
+                                        <strong><abbr title="Check to display the selected column when it is referenced as foreign key in another table. Columns keys id, name, reference are checked by default.">Related tables</abbr></strong>
+                                    <?php endif ?>
+                                </div>
                             </div>
 
                             <?php foreach ($table['columns'] as $i => $column): ?>
                                 <div class="row align-items-center mb-2">
                                     <div class="col-3 text-right">
-                                        <label class="col-form-label" for="<?= htmlspecialchars($table['name']) . '-' . $i ?>">
-                                            <?= htmlspecialchars($column['name']) ?>
-                                            <?= $column['isPrimary'] ? '🔑' : '' ?>
-                                            <?= $column['isAuto'] ? '🔒' : '' ?>
-                                            <?= $column['isForeignKey'] ? '🛅' : '' ?>
-                                            <?= $column['nullable'] ? '🫙' : '' ?>
+                                        <?php
+                                        // Initialize an array to hold classes and emojis
+                                        $labelAttributes = [
+                                            'classes' => [],
+                                            'emojis'  => []
+                                        ];
+
+                                        // Define the conditions, classes, and emojis
+                                        $conditions = [
+                                            'isPrimary'    => ['class' => 'is-primary'   , 'emoji' => '🔑'],
+                                            'isAuto'       => ['class' => 'is-auto'      , 'emoji' => '🔒'],
+                                            'isForeignKey' => ['class' => 'is-foreignkey', 'emoji' => '🛅'],
+                                            'nullable'     => ['class' => 'is-nullable'  , 'emoji' => '🫙']
+                                        ];
+
+                                        // Iterate over conditions and update label attributes
+                                        foreach ($conditions as $key => $attributes) {
+                                            // echo $key .' / '. $column['name'].' / '.print_r($column[$key], true) . '<br>';
+                                            if ($key === 'isPrimary' && $column['name'] == $column['isPrimary']) {
+                                                // Primary key column
+                                                $labelAttributes['classes'][] = $attributes['class'];
+                                                $labelAttributes['emojis'][] = $attributes['emoji'];
+                                            } elseif ($key === 'isPrimary' && $column['name'] != $column['isPrimary']) {
+                                                // Not a primary key
+                                            } elseif (!empty($column[$key])) {
+                                                $labelAttributes['classes'][] = $attributes['class'];
+                                                $labelAttributes['emojis'][]  = $attributes['emoji'];
+                                            }
+                                        }
+
+                                        // Convert classes array into a space-separated string
+                                        $labelClassString = implode(' ', $labelAttributes['classes']);
+                                        ?>
+
+                                        <label class="col-form-label <?= htmlspecialchars($labelClassString) ?>" for="<?= htmlspecialchars($table['name']) . '-' . $i ?>">
+                                            <abbr title="<?= htmlspecialchars($column['name']) ?>, <?php echo $column['type'] ?>"><?= truncate(htmlspecialchars($column['name']), 25) ?></abbr>
+
+                                            <span title="<?= htmlspecialchars($labelClassString) ?>"><?= implode(' ', $labelAttributes['emojis']) ?></span>
                                         </label>
+
                                     </div>
-                                    <div class="col-md-5">
+                                    <div class="col-md-4">
                                         <?php
                                         // echo '<pre>';
                                         // print_r($table);
@@ -200,23 +318,94 @@ if (isset($_POST['table'])) {
                                         <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columncomment]" value="<?= htmlspecialchars($column['comment']) ?>"/>
                                         <input type="hidden" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnnullable]" value="<?php echo $column['nullable'] ?>"/>
 
-                                        <input id="textinput_<?= htmlspecialchars($table['name']) . '-' . $i ?>"
+                                        <?php
+                                        // Debug a row
+                                        // echo '<pre>';
+                                        // print_r($column);
+                                        // print_r($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']);
+                                        // echo '</pre>';
+                                        ?>
+                                        <input id="text-<?= sanitize($table['name']) . '-' . sanitize($column['name']) ?>"
                                                 name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columndisplay]"
                                                 type="text"
                                                 placeholder="Display field name in frontend"
                                                 class="form-control rounded-0"
-                                                <?php echo isset($tables_columns_names[$table['name']]['columns'][$column['name']]) ? 'value="'.addslashes(htmlspecialchars($tables_columns_names[$table['name']]['columns'][$column['name']])).'"' : '' ?>
+                                                value="<?php echo isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay']) ?
+                                                                    addslashes(htmlspecialchars($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columndisplay'])) :
+                                                                    ''
+                                                        ?>"
                                                 >
+                                    </div>
+                                    <div class="col-md-1">
+                                        <!-- Upload checkbox -->
+                                        <?php
+                                        if (!$column['isForeignKey'] && (
+                                                strstr($column['type'], 'char') ||
+                                                strstr($column['type'], 'text') ||
+                                                strstr($column['type'], 'blob')
+                                                )
+                                            ) :
+
+                                            if (isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['is_file'])) {
+                                                $checked = $tables_and_columns_names[$table['name']]['columns'][$column['name']]['is_file'] ? 'checked' : '';
+                                            } else {
+                                                $checked = '';
+                                                $guesslist_checked_colums = array('file', 'image', 'logo', 'picture', 'photo', 'pdf', 'jpg', 'gif', 'png', 'zip');
+                                                foreach($guesslist_checked_colums as $term) {
+                                                    $checked = strstr($column['name'], $term) ? 'checked' : $checked;
+                                                }
+                                            }
+                                            ?>
+                                            <input type="checkbox"
+                                                    name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][file]"
+                                                    id="file-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>"
+                                                    value="1"
+                                                    <?php echo $checked ?>
+                                            >
+                                            <label for="file-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">File</label>
+                                        <?php endif ?>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in overview checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]" id="checkboxes-<?= $i ?>" value="1" checked>
-                                        <label for="checkboxes-<?= $i ?>">Visible in overview?</label>
+                                        <?php
+                                        if (isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columnvisible'])) {
+                                            $checked = $tables_and_columns_names[$table['name']]['columns'][$column['name']]['columnvisible'] ? 'checked' : '';
+                                        } else {
+                                            // TODO: do not check by default if it's a long content like TEXT, BLOB, etc...
+                                            $checked = 'checked';
+                                        }
+                                        ?>
+                                        <input type="checkbox"
+                                                name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columnvisible]"
+                                                id="visibility-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>"
+                                                value="1"
+                                                <?php echo $checked ?>
+                                        >
+                                        <label for="visibility-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">Show column</label>
                                     </div>
                                     <div class="col-md-2">
                                         <!-- Visible in preview checkbox -->
-                                        <input type="checkbox" name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]" id="checkboxes-<?= $i ?>-2" value="1" checked>
-                                        <label for="checkboxes-<?= $i ?>-2">Visible in preview?</label>
+                                        <?php
+                                        if ($is_table_referenced):
+                                            if (isset($tables_and_columns_names[$table['name']]['columns'][$column['name']]['columninpreview'])) {
+                                                $checked = $tables_and_columns_names[$table['name']]['columns'][$column['name']]['columninpreview'] ? 'checked' : '';
+                                            }
+                                            else {
+                                                $checked = '';
+                                                $guesslist_checked_colums = array('name', 'reference', 'id');
+                                                foreach ($guesslist_checked_colums as $term) {
+                                                    $checked = strstr($column['name'], $term) ? 'checked' : $checked;
+                                                }
+                                            }
+                                            ?>
+                                            <input type="checkbox"
+                                                    name="<?= htmlspecialchars($table['name']) ?>columns[<?= $i ?>][columninpreview]"
+                                                    id="visibility-fk-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>"
+                                                    value="1"
+                                                    <?php echo $checked ?>
+                                            >
+                                            <label for="visibility-fk-<?= htmlspecialchars($table['name']) . '-' . sanitize($column['name']) ?>">Show in FK</label>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>

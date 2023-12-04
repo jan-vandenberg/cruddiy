@@ -1,0 +1,91 @@
+default:
+  suites:
+
+
+    # Test a fresh install (the generator has never been run)
+    admin:
+      contexts:
+        - AdminFeatureContext: []
+      paths:
+        - features/admin/index/deconfigure.feature
+        - features/admin/index/page.feature
+        - features/admin/index/form.fill.feature
+        - features/admin/relations/page.feature
+        - features/admin/relations/schema.feature
+        - features/admin/relations/form.feature
+        - features/admin/relations/form.fill.feature
+        - features/admin/tables/page.feature
+        - features/admin/tables/form.fill.feature
+        - features/admin/columns/page.feature
+        - features/admin/columns/form.feature
+        - features/admin/columns/form.fresh.feature
+        - features/admin/columns/form.fill.feature
+        - features/admin/generate/page.feature
+        - features/admin/generate/result.feature
+
+
+
+    # Test the generated CRUD files
+    public:
+      contexts:
+        - PublicFeatureContext: []
+      paths:
+        - features/public/index.feature
+        - features/public/read.feature
+        - features/public/create.feature
+        - features/public/update.feature
+        - features/public/delete.feature
+
+
+
+    # Test an existing installation (the generator was run at least once)
+    regenerate:
+      contexts:
+        - AdminFeatureContext: []
+      paths:
+        - features/admin/index/page.feature
+        - features/admin/index/form.submit.feature
+        - features/admin/relations/page.feature
+        - features/admin/relations/form.feature
+        - features/admin/tables/page.feature
+        - features/admin/tables/form.reconfigure.feature
+        - features/admin/tables/form.submit.feature
+        - features/admin/columns/page.feature
+        - features/admin/columns/form.feature
+        - features/admin/columns/form.reconfigure.feature
+        - features/admin/generate/page.feature
+        - features/admin/generate/result.feature
+
+
+
+    # Test the generated CRUD files
+    public_after_regenerate:
+      contexts:
+        - PublicFeatureContext: []
+      paths:
+        - features/public/index.feature
+        - features/public/read.feature
+        - features/public/create.feature
+        - features/public/update.feature
+        - features/public/delete.feature
+
+
+  extensions:
+    DMore\ChromeExtension\Behat\ServiceContainer\ChromeExtension: ~
+    Behat\MinkExtension:
+      base_url: 'http://cruddiy.localhost'
+      goutte:
+        guzzle_parameters:
+          curl.options:
+            CURLOPT_TIMEOUT: 5
+      sessions:
+        default:
+          goutte: ~
+        javascript:
+          chrome:
+            api_url: "http://127.0.0.1:9222"
+            download_behavior: allow
+            download_path: ~/Downloads
+            validate_certificate: false
+            socket_timeout: 5
+            dom_wait_timeout: 1000

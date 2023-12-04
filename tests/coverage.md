@@ -1,0 +1,103 @@
+- Feature: Reset the installation
+  -   Scenario: No existing credentials
+- Feature: Check admin index page content
+  -   Scenario: No errors on page
+- Feature: Fill the form
+  -   Scenario: Inject environment variables
+- Feature: Check admin relations page content
+  -   Scenario: No errors on page
+- Feature: Check admin schema import form
+  -   Scenario: Check link to import schema page
+  -   Scenario: Check schema import form
+- Feature: Check admin relations creation form
+  -   Scenario: Check unicity display of existing relations
+- Feature: Check admin relations creation form
+  -   Scenario: Check that we can add a relation
+- Feature: Check admin tables page
+  -   Scenario: Check for errors on Tables page
+- Feature: Check admin tables mapping form
+  -   Scenario: Fill the tables form
+- Feature: Check admin columns page
+  -   Scenario: Check for errors on the Columns page
+- Feature: Check admin columns form
+  -   Scenario: Name and select Brands columns
+- Feature: Check field default values
+  -   Scenario: Name and select Brands columns on a fresh installation
+- Feature: Fill admin columns form
+  -   Scenario: Set values
+- Feature: Check the generator execution
+  -   Scenario: Verify errors and execution
+- Feature: Check the generator result
+  -   Scenario: Look for errors and data continuity
+- Feature: Check public index page content
+  -   Scenario: Check Brands list
+  -   Scenario: Check Products list
+- Feature: Check public read page content
+  -   Scenario: Go to Brands item
+- Feature: Check public create page content
+  -   Scenario: Add supplier
+  -   Scenario: Add product
+  -   Scenario: Add product with upload file
+- Feature: Check public update page content
+  -   Scenario: Go to Brands item
+  -   Scenario: Update a record
+  -   Scenario: Update a record with a file upload
+  -   Scenario: Preserve existing attachment when updating a record without picking a new file
+  -   Scenario: Successfully updating a product file
+  -   Scenario: Attempting to upload a product file but leaving the file input empty
+  -   Scenario: Using a backup file for a product when no file is uploaded
+  -   Scenario: Deleting an uploaded product file
+  -   Scenario: Attempting to delete a product file that does not exist
+  -   Scenario: Successfully updating a new product file
+- Feature: Check public delete page content
+  -   Scenario: Check if there is a warning before deletion
+  -   Scenario: Delete a Suppliers record
+  -   Scenario: Check FK dependency
+- Feature: Check admin index page content
+  -   Scenario: No errors on page
+- Feature: The form should be pre-field
+  -   Scenario: Look for config file variables
+- Feature: Check admin relations page content
+  -   Scenario: No errors on page
+- Feature: Check admin relations creation form
+  -   Scenario: Check unicity display of existing relations
+- Feature: Check admin tables page
+  -   Scenario: Check for errors on Tables page
+- Feature: Check admin tables page
+  -   Scenario: Check for preconfiguration from config-tables-columns.php
+- Feature: Check admin tables mapping form
+  -   Scenario: Submit the form with preconfigured values
+- Feature: Check admin columns page
+  -   Scenario: Check for errors on the Columns page
+- Feature: Check admin columns form
+  -   Scenario: Name and select Brands columns
+- Feature: Check field default values
+  -   Scenario: Name and select Brands columns when the generator has already run
+- Feature: Check the generator execution
+  -   Scenario: Verify errors and execution
+- Feature: Check the generator result
+  -   Scenario: Look for errors and data continuity
+- Feature: Check public index page content
+  -   Scenario: Check Brands list
+  -   Scenario: Check Products list
+- Feature: Check public read page content
+  -   Scenario: Go to Brands item
+- Feature: Check public create page content
+  -   Scenario: Add supplier
+  -   Scenario: Add product
+  -   Scenario: Add product with upload file
+- Feature: Check public update page content
+  -   Scenario: Go to Brands item
+  -   Scenario: Update a record
+  -   Scenario: Update a record with a file upload
+  -   Scenario: Preserve existing attachment when updating a record without picking a new file
+  -   Scenario: Successfully updating a product file
+  -   Scenario: Attempting to upload a product file but leaving the file input empty
+  -   Scenario: Using a backup file for a product when no file is uploaded
+  -   Scenario: Deleting an uploaded product file
+  -   Scenario: Attempting to delete a product file that does not exist
+  -   Scenario: Successfully updating a new product file
+- Feature: Check public delete page content
+  -   Scenario: Check if there is a warning before deletion
+  -   Scenario: Delete a Suppliers record
+  -   Scenario: Check FK dependency

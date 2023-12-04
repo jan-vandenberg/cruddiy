@@ -1,0 +1,16 @@
+{
+    "name": "jan-vandenberg/cruddiy",
+    "description": "No-code Bootstrap PHP CRUD generator",
+    "type": "project",
+    "license": "GNU Affero General Public License v3.0",
+    "require-dev": {
+        "behat/behat": "^3.8",
+        "behat/mink-extension": "^2.3",
+        "behat/mink-goutte-driver": "^1.2",
+        "dmore/chrome-mink-driver": "^2.9",
+        "dmore/behat-chrome-extension": "^1.4"
+    },
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}

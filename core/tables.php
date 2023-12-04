@@ -1,5 +1,11 @@
     <?php
-        include "app/config.php";
+    include "app/config.php";
+    include "helpers.php";
+
+    $tables_and_columns_names = [];
+    if (file_exists("app/config-tables-columns.php")) {
+        include("app/config-tables-columns.php");
+    }
     ?>
     <!doctype html>
     <html lang="en">
@@ -18,15 +24,18 @@
                         <h4 class="h1 border-bottom pb-2">All Available Tables</h4>
                     </div>
 
-                    <div class="row align-items-center mb-1">
-                        <div class="col-md-11 text-right pr-5 ml-3">
-                            <input type="checkbox" id="checkall">
-                            <label for="checkall">Check/uncheck all</label>
-                        </div>
-                    </div>
-
-
                     <form class="form-horizontal" action="columns.php" method="post">
+
+                        <div class="container">
+                            <div class="row align-items-center">
+                                <div class="col-md-9"></div>
+                                <div class="col-md-3">
+                                    <input type="checkbox" id="checkall" class="mr-1">
+                                    <label for="checkall">Check/uncheck all</label>
+                                </div>
+                            </div>
+                        </div>
+
                         <fieldset>
                             <?php
                             //Get all tables
@@ -45,17 +54,23 @@
 
                             <div class="container">
                                 <?php foreach ($tablelist as $i => $table): ?>
+                                    <?php
+                                    // echo '<pre>';
+                                    // print_r($table);
+                                    // print_r($tables_and_columns_names[$table]);
+                                    // echo '</pre>';
+                                    ?>
                                     <div class="row align-items-center">
                                         <div class="col-md-3 text-right">
                                             <label class="control-label" for="table[<?= $i ?>][tablename]"><?= htmlspecialchars($table) ?></label>
                                         </div>
                                         <div class="col-md-6">
                                             <input type="hidden" name="table[<?= $i ?>][tablename]" value="<?= htmlspecialchars($table) ?>"/>
-                                            <input id="textinput_<?= htmlspecialchars($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($tables_columns_names[$table]['name']) ? 'value="'.$tables_columns_names[$table]['name'].'"' : '' ?>>
+                                            <input id="text-<?= sanitize($table) ?>" name="table[<?= $i ?>][tabledisplay]" type="text" placeholder="Display table name in frontend" class="form-control rounded-0 shadow-sm" <?php echo isset($tables_and_columns_names[$table]['name']) ? 'value="'.$tables_and_columns_names[$table]['name'].'"' : '' ?>>
                                         </div>
                                         <div class="col-md-3">
-                                            <input class="mr-1" type="checkbox" name="table[<?= $i ?>][tablecheckbox]" id="checkboxes-<?= $i ?>" value="1">
-                                            <label for="checkboxes-<?= $i ?>">Generate CRUD</label>
+                                            <input class="mr-1" type="checkbox" name="table[<?= $i ?>][tablecheckbox]" id="generate-<?= sanitize($table) ?>" value="1" <?php echo array_key_exists($table, $tables_and_columns_names) ? 'checked' : '' ?>>
+                                            <label for="generate-<?= sanitize($table) ?>">Generate CRUD</label>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -80,9 +95,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <script>
     $(document).ready(function () {
-        $('#checkall').click(function(e) {
-            var chb = $('.form-horizontal').find('input[type="checkbox"]');
-            chb.prop('checked', !chb.prop('checked'));
+        $('#checkall').click(function() {
+            var isChecked = $(this).prop('checked');
+            $('.form-horizontal').find('input[type="checkbox"]').prop('checked', isChecked);
         });
     });
     </script>
