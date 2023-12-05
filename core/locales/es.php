@@ -48,5 +48,10 @@ return array(
     'stmt_error'                   => '¡Vaya! Algo salió mal. Intente nuevamente más tarde.',
     'unsupported_no_pk'            => 'Editar tablas sin clave primaria aún no es compatible.',
     'invalid_request_instructions' => 'Lo siento, ha realizado una solicitud inválida. Por favor, <a href="index.php" class="alert-link">regrese</a> e intente nuevamente.',
+
+    // foreign keys
+    "references_tables" => "Referencias a este %s:",
+    "references_view_btn" => "Ver %s %s con %s = %s",
+
 );
 ?>

@@ -49,6 +49,10 @@ return array(
     'Invalid Request' => "Invalid Request",
     'stmt_error' => 'Oops! Something went wrong. Please try again later.',
     'unsupported_no_pk' => "Editing tables without primary key isn't supported yet.",
-    'invalid_request_instructions' => "Sorry, you've made an invalid request. Please <a href='index.php' class='alert-link'>go back</a> and try again."
+    'invalid_request_instructions' => "Sorry, you've made an invalid request. Please <a href='index.php' class='alert-link'>go back</a> and try again.",
+
+    // foreign keys
+    "references_tables" => "References to this %s:",
+    "references_view_btn" => "View %s %s with %s = %s",
 );
 ?>

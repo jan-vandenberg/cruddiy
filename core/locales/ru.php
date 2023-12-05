@@ -47,6 +47,11 @@ return array(
     'Invalid Request'              => 'Неверный запрос',
     'stmt_error'                   => 'Упс! Что-то пошло не так. Пожалуйста, попробуйте позже.',
     'unsupported_no_pk'            => 'Редактирование таблиц без первичного ключа пока не поддерживается.',
-    'invalid_request_instructions' => 'Извините, вы сделали неверный запрос. Пожалуйста, <a href="index.php" class="alert-link">вернитесь назад</a> и попробуйте еще раз.'
+    'invalid_request_instructions' => 'Извините, вы сделали неверный запрос. Пожалуйста, <a href="index.php" class="alert-link">вернитесь назад</a> и попробуйте еще раз.',
+
+    // foreign keys
+    "references_tables" => "Ссылки на этот %s:",
+    "references_view_btn" => "Посмотреть %s %s с %s = %s",
+
 );
 ?>

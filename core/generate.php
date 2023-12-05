@@ -522,11 +522,11 @@ function generate($postdata) {
                     $number_of_refs = mysqli_fetch_assoc(mysqli_query($link, $sql))["count"];
                     if ($number_of_refs > 0)
                     {
-                        $html .= \'<p><a href="' . $table . '-index.php?' . $column . '=\'. $row["' . $fk_column . '"]' . '.\'" class="btn btn-info">View \' . $number_of_refs . \' ' . $table . ' with ' . $column . ' = \'. $row["' . $fk_column . '"] .\'</a></p></p>\';
+                        $html .= \'<p><a href="' . $table . '-index.php?' . $column . '=\'. $row["' . $fk_column . '"]' . '.\'" class="btn btn-info">\' . translate("references_view_btn", false, $number_of_refs, "' . $table . '", "' . $column . '", $row["' . $fk_column . '"]) .\'</a></p></p>\';
                     }';
                 }
             }
-            $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>References to this ' . $tablename . ':</h3>" . $html;}' : "";
+            $foreign_key_references = $foreign_key_references != "" ? '$html = "";' . $foreign_key_references . 'if ($html != "") {echo "<h3>" . translate("references_tables", false, "' . $tablename . '") . "</h3>" . $html;}' : "";
 
             //Specific INDEX page variables
             $column_id = null;

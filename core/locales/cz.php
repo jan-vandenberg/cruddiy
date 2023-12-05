@@ -47,7 +47,12 @@ return array(
     'Invalid Request' => 'Neplatný požadavek',
     'stmt_error' => 'Jejda! Něco se pokazilo. Zkuste to prosím znovu později.',
     'unsupported_no_pk' => 'Úprava tabulek bez primárního klíče zatím není podporována.',
-    'invalid_request_instructions' => 'Omlouváme se, provedli jste neplatný požadavek. Prosím <a href="index.php" class="alert-link">vraťte se zpět</a> a zkuste to znovu.'
+    'invalid_request_instructions' => 'Omlouváme se, provedli jste neplatný požadavek. Prosím <a href="index.php" class="alert-link">vraťte se zpět</a> a zkuste to znovu.',
+
+    // foreign keys
+    "references_tables" => "Odkazy na toto %s:",
+    "references_view_btn" => "Zobrazit %s %s s %s = %s",
+
 
 );
 ?>

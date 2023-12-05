@@ -47,7 +47,11 @@ return array(
     'Invalid Request' => 'Ongeldige aanvraag',
     'stmt_error' => 'Oeps! Er is iets fout gegaan. Probeer het later opnieuw.',
     'unsupported_no_pk' => 'Het bewerken van tabellen zonder primaire sleutel wordt nog niet ondersteund.',
-    'invalid_request_instructions' => 'Sorry, u hebt een ongeldige aanvraag gedaan. Ga alstublieft <a href="index.php" class="alert-link">terug</a> en probeer het opnieuw.'
+    'invalid_request_instructions' => 'Sorry, u hebt een ongeldige aanvraag gedaan. Ga alstublieft <a href="index.php" class="alert-link">terug</a> en probeer het opnieuw.',
+
+    // foreign keys
+    "references_tables" => "Verwijzingen naar deze %s:",
+    "references_view_btn" => "Bekijk %s %s met %s = %s",
 
 );
 ?>
