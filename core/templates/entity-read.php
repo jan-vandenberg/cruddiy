@@ -55,7 +55,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>View Record</title>
+    <title><?php translate('View Record') ?></title>
     {CSS_REFS}
 </head>
 <?php require_once('navbar.php'); ?>
@@ -65,7 +65,7 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
             <div class="row">
                 <div class="col-md-8 mx-auto">
                     <div class="page-header">
-                        <h1>View Record</h1>
+                        <h1><?php translate('View Record') ?></h1>
                     </div>
 
                     {RECORDS_READ_FORM}
