@@ -562,24 +562,24 @@ function generate($postdata) {
                         }
 
                         if (!empty($columns['columncomment'])) {
-                            $columndisplay_th = "\n".'$str = <<<EOD'."\n";
+                            $columndisplay_th = '";'."\n".'$str = <<<EOD'."\n";
                             $columndisplay_th .= "\t" . $columns['columncomment'] . "\n";
                             $columndisplay_th .= 'EOD;'."\n";
                             $columndisplay_th .= '?>'."\n";
-                            $columndisplay_th .= '<span data-toggle="tooltip" data-placement="top" title="<?php echo str_replace(\'"\', "\'\'", $str) ?>">' . $columndisplay . '</span>'."\n";
-                            $columndisplay_th .= '<?php'."\n";
+                            $columndisplay_th .= '<span data-toggle="tooltip" data-placement="top" title="<?php echo str_replace(\'"\', "\'\'", $str) ?>">' . $columndisplay . '</span><?php echo "'."\n";
                         } else {
-                            $columndisplay_th = '';
+                            $columndisplay_th = $columndisplay;
                         }
 
                         $columns_available[] = "$columnname";
                         $index_sql_search[] = "`$tablename`.`$columnname`";
+
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$columnname = "' . $columnname . '";' . "\n";
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$sort_link = isset($_GET["order"]) && $_GET["order"] == $columnname && $_GET["sort"] == "asc" ? "desc" : "asc";' . "\n";
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$sort_link = isset($_GET["order"]) && $_GET["order"] == $columnname && $_GET["sort"] == "desc" ? "asc" : $sort_link;' . "\n";
-                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . 'echo "<th><a href=?search=$search&order=' . $columnname . '&sort=".$sort_link.">";' . "\n";
-                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . $columndisplay_th . "\n\t\t\t\t\t\t\t\t\t\t";
-                        $index_table_headers . '</th>";' . "\n\t\t\t\t\t\t\t\t\t\t";
+                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . 'echo "<th><a href=?search=$search&order=' . $columnname . '&sort=".$sort_link.">';
+                        $index_table_headers .= $columndisplay_th;
+                        $index_table_headers .= '</a></th>";' . "\n";
 
                         // Display date in locale format
                         if (!empty($columns['fk'])) {
@@ -824,7 +824,7 @@ function generate($postdata) {
                                 $column_input .= '<?php if (isset(' . $create_record . ') && !empty(' . $create_record . ')) : ?>' . "\n";
                                 $column_input .= '<div class="custom-control custom-checkbox">' . "\n";
                                 $column_input .= '    <input type="checkbox" class="custom-control-input" id="cruddiy_delete_' . $columnname . '" name="cruddiy_delete_' . $columnname . '" value="1">' . "\n";
-                                $column_input .= '    <label class="custom-control-label" for="cruddiy_delete_' . $columnname . '"><?php translate(\'Delete File\', true, \'<a href="uploads/\' . ' . @$create_record . ' . \'" target="_blank">\' . ' . @$create_record . ' . \'</a>\') ?></label>' . "\n";
+                                $column_input .= '    <label class="custom-control-label" for="cruddiy_delete_' . $columnname . '"><?php translate(\'Delete File\', true, \'<a href="uploads/\' . ' . $column_input . ' . \'" target="_blank">\' . ' . @$create_record . ' . \'</a>\') ?></label>' . "\n";
                                 $column_input .= '</div>' . "\n";
                                 $column_input .= '<?php endif ?>' . "\n";
                             }
