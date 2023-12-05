@@ -562,7 +562,14 @@ function generate($postdata) {
                         }
 
                         if (!empty($columns['columncomment'])) {
-                            $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
+                            $columndisplay_th = "\n".'$str = <<<EOD'."\n";
+                            $columndisplay_th .= "\t" . $columns['columncomment'] . "\n";
+                            $columndisplay_th .= 'EOD;'."\n";
+                            $columndisplay_th .= '?>'."\n";
+                            $columndisplay_th .= '<span data-toggle="tooltip" data-placement="top" title="<?php echo str_replace(\'"\', "\'\'", $str) ?>">' . $columndisplay . '</span>'."\n";
+                            $columndisplay_th .= '<?php'."\n";
+                        } else {
+                            $columndisplay_th = '';
                         }
 
                         $columns_available[] = "$columnname";
@@ -570,7 +577,9 @@ function generate($postdata) {
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$columnname = "' . $columnname . '";' . "\n";
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$sort_link = isset($_GET["order"]) && $_GET["order"] == $columnname && $_GET["sort"] == "asc" ? "desc" : "asc";' . "\n";
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$sort_link = isset($_GET["order"]) && $_GET["order"] == $columnname && $_GET["sort"] == "desc" ? "asc" : $sort_link;' . "\n";
-                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . 'echo "<th><a href=?search=$search&order=' . $columnname . '&sort=".$sort_link.">' . $columndisplay . '</th>";' . "\n\t\t\t\t\t\t\t\t\t\t";
+                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . 'echo "<th><a href=?search=$search&order=' . $columnname . '&sort=".$sort_link.">";' . "\n";
+                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . $columndisplay_th . "\n\t\t\t\t\t\t\t\t\t\t";
+                        $index_table_headers . '</th>";' . "\n\t\t\t\t\t\t\t\t\t\t";
 
                         // Display date in locale format
                         if (!empty($columns['fk'])) {
@@ -656,7 +665,7 @@ function generate($postdata) {
                     }
 
                     if (!empty($columns['columncomment'])) {
-                        $columndisplay = "<span data-toggle='tooltip' data-placement='top' title='" . $columns['columncomment'] . "'>" . $columndisplay . '</span>';
+                        $columndisplay = $columndisplay . '<small class="form-text text-muted">' . $columns['columncomment'] . '</small>';
                     }
 
                     if (!empty($columns['auto'])) {
