@@ -47,7 +47,12 @@ return array(
     'Invalid Request' => 'Richiesta non valida',
     'stmt_error' => 'Ops! Qualcosa è andato storto. Riprova più tardi.',
     'unsupported_no_pk' => 'La modifica di tabelle senza chiave primaria non è ancora supportata.',
-    'invalid_request_instructions' => 'Spiacente, hai effettuato una richiesta non valida. Per favore <a href="index.php" class="alert-link">torna indietro</a> e riprova.'
+    'invalid_request_instructions' => 'Spiacente, hai effettuato una richiesta non valida. Per favore <a href="index.php" class="alert-link">torna indietro</a> e riprova.',
+
+    // foreign keys
+    "references_tables" => "Riferimenti a questo %s:",
+    "references_view_btn" => "Visualizza %s %s con %s = %s",
+
 
 );
 ?>

@@ -43,7 +43,17 @@ return array(
     'Cancel' => '取消',
 
     // errors
-    'Error' => '错误'
+    'Error' => "错误",
+    'Invalid Request' => "无效请求",
+    'stmt_error' => '哎呀！出了点问题。请稍后再试。',
+    'unsupported_no_pk' => "目前还不支持编辑没有主键的表。",
+    'invalid_request_instructions' => "对不起，您的请求无效。请<a href='index.php' class='alert-link'>返回</a>重试。",
+
+
+    // foreign keys
+    "references_tables" => "对此 %s 的引用:",
+    "references_view_btn" => "查看 %s %s 与 %s = %s",
+
 
 );
 ?>

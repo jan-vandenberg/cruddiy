@@ -48,4 +48,9 @@ return array(
     'stmt_error'                   => 'Hoppla! Etwas ist schief gelaufen. Bitte versuchen Sie es später noch einmal.',
     'unsupported_no_pk'            => 'Das Bearbeiten von Tabellen ohne Primärschlüssel wird noch nicht unterstützt.',
     'invalid_request_instructions' => 'Entschuldigung, Sie haben eine ungültige Anfrage gestellt. Bitte <a href="index.php" class="alert-link">gehen Sie zurück</a> und versuchen Sie es erneut.',
+
+    // foreign keys
+    "references_tables" => "Verweise auf dieses %s:",
+    "references_view_btn" => "Zeige %s %s mit %s = %s",
+
 );

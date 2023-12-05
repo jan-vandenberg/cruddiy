@@ -47,6 +47,11 @@ return array(
     'Invalid Request' => 'अमान्य अनुरोध',
     'stmt_error' => 'उफ़! कुछ गलत हो गया। कृपया बाद में पुनः प्रयास करें।',
     'unsupported_no_pk' => 'प्राथमिक कुंजी के बिना टेबल का संपादन अभी तक समर्थित नहीं है।',
-    'invalid_request_instructions' => 'क्षमा करें, आपने एक अमान्य अनुरोध किया है। कृपया <a href="index.php" class="alert-link">वापस जाएँ</a> और पुनः प्रयास करें।'
+    'invalid_request_instructions' => 'क्षमा करें, आपने एक अमान्य अनुरोध किया है। कृपया <a href="index.php" class="alert-link">वापस जाएँ</a> और पुनः प्रयास करें।',
+
+    // foreign keys
+    "references_tables" => "इस %s के संदर्भ:",
+    "references_view_btn" => "%s %s को %s = %s के साथ देखें",
+
 );
 ?>

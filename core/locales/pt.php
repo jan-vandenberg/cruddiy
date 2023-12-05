@@ -47,6 +47,12 @@ return array(
     'Invalid Request' => 'Solicitação Inválida',
     'stmt_error' => 'Ops! Algo deu errado. Por favor, tente novamente mais tarde.',
     'unsupported_no_pk' => 'A edição de tabelas sem chave primária ainda não é suportada.',
-    'invalid_request_instructions' => 'Desculpe, você fez uma solicitação inválida. Por favor, <a href="index.php" class="alert-link">volte</a> e tente novamente.'
+    'invalid_request_instructions' => 'Desculpe, você fez uma solicitação inválida. Por favor, <a href="index.php" class="alert-link">volte</a> e tente novamente.',
+
+    // foreign keys
+    "references_tables" => "Referências a este %s:",
+    "references_view_btn" => "Ver %s %s com %s = %s",
+
+
 );
 ?>

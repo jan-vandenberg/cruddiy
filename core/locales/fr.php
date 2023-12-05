@@ -49,6 +49,10 @@ return array(
     'Invalid Request' => "Demande invalide",
     'stmt_error' => 'Oups ! Une erreur est survenue. Veuillez réessayer plus tard.',
     'unsupported_no_pk' => "L'édition de tables sans clé primaire n'est pas encore prise en charge.",
-    'invalid_request_instructions' => "Désolé, vous avez fait une demande invalide. Veuillez <a href='index.php' class='alert-link'>réessayer</a>."
+    'invalid_request_instructions' => "Désolé, vous avez fait une demande invalide. Veuillez <a href='index.php' class='alert-link'>réessayer</a>.",
+
+    // foreign keys
+    "references_tables" => "Liens avec %s :",
+    "references_view_btn" => "Voir %s %s avec %s = %s",
 );
 ?>
