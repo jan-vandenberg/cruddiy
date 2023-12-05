@@ -824,14 +824,17 @@ function generate($postdata) {
                                 $column_input .= '<?php if (isset(' . $create_record . ') && !empty(' . $create_record . ')) : ?>' . "\n";
                                 $column_input .= '<div class="custom-control custom-checkbox">' . "\n";
                                 $column_input .= '    <input type="checkbox" class="custom-control-input" id="cruddiy_delete_' . $columnname . '" name="cruddiy_delete_' . $columnname . '" value="1">' . "\n";
-                                $column_input .= '    <label class="custom-control-label" for="cruddiy_delete_' . $columnname . '"><?php translate(\'Delete File\', true, \'<a href="uploads/\' . ' . $column_input . ' . \'" target="_blank">\' . ' . @$create_record . ' . \'</a>\') ?></label>' . "\n";
+                                $column_input .= '    <label class="custom-control-label" for="cruddiy_delete_' . $columnname . '">'. "\n";
+                                $html_link_upload = '<a href="uploads/<?php echo ' . $create_record . ' ?>" target="_blank"><?php echo ' . $create_record . ' ?></a>';
+                                $column_input .= '<?php translate("Delete:") ?>: '.$html_link_upload;
+                                $column_input .= '    </label>' . "\n";
                                 $column_input .= '</div>' . "\n";
                                 $column_input .= '<?php endif ?>' . "\n";
                             }
 
 
 
-
+                            // Not an upload column
                             if (!$is_special_column_type) {
                                 switch ($type) {
                                     //TEXT
