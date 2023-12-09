@@ -55,7 +55,7 @@ include("helpers.php");
                     <!-- Number records per page-->
                     <div class="form-group">
                         <label class="col-form-label" for="numrecordsperpage">Items per generated page</label>
-                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php if(isset($no_of_records_per_page)) echo $no_of_records_per_page ?>">
+                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php echo isset($no_of_records_per_page) ? $no_of_records_per_page : 10?>">
                     </div>
 
                     <div class="form-group">
