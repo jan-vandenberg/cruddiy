@@ -7,5 +7,6 @@ Feature: Reset the installation
     And the "database" field should contain ""
     And the "username" field should contain ""
     And the "password" field should contain ""
+    And the "numrecordsperpage" field should contain "10"
     And the "appname" field should contain ""
     And the "language" field should contain "en"
