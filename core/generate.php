@@ -28,7 +28,7 @@ $index_table_headers = '';
 $sort = '';
 $excluded_keys = array('singlebutton', 'keep_startpage', 'append_links');
 $generate_start_checked_links = array();
-$startpage_filename = "app/navbar.php";
+$startpage_filename = $_SESSION['destination'] . "/navbar.php";
 $forced_deletion = false;
 $buttons_delimiter = '<!-- TABLE_BUTTONS -->';
 
@@ -118,7 +118,7 @@ function generate_error(){
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $errorfile);
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
 
-    if (!file_put_contents("app/error.php", $prestep2, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/error.php", $prestep2, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating Error file<br>";
@@ -134,7 +134,7 @@ function generate_startpage(){
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
     $prestep3 = str_replace("{APP_NAME}", $appname, $prestep2);
 
-    if (!file_put_contents("app/index.php", $prestep3, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/index.php", $prestep3, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating main index file.<br>";
@@ -279,7 +279,7 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $step9 = str_replace("{APP_NAME}", $appname, $step8 );
     $step10 = str_replace("{JOIN_COLUMNS}", $join_columns, $step9 );
     $step11 = str_replace("{JOIN_CLAUSES}", $join_clauses, $step10 );
-    if (!file_put_contents("app/".$tablename."-index.php", $step11, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-index.php", $step11, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Index file<br>";
@@ -308,7 +308,7 @@ function generate_read($tablename, $column_id, $read_records, $foreign_key_refer
     $step3 = str_replace("{FOREIGN_KEY_REFS}", $foreign_key_references, $step2 );
     $step4 = str_replace("{JOIN_COLUMNS}", $join_columns, $step3 );
     $step5 = str_replace("{JOIN_CLAUSES}", $join_clauses, $step4 );
-    if (!file_put_contents("app/".$tablename."-read.php", $step5, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-read.php", $step5, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Read file<br>";
@@ -333,7 +333,7 @@ function generate_delete($tablename, $column_id){
 
     $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
-    if (!file_put_contents("app/".$tablename."-delete.php", $step1, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-delete.php", $step1, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Delete file<br><br>";
@@ -366,7 +366,7 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
     $step6 = str_replace("{CREATE_HTML}", $create_html, $step5);
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
     $step8 = str_replace("{COLUMN_ID}", $column_id, $step7);
-    if (!file_put_contents("app/".$tablename."-create.php", $step8, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-create.php", $step8, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Create file<br>";
@@ -399,7 +399,7 @@ function generate_update($tablename, $create_records, $create_err_records, $crea
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
     $step8 = str_replace("{UPDATE_COLUMN_ROWS}", $update_column_rows, $step7);
     $step9 = str_replace("{UPDATE_SQL_COLUMNS}", $update_sql_columns, $step8);
-    if (!file_put_contents("app/".$tablename."-update.php", $step9, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-update.php", $step9, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Update file<br>";
@@ -987,9 +987,9 @@ function generate($postdata) {
                     // force existing files deletion
                     if (!$forced_deletion && (!isset($_POST['keep_startpage']) || (isset($_POST['keep_startpage']) && $_POST['keep_startpage'] != 'true'))) {
                         $forced_deletion = true;
-                        echo '<h3>Deleting existing files in app/</h3>';
+                        echo '<h3>Deleting existing files in '. $_SESSION['destination'] .'/</h3>';
                         $keep = array('config.php', 'helpers.php', 'config-tables-columns.php', 'locales');
-                        foreach (glob("app/*") as $file) {
+                        foreach (glob($_SESSION['destination'] . "/*") as $file) {
                             if (!in_array(basename($file), $keep)) {
                                 if (is_file($file)) {
                                     if (unlink($file)) {
@@ -1004,16 +1004,16 @@ function generate($postdata) {
                         global $upload_persistent_dir;
                         echo '<h3>Deleting upload directory</h3>';
                         if (!$upload_persistent_dir) {
-                            deleteDirectory("app/$upload_target_dir");
-                            echo "app/$upload_target_dir was deleted (set <code>\$upload_persistent_dir=true</code> in app/config.php to preserve next time)";
+                            deleteDirectory($_SESSION['destination'] . "/$upload_target_dir");
+                            echo $_SESSION['destination'] . "/$upload_target_dir was deleted (set <code>\$upload_persistent_dir=true</code> in app/config.php to preserve next time)";
                         }
                         else {
-                            echo "app/$upload_target_dir was preserved due to <code>\$upload_persistent_dir=true</code> in app/config.php";
+                            echo $_SESSION['destination'] . "/$upload_target_dir was preserved due to <code>\$upload_persistent_dir=true</code> in app/config.php";
                         }
 
                         // always delete the locales directory as we may need to regenerate the translations
-                        deleteDirectory("app/locales");
-                        recursiveCopy('locales', 'app/locales');
+                        deleteDirectory($_SESSION['destination'] . "/locales");
+                        recursiveCopy('locales', $_SESSION['destination'] . '/locales');
 
                         echo '<br><br>';
 
@@ -1113,7 +1113,7 @@ function extractTableName($post_key) {
 // Save table and columns configuration
 function updateTableAndColumnsNames($tables_and_columns_names) {
 
-    $configTableNamesFilePath     = 'app/config-tables-columns.php';
+    $configTableNamesFilePath     = $_SESSION['destination'] . '/config-tables-columns.php';
     $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
 
     // Read config file template
@@ -1242,7 +1242,7 @@ function recursiveCopy($src, $dst) {
                 <?php generate($_POST); ?>
                 <hr>
                 <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
-                <a href="app/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a><br><br>
+                <a href="<?php echo $_SESSION['destination'] ?>/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a><br><br>
                 You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
                 <hr>
                 If you need further instructions please visit <a href="http://cruddiy.com" target="_blank">cruddiy.com</a> or ask on our <a href="https://github.com/jan-vandenberg/cruddiy" target="_blank">GitHub</a> project.

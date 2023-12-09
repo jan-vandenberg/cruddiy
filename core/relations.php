@@ -43,8 +43,15 @@ if(isset($_POST['index'])) {
 		$_POST[$k] = mysqli_real_escape_string($link, $v);
 	}
 
-	if (!file_exists('./app'))
-		mkdir('./app', 0777, true);
+    // TODO: error handling if $destination cannot be created
+	if (!file_exists($destination)) {
+		mkdir($destination, 0777, true);
+    }
+
+
+    $_SESSION['destination'] = $destination;
+    $configfilePath = $destination . '/config.php';
+    $_SESSION['gitignore'] = $gitignore;
 
 
     $helpersfilename = 'helpers.php';
@@ -52,7 +59,7 @@ if(isset($_POST['index'])) {
     $helpers = fread($handle, filesize($helpersfilename));
     fclose($handle);
 
-    $helpersfile = fopen("app/".$helpersfilename, "w") or die("Unable to create Helpers file! Please check your file permissions");
+    $helpersfile = fopen($destination . '/'. $helpersfilename, "w") or die("Unable to create Helpers file! Please check your file permissions");
     fwrite($helpersfile, $helpers);
 	fclose($helpersfile);
 
@@ -85,6 +92,8 @@ if(isset($_POST['index'])) {
     if (fwrite($configfile, $templateContent) === false) die("Error writing Config file!");
     fclose($configfile);
 
+} else {
+    $configfilePath = $_SESSION['destination'] . '/config.php';
 }
 require $configfilePath;
 

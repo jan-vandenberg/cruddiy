@@ -1,5 +1,7 @@
 <?php
-include "app/config.php";
+session_start();
+
+include $_SESSION['destination'] . '/config.php';
 include "helpers.php";
 
 $errors = [];

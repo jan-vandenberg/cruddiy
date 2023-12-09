@@ -78,8 +78,8 @@ function get_foreign_keys($table){
 
 function read_tables_and_columns_config_file() {
 
-    if (file_exists("app/config-tables-columns.php")) {
-        include("app/config-tables-columns.php");
+    if (file_exists($_SESSION['destination'] . "/config-tables-columns.php")) {
+        include($_SESSION['destination'] . "/config-tables-columns.php");
     } else {
         return null;
     }
@@ -102,8 +102,8 @@ function read_tables_and_columns_config_file() {
 $tablesData = [];
 $checked_tables_counter=0;
 if (!isset($_POST['table'])) {
-    if (file_exists("app/config-tables-columns.php")) {
-        include("app/config-tables-columns.php");
+    if (file_exists($_SESSION['destination'] . "/config-tables-columns.php")) {
+        include($_SESSION['destination'] . "/config-tables-columns.php");
         $_POST = read_tables_and_columns_config_file();
     }
 }
@@ -227,7 +227,7 @@ function is_table_referenced($table_name) {
                                 <div class="col-3"></div>
                                 <div class="col-4 my-4">
                                     <?php
-                                    $configTableNamesFilePath = 'app/config-tables-columns.php';
+                                    $configTableNamesFilePath = $_SESSION['destination'] . '/config-tables-columns.php';
                                     if (file_exists($configTableNamesFilePath)) {
                                         include($configTableNamesFilePath);
                                     }
@@ -417,7 +417,7 @@ function is_table_referenced($table_name) {
                             <div class="col-md-8 mx-auto">
                                 <p class="form-check">
                                     <small id="passwordHelpBlock" class="form-text text-muted">
-                                        Cruddiy will create a fresh startpage in the app/ sub-folder, with link<?php echo $checked_tables_counter > 1 ? 's' : '' ?> to manage the table<?php echo $checked_tables_counter > 1 ? 's' : '' ?> above.<br>
+                                        Cruddiy will create a fresh startpage in the <?php echo $_SESSION['destination'] ?>/ sub-folder, with link<?php echo $checked_tables_counter > 1 ? 's' : '' ?> to manage the table<?php echo $checked_tables_counter > 1 ? 's' : '' ?> above.<br>
                                         If you have used Cruddiy on other tables before, your start page will be replaced by the fresh one, and previous links will be lost.
                                     </small>
                                     <input class="form-check-input" type="checkbox" value="true" id="keep_startpage" name="keep_startpage">
