@@ -145,6 +145,7 @@ function generate_navbar($tablename, $start_page, $keep_startpage, $append_links
     global $navbarfile;
     global $generate_start_checked_links;
     global $startpage_filename;
+    global $appname;
 
     echo "<h3>Table: $tablename</h3>";
 
