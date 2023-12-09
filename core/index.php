@@ -73,7 +73,7 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
                     <!-- Number records per page-->
                     <div class="form-group">
                         <label class="col-form-label" for="numrecordsperpage">Items per generated page</label>
-                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php if(isset($numrecordsperpage)) echo $numrecordsperpage; ?>">
+                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php if(isset($no_of_records_per_page)) echo $no_of_records_per_page; ?>">
                     </div>
 
                     <!-- App name -->
