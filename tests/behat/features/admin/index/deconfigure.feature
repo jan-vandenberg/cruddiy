@@ -10,3 +10,4 @@ Feature: Reset the installation
     And the "numrecordsperpage" field should contain ""
     And the "appname" field should contain ""
     And the "language" field should contain "en"
+    And the checkbox "gitignore" should be checked
