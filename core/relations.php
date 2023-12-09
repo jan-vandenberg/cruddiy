@@ -1,28 +1,46 @@
 <?php
-$configfilePath = 'app/config.php';
+session_start();
+include 'helpers.php';
 
 if(isset($_POST['index'])) {
 
-    if((isset($_POST['server'])) && $_POST['server'] <> '') {
-        $server=trim($_POST['server']);
-    } else {
-        $server = "localhost";
-    }
-	if(isset($_POST['username'])) $username=trim($_POST['username']);
-	if(isset($_POST['password'])) $password=trim($_POST['password']);
-	if(isset($_POST['database'])) $database=trim($_POST['database']);
-	if(isset($_POST['numrecordsperpage'])) $numrecordsperpage=$_POST['numrecordsperpage'];
+    // echo '<pre>';
+    // print_r($_POST);
+    // echo '</pre>';
 
-    if((isset($_POST['appname'])) && $_POST['appname'] <> '') {
-        $appname=trim($_POST['appname']);
-    } else {
-        $appname = "Database Admin";
-    }
+	$server            = isset($_POST['server'])            && !empty($_POST['server'])                ? trim($_POST['server'])           : 'localhost';
+	$username          = isset($_POST['username'])          && !empty($_POST['username'])              ? trim($_POST['username'])         : null;
+	$password          = isset($_POST['password'])          && !empty($_POST['password'])              ? trim($_POST['password'])         : null;
+    $database          = isset($_POST['database'])          && !empty($_POST['database'])              ? trim($_POST['database'])         : null;
+    $numrecordsperpage = isset($_POST['numrecordsperpage']) && is_numeric($_POST['numrecordsperpage']) ? $_POST['numrecordsperpage']      : 10;
+    $destination       = isset($_POST['destination'])       && !empty($_POST['destination'])           ? sanitizePath($_POST['destination'])  : 'app';
+    $appname           = isset($_POST['appname'])           && !empty($_POST['appname'])               ? $_POST['appname']                : 'Database Admin';
+    $language          = isset($_POST['language'])          && !empty($_POST['language'])              ? $_POST['language']               : 'en';
+    $gitignore         = isset($_POST['gitignore'])                                                    ? true                             : false;
 
-    if((isset($_POST['language'])) && !is_numeric($_POST['language'])) {
-        $language=$_POST['language'];
-    } else {
-        $language = "en";
+    // echo "server: $server<br>";
+    // echo "username: $username<br>";
+    // echo "password: $password<br>";
+    // echo "database: $database<br>";
+    // echo "numrecordsperpage: $numrecordsperpage<br>";
+    // echo "destination: $destination<br>";
+    // echo "appname: $appname<br>";
+    // echo "language: $language<br>";
+
+    if (!$username) header('location:index.php?empty=Username');
+    if (!$password) header('location:index.php?empty=Password');
+    if (!$database) header('location:index.php?empty=Database');
+
+    $reserved_words = array(
+        'templates',
+        'locales',
+        '../core',
+        '../schema',
+        '../tests',
+        '../vendor',
+    );
+    if (in_array($destination, $reserved_words)) {
+        header('location:index.php?error=destination');
     }
 
     /* Attempt to connect to MySQL database */
@@ -36,8 +54,15 @@ if(isset($_POST['index'])) {
 		$_POST[$k] = mysqli_real_escape_string($link, $v);
 	}
 
-	if (!file_exists('app'))
-		mkdir('app', 0777, true);
+    // TODO: error handling if $destination cannot be created
+	if (!file_exists($destination)) {
+		mkdir($destination, 0777, true);
+    }
+
+
+    $_SESSION['destination'] = $destination;
+    $configfilePath = $destination . '/config.php';
+    $_SESSION['gitignore'] = $gitignore;
 
 
     $helpersfilename = 'helpers.php';
@@ -45,7 +70,7 @@ if(isset($_POST['index'])) {
     $helpers = fread($handle, filesize($helpersfilename));
     fclose($handle);
 
-    $helpersfile = fopen("app/".$helpersfilename, "w") or die("Unable to create Helpers file! Please check your file permissions");
+    $helpersfile = fopen($destination . '/'. $helpersfilename, "w") or die("Unable to create Helpers file! Please check your file permissions");
     fwrite($helpersfile, $helpers);
 	fclose($helpersfile);
 
@@ -66,6 +91,8 @@ if(isset($_POST['index'])) {
         '{{no_of_records_per_page}}' => $numrecordsperpage,
         '{{appname}}'                => $appname,
         '{{language}}'               => $language,
+        '{{gitignore}}'              => $gitignore,
+        '{{destination}}'            => $destination,
     ];
 
     foreach ($replacements as $placeholder => $realValue) {
@@ -76,6 +103,8 @@ if(isset($_POST['index'])) {
     if (fwrite($configfile, $templateContent) === false) die("Error writing Config file!");
     fclose($configfile);
 
+} else {
+    $configfilePath = $_SESSION['destination'] . '/config.php';
 }
 require $configfilePath;
 
@@ -168,8 +197,7 @@ if(isset($_POST['addkey'])){
     }
 }
 
-?>
-<!doctype html>
+?><!doctype html>
 <html lang="en">
 <head>
     <title>Select Relations</title>

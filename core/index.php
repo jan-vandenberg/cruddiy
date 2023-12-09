@@ -1,10 +1,21 @@
 <?php
-if (file_exists("app/config.php")) {
-    include("app/config.php");
+session_start();
+include 'helpers.php';
+
+if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
+    unset($_SESSION['destination']);
+} else {
+    if (isset($_SESSION["destination"]) && !empty($_SESSION["destination"])) {
+        if (file_exists($_SESSION['destination'] . '/config.php')) {
+            include $_SESSION['destination'] . '/config.php';
+        }
+    } else {
+        header('location:directory.php?from=index');
+        exit();
+    }
 }
-include("helpers.php");
-?>
-<!doctype html>
+
+?><!doctype html>
 <html lang="en">
 
 <head>
@@ -21,13 +32,29 @@ include("helpers.php");
 <div class="container">
     <div class="row">
         <div class="col-md-4 mx-auto">
+
+            <!-- Form Name -->
+            <div class="text-center pt-5">
+                <h4>Enter database information</h4>
+            </div>
+
+            <!-- Error messages -->
+            <?php if (isset($_GET["empty"])) : ?>
+                <div class="alert alert-danger" role="alert">
+                    The field <?php echo $_GET["empty"]; ?> cannot be empty.
+                </div>
+            <?php endif ?>
+
+            <?php if (isset($_GET["error"])) : ?>
+                <div class="alert alert-danger" role="alert">
+                    <?php if ($_GET['error'] == 'destination'): ?>
+                        Invalid destination name.
+                    <?php endif ?>
+                </div>
+            <?php endif ?>
+
             <form class="form-group-row" action="relations.php" method="post">
                 <fieldset>
-
-                    <!-- Form Name -->
-                    <div class="text-center pt-5">
-                        <h4>Enter database information</h4>
-                    </div>
 
                     <div class="form-group">
                         <label class="col-form-label" for="textinput">Server</label>
@@ -55,12 +82,29 @@ include("helpers.php");
                     <!-- Number records per page-->
                     <div class="form-group">
                         <label class="col-form-label" for="numrecordsperpage">Items per generated page</label>
-                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php echo isset($no_of_records_per_page) ? $no_of_records_per_page : 10?>">
+                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page (default 10)" class="form-control input-md" value="<?php if(isset($no_of_records_per_page)) echo $no_of_records_per_page; ?>">
                     </div>
 
+                    <!-- App name -->
                     <div class="form-group">
                         <label class="col-form-label" for="appname">App Name</label>
                         <input id="appname" name="appname" type="text" placeholder="Name for your app (optional)" class="form-control " value="<?php if(isset($appname)) echo $appname; ?>">
+                    </div>
+
+                    <!-- Destination folder -->
+                    <div class="form-group">
+                        <label class="col-form-label" for="destination">Destination folder</label>
+                        <input id="destination" name="destination" type="text" placeholder="app" class="form-control " value="<?php if(isset($destination)) echo $destination; ?>">
+                        <p><small class="form-text text-muted">
+                            This is were your autonomous CRUD app will be generated.
+                            <br>
+                            Relative to <code><?php echo __DIR__ ?></code>
+                        </small></p>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input" id="gitignore" name="gitignore" checked>
+                        <label class="form-check-label" for="gitignore">Add to .gitignore</label>
                     </div>
 
                     <!-- Language -->
@@ -84,7 +128,7 @@ include("helpers.php");
                             ?>
                         </select>
                         <p>
-                            <small>
+                            <small class="form-text text-muted">
                                 You can add new locales in <code>core/locales</code> (use <code>en.php</code> as starting point).
                                 Please <a href="https://github.com/jan-vandenberg/cruddiy/fork" target="_blank">fork and share</a> your translations!
                             </small>

@@ -1,4 +1,21 @@
 <?php
+session_start();
+include 'helpers.php';
+
+require 'templates.php';
+
+if (!isset($_SESSION["destination"]) || empty($_SESSION["destination"])) {
+    // Store POST data in session
+    $_SESSION['post_data'] = $_POST;
+    header('location:directory.php?from=generate');
+    exit();
+} else {
+    include $_SESSION['destination'] . '/config.php';
+}
+
+// Retrieve POST data from session if needed
+$_POST = $_SESSION['post_data'] ?? $_POST;
+
 // Debug POST data
 // echo '<pre>';
 // print_r($_POST);
@@ -15,9 +32,8 @@ if ($total_postvars >= $max_postvars) {
     exit();
 }
 
-require "app/config.php";
-require "templates.php";
-require "helpers.php";
+
+
 $tablename = '';
 $tabledisplay = '';
 $columnname = '' ;
@@ -28,7 +44,7 @@ $index_table_headers = '';
 $sort = '';
 $excluded_keys = array('singlebutton', 'keep_startpage', 'append_links');
 $generate_start_checked_links = array();
-$startpage_filename = "app/navbar.php";
+$startpage_filename = $_SESSION['destination'] . "/navbar.php";
 $forced_deletion = false;
 $buttons_delimiter = '<!-- TABLE_BUTTONS -->';
 
@@ -80,10 +96,12 @@ function column_type($columnname){
 }
 
 function is_primary_key($t, $c){
-    $cols = $_POST[$t . 'columns'];
-    foreach($cols as $col) {
-        if (isset($col['primary']) && $col['columnname'] == $c){
-            return 1;
+    $cols = isset($_POST[$t . 'columns']) ? $_POST[$t . 'columns'] : null;
+    if ($cols) {
+        foreach($cols as $col) {
+            if (isset($col['primary']) && $col['columnname'] == $c){
+                return 1;
+            }
         }
     }
     return 0;
@@ -118,7 +136,7 @@ function generate_error(){
     $prestep1 = str_replace("{CSS_REFS}", $CSS_REFS, $errorfile);
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
 
-    if (!file_put_contents("app/error.php", $prestep2, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/error.php", $prestep2, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating Error file<br>";
@@ -134,7 +152,7 @@ function generate_startpage(){
     $prestep2 = str_replace("{JS_REFS}", $JS_REFS, $prestep1);
     $prestep3 = str_replace("{APP_NAME}", $appname, $prestep2);
 
-    if (!file_put_contents("app/index.php", $prestep3, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/index.php", $prestep3, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating main index file.<br>";
@@ -145,6 +163,7 @@ function generate_navbar($tablename, $start_page, $keep_startpage, $append_links
     global $navbarfile;
     global $generate_start_checked_links;
     global $startpage_filename;
+    global $appname;
 
     echo "<h3>Table: $tablename</h3>";
 
@@ -154,7 +173,8 @@ function generate_navbar($tablename, $start_page, $keep_startpage, $append_links
             // called on the first run of the POST loop
             echo "Generating fresh Startpage file<br>";
             $step0 = str_replace("{TABLE_BUTTONS}", $start_page, $navbarfile);
-            if (!file_put_contents($startpage_filename, $step0, LOCK_EX)) {
+            $step1 = str_replace("{APP_NAME}", $appname, $step0);
+            if (!file_put_contents($startpage_filename, $step1, LOCK_EX)) {
                 die("Unable to open fresh startpage file!");
             }
         } else {
@@ -277,7 +297,7 @@ function generate_index($tablename,$tabledisplay,$index_table_headers,$index_tab
     $step9 = str_replace("{APP_NAME}", $appname, $step8 );
     $step10 = str_replace("{JOIN_COLUMNS}", $join_columns, $step9 );
     $step11 = str_replace("{JOIN_CLAUSES}", $join_clauses, $step10 );
-    if (!file_put_contents("app/".$tablename."-index.php", $step11, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-index.php", $step11, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Index file<br>";
@@ -306,7 +326,7 @@ function generate_read($tablename, $column_id, $read_records, $foreign_key_refer
     $step3 = str_replace("{FOREIGN_KEY_REFS}", $foreign_key_references, $step2 );
     $step4 = str_replace("{JOIN_COLUMNS}", $join_columns, $step3 );
     $step5 = str_replace("{JOIN_CLAUSES}", $join_clauses, $step4 );
-    if (!file_put_contents("app/".$tablename."-read.php", $step5, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-read.php", $step5, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Read file<br>";
@@ -331,7 +351,7 @@ function generate_delete($tablename, $column_id){
 
     $step0 = str_replace("{TABLE_NAME}", $tablename, $prestep2);
     $step1 = str_replace("{TABLE_ID}", $column_id, $step0);
-    if (!file_put_contents("app/".$tablename."-delete.php", $step1, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-delete.php", $step1, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Delete file<br><br>";
@@ -364,7 +384,7 @@ function generate_create($tablename,$create_records, $create_err_records, $creat
     $step6 = str_replace("{CREATE_HTML}", $create_html, $step5);
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
     $step8 = str_replace("{COLUMN_ID}", $column_id, $step7);
-    if (!file_put_contents("app/".$tablename."-create.php", $step8, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-create.php", $step8, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Create file<br>";
@@ -397,7 +417,7 @@ function generate_update($tablename, $create_records, $create_err_records, $crea
     $step7 = str_replace("{CREATE_POST_VARIABLES}", $create_postvars, $step6);
     $step8 = str_replace("{UPDATE_COLUMN_ROWS}", $update_column_rows, $step7);
     $step9 = str_replace("{UPDATE_SQL_COLUMNS}", $update_sql_columns, $step8);
-    if (!file_put_contents("app/".$tablename."-update.php", $step9, LOCK_EX)) {
+    if (!file_put_contents($_SESSION['destination'] . "/".$tablename."-update.php", $step9, LOCK_EX)) {
         die("Unable to open file!");
     }
     echo "Generating $tablename Update file<br>";
@@ -492,6 +512,7 @@ function generate($postdata) {
         global $sort;
         global $link;
         global $forced_deletion;
+        global $gitignore;
 
         if (!in_array($key, $excluded_keys)) {
             $i = 0;
@@ -984,9 +1005,9 @@ function generate($postdata) {
                     // force existing files deletion
                     if (!$forced_deletion && (!isset($_POST['keep_startpage']) || (isset($_POST['keep_startpage']) && $_POST['keep_startpage'] != 'true'))) {
                         $forced_deletion = true;
-                        echo '<h3>Deleting existing files in app/</h3>';
+                        echo '<h3>Deleting existing files in '. $_SESSION['destination'] .'/</h3>';
                         $keep = array('config.php', 'helpers.php', 'config-tables-columns.php', 'locales');
-                        foreach (glob("app/*") as $file) {
+                        foreach (glob($_SESSION['destination'] . "/*") as $file) {
                             if (!in_array(basename($file), $keep)) {
                                 if (is_file($file)) {
                                     if (unlink($file)) {
@@ -1001,18 +1022,76 @@ function generate($postdata) {
                         global $upload_persistent_dir;
                         echo '<h3>Deleting upload directory</h3>';
                         if (!$upload_persistent_dir) {
-                            deleteDirectory("app/$upload_target_dir");
-                            echo "app/$upload_target_dir was deleted (set <code>\$upload_persistent_dir=true</code> in app/config.php to preserve next time)";
+                            deleteDirectory($_SESSION['destination'] . "/$upload_target_dir");
+                            echo $_SESSION['destination'] . "/$upload_target_dir was deleted (set <code>\$upload_persistent_dir=true</code> in app/config.php to preserve next time)";
                         }
                         else {
-                            echo "app/$upload_target_dir was preserved due to <code>\$upload_persistent_dir=true</code> in app/config.php";
+                            echo $_SESSION['destination'] . "/$upload_target_dir was preserved due to <code>\$upload_persistent_dir=true</code> in app/config.php";
                         }
 
                         // always delete the locales directory as we may need to regenerate the translations
-                        deleteDirectory("app/locales");
-                        recursiveCopy('locales', 'app/locales');
+                        deleteDirectory($_SESSION['destination'] . "/locales");
+                        recursiveCopy('locales', $_SESSION['destination'] . '/locales');
 
                         echo '<br><br>';
+
+
+
+                        echo '<h3>Updating the .gitgignore file</h3>';
+
+                        // Define the path to the .gitignore file
+                        $gitignorePath = './../.gitignore';
+
+                        // Check if the session variables are set
+                        if (!isset($gitignore) || !isset($_SESSION['destination'])) {
+                            echo "Required session variables are not set.";
+                        }
+
+                        // Define the subdirectory path from session
+                        $subdirectoryPath = basename(__DIR__) .'/'. $_SESSION['destination'];
+
+                        // Ensure the path is formatted correctly (add trailing slash if missing)
+                        if (substr($subdirectoryPath, -1) != '/') {
+                            $subdirectoryPath .= '/';
+                        }
+
+                        $subdirectoryPath = str_replace('core/./', 'core/', $subdirectoryPath);
+
+                        // Read the file into an array. Each line becomes an array element
+                        $lines = file($gitignorePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+                        // Check if the file was read successfully
+                        if ($lines === false) {
+                            echo "Error reading the .gitignore file.";
+                        }
+
+                        if ($gitignore) { // If checkbox is checked, add the path
+                            if (!in_array($subdirectoryPath, $lines)) {
+                                $lines[] = $subdirectoryPath;
+                                file_put_contents($gitignorePath, implode("\n", $lines));
+                                echo "Subdirectory <code>$subdirectoryPath</code>added to .gitignore.";
+                            } else {
+                                echo "Subdirectory <code>$subdirectoryPath</code> already exists in .gitignore.";
+                            }
+                        } else { // If checkbox is unchecked, remove the path
+                            $foundAndRemoved = false;
+                            foreach ($lines as $key => $line) {
+                                if (trim($line) == $subdirectoryPath) {
+                                    unset($lines[$key]);
+                                    $foundAndRemoved = true;
+                                    break; // Remove this if there could be multiple occurrences
+                                }
+                            }
+                            if ($foundAndRemoved) {
+                                file_put_contents($gitignorePath, implode("\n", $lines));
+                                echo "Subdirectory <code>$subdirectoryPath</code> removed from .gitignore.";
+                            } else {
+                                echo "Subdirectory <code>$subdirectoryPath</code> not found in .gitignore.";
+                            }
+                        }
+
+                        echo "<br><br>";
+
                     }
 
                     generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay, $key);
@@ -1054,7 +1133,7 @@ function extractTableName($post_key) {
 // Save table and columns configuration
 function updateTableAndColumnsNames($tables_and_columns_names) {
 
-    $configTableNamesFilePath     = 'app/config-tables-columns.php';
+    $configTableNamesFilePath     = $_SESSION['destination'] . '/config-tables-columns.php';
     $configTableNamesTemplatePath = 'templates/config-tables-columns.php';
 
     // Read config file template
@@ -1112,7 +1191,7 @@ function extractTableAndColumnsNames($postdata) {
 
 
 function deleteDirectory($dirPath) {
-    echo "delete : $dirPath";
+    echo "<br>Delete : $dirPath";
     if (!is_dir($dirPath)) {
         // throw new InvalidArgumentException("$dirPath must be a directory");
         return false;
@@ -1166,8 +1245,7 @@ function recursiveCopy($src, $dst) {
 }
 
 
-?>
-<!doctype html>
+?><!doctype html>
 <html lang="en">
 <head>
     <title>Generated pages</title>
@@ -1182,12 +1260,21 @@ function recursiveCopy($src, $dst) {
             <div class="col-md-12 mx-auto px-5">
                 <?php generate($_POST); ?>
                 <hr>
-                <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
-                <a href="app/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a><br><br>
-                You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
+                <br>
+                Your app has been created! It is completely self contained in the <code><?php echo $_SESSION['destination'] ?></code> folder. You can move this folder anywhere on your server.<br><br>
+                <a href="<?php echo $_SESSION['destination'] ?>/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a>
+                <br>
+                <br>
+                You can close this tab or leave it open and use the back button to make changes and regenerate the app.
+                <br>
+                Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.
+                <br>
+                <br>
+                Would you like to try with new settings?
+                <a href="directory.php" class="btn btn-secondary btn-sm">Restart</a>
+                <br><br>
                 <hr>
                 If you need further instructions please visit <a href="http://cruddiy.com" target="_blank">cruddiy.com</a> or ask on our <a href="https://github.com/jan-vandenberg/cruddiy" target="_blank">GitHub</a> project.
-
             </div>
         </div>
     </div>

@@ -17,8 +17,6 @@
   -   Scenario: Check for errors on Tables page
 - Feature: Check admin tables mapping form
   -   Scenario: Fill the tables form
-- Feature: Check admin columns page
-  -   Scenario: Check for errors on the Columns page
 - Feature: Check admin columns form
   -   Scenario: Name and select Brands columns
 - Feature: Check field default values
@@ -27,6 +25,9 @@
   -   Scenario: Set values
 - Feature: Check the generator execution
   -   Scenario: Verify errors and execution
+- Feature: Check .gitignore file
+  -   Scenario: Check confirmation message on generate
+  -   Scenario: Check for the existence of destination subdirectory in .gitignore
 - Feature: Check the generator result
   -   Scenario: Look for errors and data continuity
 - Feature: Check public index page content
@@ -53,8 +54,37 @@
   -   Scenario: Check if there is a warning before deletion
   -   Scenario: Delete a Suppliers record
   -   Scenario: Check FK dependency
-- Feature: Check admin index page content
+- Feature: Check admin index page content when regenerating CRUD
+  -   Scenario: Existing configuration was detected
+  -   Scenario: Restart configuration from scratch
+  -   Scenario: Re-using an existing configuration
+- Feature: The form should be pre-field
+  -   Scenario: Look for config file variables and uncheck gitignore
+- Feature: Check admin relations page content
   -   Scenario: No errors on page
+- Feature: Check admin relations creation form
+  -   Scenario: Check unicity display of existing relations
+- Feature: Check admin tables page
+  -   Scenario: Check for errors on Tables page
+- Feature: Check admin tables page
+  -   Scenario: Check for preconfiguration from config-tables-columns.php
+- Feature: Check admin tables mapping form
+  -   Scenario: Submit the form with preconfigured values
+- Feature: Check admin columns form
+  -   Scenario: Name and select Brands columns
+- Feature: Check field default values
+  -   Scenario: Name and select Brands columns when the generator has already run
+- Feature: Check the generator execution
+  -   Scenario: Verify errors and execution
+- Feature: Check .gitignore file
+  -   Scenario: Check confirmation message on generate
+  -   Scenario: Check for the existence of destination subdirectory in .gitignore
+- Feature: Check the generator result
+  -   Scenario: Look for errors and data continuity
+- Feature: Check admin index page content when regenerating CRUD
+  -   Scenario: Existing configuration was detected
+  -   Scenario: Restart configuration from scratch
+  -   Scenario: Re-using an existing configuration
 - Feature: The form should be pre-field
   -   Scenario: Look for config file variables
 - Feature: Check admin relations page content
@@ -67,14 +97,15 @@
   -   Scenario: Check for preconfiguration from config-tables-columns.php
 - Feature: Check admin tables mapping form
   -   Scenario: Submit the form with preconfigured values
-- Feature: Check admin columns page
-  -   Scenario: Check for errors on the Columns page
 - Feature: Check admin columns form
   -   Scenario: Name and select Brands columns
 - Feature: Check field default values
   -   Scenario: Name and select Brands columns when the generator has already run
 - Feature: Check the generator execution
   -   Scenario: Verify errors and execution
+- Feature: Check .gitignore file
+  -   Scenario: Check confirmation message on generate
+  -   Scenario: Check for the existence of destination subdirectory in .gitignore
 - Feature: Check the generator result
   -   Scenario: Look for errors and data continuity
 - Feature: Check public index page content

@@ -1,6 +1,8 @@
 <?php
-include "app/config.php";
-include "helpers.php";
+session_start();
+include 'helpers.php';
+
+include $_SESSION['destination'] . '/config.php';
 
 $errors = [];
 $schemaFiles = glob('../schema/*.sql');
@@ -67,8 +69,7 @@ if(isset($_POST['submit'])){
         exit();
     }
 }
-?>
-<!doctype html>
+?><!doctype html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">

@@ -8,7 +8,7 @@ Feature: Check admin schema import form
     And I should not see "Fatal error"
 
   Scenario: Check schema import form
-    Given I am on "/core/schema.php"
+    # Given I am on "/core/schema.php"
     When I select "../schema/Tests - Admin.sql" from "schemaFile"
 
     And I press "Import schema"

@@ -3,6 +3,7 @@
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\AfterStepScope;
+use Behat\Behat\Hook\Scope\StepScope;
 use Behat\MinkExtension\Context\MinkContext;
 use Behat\Mink\Exception\ExpectationException;
 use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
@@ -15,6 +16,8 @@ class FeatureContext extends MinkContext implements Context {
 
     protected $pdo;
     protected $dotenv;
+
+    private $lastStepScope;
 
     /**
      * Initializes context.
@@ -112,6 +115,10 @@ class FeatureContext extends MinkContext implements Context {
      * @AfterStep
      */
     public function logFailedStep(AfterStepScope $scope) {
+        // Capture last test scope (for use in iLogTheContentOfThePage)
+        $this->lastStepScope = $scope;
+
+        // Log page content when the test fails
         if ($scope->getTestResult()->getResultCode() !== TestResult::PASSED) {
             $this->logPageContent($scope);
         }
@@ -152,13 +159,39 @@ class FeatureContext extends MinkContext implements Context {
 
     // Delete files uploaded by the Public test suite
     public function deleteTestUploads() {
-        $directory = __DIR__ . '/../../../../core/app/uploads';
+        $directory = __DIR__ . '/../../../../core/app_cruddiy_tests/uploads';
         $substring = '_cruddiy_test_image.jpg';
 
         foreach (glob($directory . '/*') as $file) {
             if (is_file($file) && strpos(basename($file), $substring) !== false) {
                 unlink($file);
             }
+        }
+    }
+
+
+
+    /**
+     * @Then I log the content of the page
+     */
+    public function iLogTheContentOfThePage() {
+        if ($this->lastStepScope) {
+            $this->logPageContent($this->lastStepScope);
+        }
+    }
+
+
+
+    /**
+     * @Then I should see either :stringOne or :stringTwo
+     */
+    public function iShouldSeeEitherStringOneOrStringTwo($stringOne, $stringTwo)
+    {
+        $page = $this->getSession()->getPage();
+        $pageContent = $page->getText();
+
+        if (strpos($pageContent, $stringOne) === false && strpos($pageContent, $stringTwo) === false) {
+            throw new \Exception(sprintf('Neither "%s" nor "%s" was found on the page', $stringOne, $stringTwo));
         }
     }
 
