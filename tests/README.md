@@ -19,13 +19,13 @@ composer install
 - If your test user does not have the privileges to create a database, just create it and fill the credentials in the `.env`. If the database exists, we will not attempt to re-create it.
 
 
-## 1.3. Run all tests
+## 1.3. Run all tests (all suites)
 
 Go to the root directory of the project and run `vendor/bin/behat --config tests/behat/behat.yml`
 
 ```
 germain@nuc13 UCRT64 /d/Sites/cruddiy
-$ vendor/bin/behat --config tests/behat/behat.yml --suite admin
+$ vendor/bin/behat --config tests/behat/behat.yml  --stop-on-failure
    (...)
 
 47 scénarios (47 succès)
@@ -33,7 +33,7 @@ $ vendor/bin/behat --config tests/behat/behat.yml --suite admin
 0m46.61s (13.23Mb)
 ```
 
-## 1.4. Run a specific suite
+## 1.4. Run a specific suite of tests
 
 - **Admin suite**: simulate the creation of a fresh CRUD
 - **Public suite**: impersonate a user navigating on the generated CRUD pages
@@ -43,6 +43,7 @@ $ vendor/bin/behat --config tests/behat/behat.yml --suite admin
 ```
 vendor/bin/behat --config tests/behat/behat.yml --suite admin
 vendor/bin/behat --config tests/behat/behat.yml --suite public
+vendor/bin/behat --config tests/behat/behat.yml --suite regenerate_nogitignore
 vendor/bin/behat --config tests/behat/behat.yml --suite regenerate
 vendor/bin/behat --config tests/behat/behat.yml --suite public # or public_after_regenerate, it's a copy
 ```
@@ -114,6 +115,7 @@ vendor/bin/behat --config tests/behat/behat.yml --dry-run --no-snippets \
 - The name of the log file mimics the Behat files in the `features/` directory, eg.:
   - Step fails in tests\behat\features\admin\relations\schema.feature line 16
   - Name of the log file: admin_relations_schema-16.html
+- There is also a custom step definition **Then I log the content of the page** that will log a page even if there is no error
 
 
 
