@@ -85,9 +85,13 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
                     <!-- Destination folder -->
                     <div class="form-group">
                         <label class="col-form-label" for="destination">Destination folder</label>
-                        <input id="destination" name="destination" type="text" placeholder="./app" class="form-control " value="<?php if(isset($destination)) echo $destination; ?>">
                         <input id="destination" name="destination" type="text" placeholder="app" class="form-control " value="<?php if(isset($destination)) echo $destination; ?>">
                         <p><small class="form-text text-muted">This is were your autonomous CRUD app will be generated.</small></p>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        <input type="checkbox" class="form-check-input" id="gitignore" name="gitignore" checked>
+                        <label class="form-check-label" for="gitignore">Add to .gitignore</label>
                     </div>
 
                     <!-- Language -->
