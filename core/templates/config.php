@@ -6,6 +6,8 @@ $db_user                = '{{db_user}}';
 $db_password            = '{{db_password}}';
 $no_of_records_per_page = '{{no_of_records_per_page}}';
 $appname                = '{{appname}}';
+$gitignore              = '{{gitignore}}';
+$destination            = '{{destination}}';
 $language               = '{{language}}';
 $translations           = include("locales/$language.php");
 

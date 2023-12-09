@@ -1,25 +1,31 @@
 <?php
-$configfilePath = 'app/config.php';
+session_start();
+include('helpers.php');
 
 if(isset($_POST['index'])) {
 
-	$server            = isset($_POST['server'])            && !empty($_POST['server'])                ? trim($_POST['server'])      : 'localhost';
-	$username          = isset($_POST['username'])          && !empty($_POST['username'])              ? trim($_POST['username'])    : null;
-	$password          = isset($_POST['password'])          && !empty($_POST['password'])              ? trim($_POST['password'])    : null;
-    $database          = isset($_POST['database'])          && !empty($_POST['database'])              ? trim($_POST['database'])    : null;
-    $numrecordsperpage = isset($_POST['numrecordsperpage']) && is_numeric($_POST['numrecordsperpage']) ? $_POST['numrecordsperpage'] : 10;
-    $destination       = isset($_POST['destination'])       && !empty($_POST['destination'])           ? $_POST['destination']       : './app';
-    $appname           = isset($_POST['$appname'])          && !empty($_POST['$appname'])              ? $_POST['$appname']          : 'Database Admin';
-    $language          = isset($_POST['$language'])         && !empty($_POST['$language'])             ? $_POST['$language']         : 'en';
+    // echo '<pre>';
+    // print_r($_POST);
+    // echo '</pre>';
 
-    // echo "server: $server<br>";
-    // echo "username: $username<br>";
-    // echo "password: $password<br>";
-    // echo "database: $database<br>";
-    // echo "numrecordsperpage: $numrecordsperpage<br>";
-    // echo "destination: $destination<br>";
-    // echo "appname: $appname<br>";
-    // echo "language: $language<br>";
+	$server            = isset($_POST['server'])            && !empty($_POST['server'])                ? trim($_POST['server'])           : 'localhost';
+	$username          = isset($_POST['username'])          && !empty($_POST['username'])              ? trim($_POST['username'])         : null;
+	$password          = isset($_POST['password'])          && !empty($_POST['password'])              ? trim($_POST['password'])         : null;
+    $database          = isset($_POST['database'])          && !empty($_POST['database'])              ? trim($_POST['database'])         : null;
+    $numrecordsperpage = isset($_POST['numrecordsperpage']) && is_numeric($_POST['numrecordsperpage']) ? $_POST['numrecordsperpage']      : 10;
+    $destination       = isset($_POST['destination'])       && !empty($_POST['destination'])           ? sanitize($_POST['destination'])  : './app';
+    $appname           = isset($_POST['appname'])           && !empty($_POST['appname'])               ? $_POST['appname']                : 'Database Admin';
+    $language          = isset($_POST['language'])          && !empty($_POST['language'])              ? $_POST['language']               : 'en';
+    $gitignore         = isset($_POST['gitignore'])                                                    ? true                             : false;
+
+    echo "server: $server<br>";
+    echo "username: $username<br>";
+    echo "password: $password<br>";
+    echo "database: $database<br>";
+    echo "numrecordsperpage: $numrecordsperpage<br>";
+    echo "destination: $destination<br>";
+    echo "appname: $appname<br>";
+    echo "language: $language<br>";
 
     if (!$username) header('location:index.php?empty=Username');
     if (!$password) header('location:index.php?empty=Password');
@@ -67,6 +73,8 @@ if(isset($_POST['index'])) {
         '{{no_of_records_per_page}}' => $numrecordsperpage,
         '{{appname}}'                => $appname,
         '{{language}}'               => $language,
+        '{{gitignore}}'              => $gitignore,
+        '{{destination}}'            => $destination,
     ];
 
     foreach ($replacements as $placeholder => $realValue) {
