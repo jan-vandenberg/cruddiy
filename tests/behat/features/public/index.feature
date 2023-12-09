@@ -2,7 +2,7 @@
 Feature: Check public index page content
 
   Scenario: Check Brands list
-    Given I am on "/core/app/brands-index.php"
+    Given I am on "/core/app_cruddiy_tests/brands-index.php"
     Then I should not see "Parse error"
     And I should not see "Fatal error"
 
@@ -52,7 +52,7 @@ Feature: Check public index page content
 
 
   Scenario: Check Products list
-    Given I am on "/core/app/brands-index.php"
-    And I am on "/core/app/suppliers-index.php"
+    Given I am on "/core/app_cruddiy_tests/brands-index.php"
+    And I am on "/core/app_cruddiy_tests/suppliers-index.php"
     Then I should see "No records were found."
 

@@ -1,7 +1,7 @@
 Feature: Check public delete page content
 
   Scenario: Check if there is a warning before deletion
-    Given I am on "/core/app/brands-index.php"
+    Given I am on "/core/app_cruddiy_tests/brands-index.php"
     And I follow "delete-3"
     # TODO: display record on the delete page
     # Then the response should contain "Under Armour"
@@ -10,7 +10,7 @@ Feature: Check public delete page content
     And I should see "Are you sure"
 
   Scenario: Delete a Suppliers record
-    Given I am on "/core/app/suppliers-index.php"
+    Given I am on "/core/app_cruddiy_tests/suppliers-index.php"
     And I follow "delete-2"
     And I should see "Delete Record"
     And I should see "Are you sure"
@@ -18,7 +18,7 @@ Feature: Check public delete page content
     Then I should see "1 results"
 
   Scenario: Check FK dependency
-    Given I am on "/core/app/suppliers-index.php"
+    Given I am on "/core/app_cruddiy_tests/suppliers-index.php"
     And I follow "delete-1"
     And I should see "Delete Record"
     And I should see "Are you sure"
