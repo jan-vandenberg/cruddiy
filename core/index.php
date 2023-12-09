@@ -15,8 +15,7 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
     }
 }
 
-?>
-<!doctype html>
+?><!doctype html>
 <html lang="en">
 
 <head>

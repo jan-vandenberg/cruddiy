@@ -18,14 +18,14 @@ if(isset($_POST['index'])) {
     $language          = isset($_POST['language'])          && !empty($_POST['language'])              ? $_POST['language']               : 'en';
     $gitignore         = isset($_POST['gitignore'])                                                    ? true                             : false;
 
-    echo "server: $server<br>";
-    echo "username: $username<br>";
-    echo "password: $password<br>";
-    echo "database: $database<br>";
-    echo "numrecordsperpage: $numrecordsperpage<br>";
-    echo "destination: $destination<br>";
-    echo "appname: $appname<br>";
-    echo "language: $language<br>";
+    // echo "server: $server<br>";
+    // echo "username: $username<br>";
+    // echo "password: $password<br>";
+    // echo "database: $database<br>";
+    // echo "numrecordsperpage: $numrecordsperpage<br>";
+    // echo "destination: $destination<br>";
+    // echo "appname: $appname<br>";
+    // echo "language: $language<br>";
 
     if (!$username) header('location:index.php?empty=Username');
     if (!$password) header('location:index.php?empty=Password');
@@ -186,8 +186,7 @@ if(isset($_POST['addkey'])){
     }
 }
 
-?>
-<!doctype html>
+?><!doctype html>
 <html lang="en">
 <head>
     <title>Select Relations</title>

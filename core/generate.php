@@ -1187,7 +1187,7 @@ function extractTableAndColumnsNames($postdata) {
 
 
 function deleteDirectory($dirPath) {
-    echo "delete : $dirPath";
+    echo "<br>Delete : $dirPath";
     if (!is_dir($dirPath)) {
         // throw new InvalidArgumentException("$dirPath must be a directory");
         return false;
@@ -1241,8 +1241,7 @@ function recursiveCopy($src, $dst) {
 }
 
 
-?>
-<!doctype html>
+?><!doctype html>
 <html lang="en">
 <head>
     <title>Generated pages</title>

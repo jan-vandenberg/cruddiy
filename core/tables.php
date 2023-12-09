@@ -2,20 +2,19 @@
 session_start();
 include 'helpers.php';
 
-    if (isset($_SESSION["destination"]) && !empty($_SESSION["destination"])) {
-        include $_SESSION['destination'] . '/config.php';
-    } else {
-        header('location:directory.php?from=tables');
-        exit();
-    }
+if (isset($_SESSION["destination"]) && !empty($_SESSION["destination"])) {
+    include $_SESSION['destination'] . '/config.php';
+} else {
+    header('location:directory.php?from=tables');
+    exit();
+}
 
 
-    $tables_and_columns_names = [];
-    if (isset($_SESSION['destination']) && file_exists($_SESSION['destination'] . '/config-tables-columns.php')) {
-        include($_SESSION['destination'] . '/config-tables-columns.php');
-    }
-    ?>
-    <!doctype html>
+$tables_and_columns_names = [];
+if (isset($_SESSION['destination']) && file_exists($_SESSION['destination'] . '/config-tables-columns.php')) {
+    include($_SESSION['destination'] . '/config-tables-columns.php');
+}
+?><!doctype html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
