@@ -494,6 +494,7 @@ function generate($postdata) {
         global $sort;
         global $link;
         global $forced_deletion;
+        global $gitignore;
 
         if (!in_array($key, $excluded_keys)) {
             $i = 0;
@@ -1015,6 +1016,62 @@ function generate($postdata) {
                         recursiveCopy('locales', 'app/locales');
 
                         echo '<br><br>';
+
+
+
+                        echo '<h3>Updating the .gitgignore file</h3>';
+
+                        // Define the path to the .gitignore file
+                        $gitignorePath = './../.gitignore';
+
+                        // Check if the session variables are set
+                        if (!isset($gitignore) || !isset($_SESSION['destination'])) {
+                            echo "Required session variables are not set.";
+                        }
+
+                        // Define the subdirectory path from session
+                        $subdirectoryPath = $_SESSION['destination'];
+
+                        // Ensure the path is formatted correctly (add trailing slash if missing)
+                        if (substr($subdirectoryPath, -1) != '/') {
+                            $subdirectoryPath .= '/';
+                        }
+
+                        // Read the file into an array. Each line becomes an array element
+                        $lines = file($gitignorePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+                        // Check if the file was read successfully
+                        if ($lines === false) {
+                            echo "Error reading the .gitignore file.";
+                        }
+
+                        if ($gitignore) { // If checkbox is checked, add the path
+                            if (!in_array($subdirectoryPath, $lines)) {
+                                $lines[] = $subdirectoryPath;
+                                file_put_contents($gitignorePath, implode("\n", $lines));
+                                echo "Subdirectory path added to .gitignore.";
+                            } else {
+                                echo "Subdirectory path already exists in .gitignore.";
+                            }
+                        } else { // If checkbox is unchecked, remove the path
+                            $foundAndRemoved = false;
+                            foreach ($lines as $key => $line) {
+                                if (trim($line) == $subdirectoryPath) {
+                                    unset($lines[$key]);
+                                    $foundAndRemoved = true;
+                                    break; // Remove this if there could be multiple occurrences
+                                }
+                            }
+                            if ($foundAndRemoved) {
+                                file_put_contents($gitignorePath, implode("\n", $lines));
+                                echo "Subdirectory path removed from .gitignore.";
+                            } else {
+                                echo "Subdirectory path not found in .gitignore.";
+                            }
+                        }
+
+                        echo "<br><br>";
+
                     }
 
                     generate_navbar($value, $start_page, isset($_POST['keep_startpage']) && $_POST['keep_startpage'] == 'true' ? true : false, isset($_POST['append_links']) && $_POST['append_links'] == 'true' ? true : false, $tabledisplay, $key);
