@@ -21,13 +21,20 @@ include("helpers.php");
 <div class="container">
     <div class="row">
         <div class="col-md-4 mx-auto">
+
+            <!-- Form Name -->
+            <div class="text-center pt-5">
+                <h4>Enter database information</h4>
+            </div>
+
+            <?php if (isset($_GET["empty"])) : ?>
+                <div class="alert alert-danger" role="alert">
+                    The field <?php echo $_GET["empty"]; ?> cannot be empty.
+                </div>
+            <?php endif ?>
+
             <form class="form-group-row" action="relations.php" method="post">
                 <fieldset>
-
-                    <!-- Form Name -->
-                    <div class="text-center pt-5">
-                        <h4>Enter database information</h4>
-                    </div>
 
                     <div class="form-group">
                         <label class="col-form-label" for="textinput">Server</label>
@@ -55,7 +62,7 @@ include("helpers.php");
                     <!-- Number records per page-->
                     <div class="form-group">
                         <label class="col-form-label" for="numrecordsperpage">Items per generated page</label>
-                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php echo isset($no_of_records_per_page) ? $no_of_records_per_page : 10?>">
+                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php if(isset($numrecordsperpage)) echo $numrecordsperpage; ?>">
                     </div>
 
                     <!-- App name -->

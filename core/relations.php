@@ -3,27 +3,28 @@ $configfilePath = 'app/config.php';
 
 if(isset($_POST['index'])) {
 
-    if((isset($_POST['server'])) && $_POST['server'] <> '') {
-        $server=trim($_POST['server']);
-    } else {
-        $server = "localhost";
-    }
-	if(isset($_POST['username'])) $username=trim($_POST['username']);
-	if(isset($_POST['password'])) $password=trim($_POST['password']);
-	if(isset($_POST['database'])) $database=trim($_POST['database']);
-	if(isset($_POST['numrecordsperpage'])) $numrecordsperpage=$_POST['numrecordsperpage'];
+	$server            = isset($_POST['server'])            && !empty($_POST['server'])                ? trim($_POST['server'])      : 'localhost';
+	$username          = isset($_POST['username'])          && !empty($_POST['username'])              ? trim($_POST['username'])    : null;
+	$password          = isset($_POST['password'])          && !empty($_POST['password'])              ? trim($_POST['password'])    : null;
+    $database          = isset($_POST['database'])          && !empty($_POST['database'])              ? trim($_POST['database'])    : null;
+    $numrecordsperpage = isset($_POST['numrecordsperpage']) && is_numeric($_POST['numrecordsperpage']) ? $_POST['numrecordsperpage'] : 10;
+    $destination       = isset($_POST['destination'])       && !empty($_POST['destination'])           ? $_POST['destination']       : './app';
+    $appname           = isset($_POST['$appname'])          && !empty($_POST['$appname'])              ? $_POST['$appname']          : 'Database Admin';
+    $language          = isset($_POST['$language'])         && !empty($_POST['$language'])             ? $_POST['$language']         : 'en';
 
-    if((isset($_POST['appname'])) && $_POST['appname'] <> '') {
-        $appname=trim($_POST['appname']);
-    } else {
-        $appname = "Database Admin";
-    }
+    // echo "server: $server<br>";
+    // echo "username: $username<br>";
+    // echo "password: $password<br>";
+    // echo "database: $database<br>";
+    // echo "numrecordsperpage: $numrecordsperpage<br>";
+    // echo "destination: $destination<br>";
+    // echo "appname: $appname<br>";
+    // echo "language: $language<br>";
 
-    if((isset($_POST['language'])) && !is_numeric($_POST['language'])) {
-        $language=$_POST['language'];
-    } else {
-        $language = "en";
-    }
+    if (!$username) header('location:index.php?empty=Username');
+    if (!$password) header('location:index.php?empty=Password');
+    if (!$database) header('location:index.php?empty=Database');
+
 
     /* Attempt to connect to MySQL database */
 	$link = mysqli_connect($server, $username, $password, $database);
@@ -36,8 +37,8 @@ if(isset($_POST['index'])) {
 		$_POST[$k] = mysqli_real_escape_string($link, $v);
 	}
 
-	if (!file_exists('app'))
-		mkdir('app', 0777, true);
+	if (!file_exists('./app'))
+		mkdir('./app', 0777, true);
 
 
     $helpersfilename = 'helpers.php';
