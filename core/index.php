@@ -75,6 +75,7 @@ include("helpers.php");
                     <div class="form-group">
                         <label class="col-form-label" for="destination">Destination folder</label>
                         <input id="destination" name="destination" type="text" placeholder="./app" class="form-control " value="<?php if(isset($destination)) echo $destination; ?>">
+                        <input id="destination" name="destination" type="text" placeholder="app" class="form-control " value="<?php if(isset($destination)) echo $destination; ?>">
                         <p><small class="form-text text-muted">This is were your autonomous CRUD app will be generated.</small></p>
                     </div>
 
