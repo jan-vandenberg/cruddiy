@@ -38,9 +38,18 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
                 <h4>Enter database information</h4>
             </div>
 
+            <!-- Error messages -->
             <?php if (isset($_GET["empty"])) : ?>
                 <div class="alert alert-danger" role="alert">
                     The field <?php echo $_GET["empty"]; ?> cannot be empty.
+                </div>
+            <?php endif ?>
+
+            <?php if (isset($_GET["error"])) : ?>
+                <div class="alert alert-danger" role="alert">
+                    <?php if ($_GET['error'] == 'destination'): ?>
+                        Invalid destination name.
+                    <?php endif ?>
                 </div>
             <?php endif ?>
 
@@ -73,7 +82,7 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
                     <!-- Number records per page-->
                     <div class="form-group">
                         <label class="col-form-label" for="numrecordsperpage">Items per generated page</label>
-                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php if(isset($no_of_records_per_page)) echo $no_of_records_per_page; ?>">
+                        <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page (default 10)" class="form-control input-md" value="<?php if(isset($no_of_records_per_page)) echo $no_of_records_per_page; ?>">
                     </div>
 
                     <!-- App name -->
@@ -86,7 +95,11 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
                     <div class="form-group">
                         <label class="col-form-label" for="destination">Destination folder</label>
                         <input id="destination" name="destination" type="text" placeholder="app" class="form-control " value="<?php if(isset($destination)) echo $destination; ?>">
-                        <p><small class="form-text text-muted">This is were your autonomous CRUD app will be generated.</small></p>
+                        <p><small class="form-text text-muted">
+                            This is were your autonomous CRUD app will be generated.
+                            <br>
+                            Relative to <code><?php echo __DIR__ ?></code>
+                        </small></p>
                     </div>
 
                     <div class="form-check mb-4">

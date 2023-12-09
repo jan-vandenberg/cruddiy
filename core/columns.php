@@ -13,7 +13,7 @@ if (!isset($_SESSION["destination"]) || empty($_SESSION["destination"])) {
 
 
 // Retrieve POST data from session if needed
-$_POST = $_SESSION['post_data'] ?? null;
+$_POST = $_SESSION['post_data'] ?? $_POST;
 
 // Debug info
 // echo '<pre>';

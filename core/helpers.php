@@ -233,6 +233,38 @@ function sanitize($fileName) {
 
 
 
+function sanitizePath($path) {
+    // Split the path into segments
+    $parts = explode('/', $path);
+
+    // Sanitize each part of the path
+    foreach ($parts as &$part) {
+        // Skip special segments that reference the current or parent directory
+        if ($part === '.' || $part === '..') {
+            continue;
+        }
+
+        // Apply the same sanitization as in your original function
+        $part = str_replace(array('<', '>', ':', '"', '|', '?', '*'), '', $part);
+
+        // Normalize Unicode characters
+        if (class_exists('Normalizer')) {
+            $part = Normalizer::normalize($part, Normalizer::FORM_C);
+        }
+
+        // Replace spaces with underscores and convert to lowercase
+        $part = strtolower(str_replace(' ', '_', $part));
+
+        // Truncate to a maximum length
+        $part = substr($part, 0, 255);
+    }
+
+    // Reassemble the path
+    return implode('/', $parts);
+}
+
+
+
 function generateUniqueFileName($originalFileName) {
     $timestamp = time();
     $salt = uniqid(); // Alternatively, use bin2hex(random_bytes(8)) for more randomness

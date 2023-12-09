@@ -14,9 +14,12 @@ if (empty($configDirectories)) {
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['configDir'])) {
-    $selectedDir = $_POST['configDir'];
-    $_SESSION['destination'] = basename($selectedDir);
-    header('location:' . $_GET['from'] . '.php');
+    $_SESSION['destination'] = basename($_POST['configDir']);
+    if (isset($_GET['from']) && !empty($_GET['from'])) {
+        header('location:' . $_GET['from'] . '.php');
+    } else {
+        header('location:index.php');
+    }
     exit();
 }
 ?><!doctype html>

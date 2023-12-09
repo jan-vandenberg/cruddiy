@@ -14,7 +14,7 @@ if (!isset($_SESSION["destination"]) || empty($_SESSION["destination"])) {
 }
 
 // Retrieve POST data from session if needed
-$_POST = $_SESSION['post_data'] ?? null;
+$_POST = $_SESSION['post_data'] ?? $_POST;
 
 // Debug POST data
 // echo '<pre>';
@@ -96,10 +96,12 @@ function column_type($columnname){
 }
 
 function is_primary_key($t, $c){
-    $cols = $_POST[$t . 'columns'];
-    foreach($cols as $col) {
-        if (isset($col['primary']) && $col['columnname'] == $c){
-            return 1;
+    $cols = isset($_POST[$t . 'columns']) ? $_POST[$t . 'columns'] : null;
+    if ($cols) {
+        foreach($cols as $col) {
+            if (isset($col['primary']) && $col['columnname'] == $c){
+                return 1;
+            }
         }
     }
     return 0;
@@ -1046,12 +1048,14 @@ function generate($postdata) {
                         }
 
                         // Define the subdirectory path from session
-                        $subdirectoryPath = $_SESSION['destination'];
+                        $subdirectoryPath = basename(__DIR__) .'/'. $_SESSION['destination'];
 
                         // Ensure the path is formatted correctly (add trailing slash if missing)
                         if (substr($subdirectoryPath, -1) != '/') {
                             $subdirectoryPath .= '/';
                         }
+
+                        $subdirectoryPath = str_replace('core/./', 'core/', $subdirectoryPath);
 
                         // Read the file into an array. Each line becomes an array element
                         $lines = file($gitignorePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -1065,9 +1069,9 @@ function generate($postdata) {
                             if (!in_array($subdirectoryPath, $lines)) {
                                 $lines[] = $subdirectoryPath;
                                 file_put_contents($gitignorePath, implode("\n", $lines));
-                                echo "Subdirectory path added to .gitignore.";
+                                echo "Subdirectory <code>$subdirectoryPath</code>added to .gitignore.";
                             } else {
-                                echo "Subdirectory path already exists in .gitignore.";
+                                echo "Subdirectory <code>$subdirectoryPath</code> already exists in .gitignore.";
                             }
                         } else { // If checkbox is unchecked, remove the path
                             $foundAndRemoved = false;
@@ -1080,9 +1084,9 @@ function generate($postdata) {
                             }
                             if ($foundAndRemoved) {
                                 file_put_contents($gitignorePath, implode("\n", $lines));
-                                echo "Subdirectory path removed from .gitignore.";
+                                echo "Subdirectory <code>$subdirectoryPath</code> removed from .gitignore.";
                             } else {
-                                echo "Subdirectory path not found in .gitignore.";
+                                echo "Subdirectory <code>$subdirectoryPath</code> not found in .gitignore.";
                             }
                         }
 
@@ -1256,12 +1260,21 @@ function recursiveCopy($src, $dst) {
             <div class="col-md-12 mx-auto px-5">
                 <?php generate($_POST); ?>
                 <hr>
-                <br>Your app has been created! It is completely self contained in the /app folder. You can move this folder anywhere on your server.<br><br>
-                <a href="<?php echo $_SESSION['destination'] ?>/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a><br><br>
-                You can close this tab or leave it open and use the back button to make changes and regenerate the app. Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.<br><br>
+                <br>
+                Your app has been created! It is completely self contained in the <code><?php echo $_SESSION['destination'] ?></code> folder. You can move this folder anywhere on your server.<br><br>
+                <a href="<?php echo $_SESSION['destination'] ?>/index.php" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-lg">Go to your app &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a>
+                <br>
+                <br>
+                You can close this tab or leave it open and use the back button to make changes and regenerate the app.
+                <br>
+                Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.
+                <br>
+                <br>
+                Would you like to try with new settings?
+                <a href="directory.php" class="btn btn-secondary btn-sm">Restart</a>
+                <br><br>
                 <hr>
                 If you need further instructions please visit <a href="http://cruddiy.com" target="_blank">cruddiy.com</a> or ask on our <a href="https://github.com/jan-vandenberg/cruddiy" target="_blank">GitHub</a> project.
-
             </div>
         </div>
     </div>

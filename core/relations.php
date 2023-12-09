@@ -13,7 +13,7 @@ if(isset($_POST['index'])) {
 	$password          = isset($_POST['password'])          && !empty($_POST['password'])              ? trim($_POST['password'])         : null;
     $database          = isset($_POST['database'])          && !empty($_POST['database'])              ? trim($_POST['database'])         : null;
     $numrecordsperpage = isset($_POST['numrecordsperpage']) && is_numeric($_POST['numrecordsperpage']) ? $_POST['numrecordsperpage']      : 10;
-    $destination       = isset($_POST['destination'])       && !empty($_POST['destination'])           ? sanitize($_POST['destination'])  : './app';
+    $destination       = isset($_POST['destination'])       && !empty($_POST['destination'])           ? sanitizePath($_POST['destination'])  : 'app';
     $appname           = isset($_POST['appname'])           && !empty($_POST['appname'])               ? $_POST['appname']                : 'Database Admin';
     $language          = isset($_POST['language'])          && !empty($_POST['language'])              ? $_POST['language']               : 'en';
     $gitignore         = isset($_POST['gitignore'])                                                    ? true                             : false;
@@ -31,6 +31,16 @@ if(isset($_POST['index'])) {
     if (!$password) header('location:index.php?empty=Password');
     if (!$database) header('location:index.php?empty=Database');
 
+    $reserved_words = array(
+        'templates',
+        'locales',
+        '../core',
+        '../schema',
+        '../tests',
+    );
+    if (in_array($destination, $reserved_words)) {
+        header('location:index.php?error=destination');
+    }
 
     /* Attempt to connect to MySQL database */
 	$link = mysqli_connect($server, $username, $password, $database);

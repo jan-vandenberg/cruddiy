@@ -52,6 +52,11 @@ if (isset($_SESSION['destination']) && file_exists($_SESSION['destination'] . '/
                             {
                                 $tablelist[] = $cRow[0];
                             }
+
+                            $configTableNamesFilePath = $_SESSION["destination"] . '/config-tables-columns.php';
+                            if (file_exists($configTableNamesFilePath)) {
+                                include($configTableNamesFilePath);
+                            }
                             ?>
 
                             <div class="container">
