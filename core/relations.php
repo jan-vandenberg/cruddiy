@@ -37,6 +37,7 @@ if(isset($_POST['index'])) {
         '../core',
         '../schema',
         '../tests',
+        '../vendor',
     );
     if (in_array($destination, $reserved_words)) {
         header('location:index.php?error=destination');
