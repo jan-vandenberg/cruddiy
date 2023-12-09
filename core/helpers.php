@@ -275,3 +275,27 @@ function truncate($string, $length = 15) {
 
     return $truncated;
 }
+
+
+
+function findConfigFile() {
+
+}
+
+
+
+// Function to scan directories and find config.php
+function getConfigDirectories($baseDir, $excludedDirs = ['locales', 'templates']) {
+    $dirs = array_filter(glob($baseDir . '/*', GLOB_ONLYDIR), function ($dir) use ($excludedDirs) {
+        return !in_array(basename($dir), $excludedDirs);
+    });
+
+    $configDirs = [];
+    foreach ($dirs as $dir) {
+        if (file_exists($dir . '/config.php')) {
+            $configDirs[] = basename($dir);
+        }
+    }
+
+    return $configDirs;
+}
