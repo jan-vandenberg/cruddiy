@@ -53,6 +53,13 @@ vendor/bin/behat --config tests/behat/behat.yml --suite public # or public_after
 vendor/bin/behat --config tests/behat/behat.yml tests/behat/features/admin/relations/schema.feature
 ```
 
+## 1.6. Stop on failure
+
+You can stop the tests when the first failure arises:
+
+```
+vendor/bin/behat --config tests/behat/behat.yml --suite admin --stop-on-failure
+```
 
 
 
