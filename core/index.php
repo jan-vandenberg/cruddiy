@@ -58,9 +58,17 @@ include("helpers.php");
                         <input id="numrecordsperpage" name="numrecordsperpage" type="number" min="1" max="1000" placeholder="Number of items per page" class="form-control input-md" value="<?php echo isset($no_of_records_per_page) ? $no_of_records_per_page : 10?>">
                     </div>
 
+                    <!-- App name -->
                     <div class="form-group">
                         <label class="col-form-label" for="appname">App Name</label>
                         <input id="appname" name="appname" type="text" placeholder="Name for your app (optional)" class="form-control " value="<?php if(isset($appname)) echo $appname; ?>">
+                    </div>
+
+                    <!-- Destination folder -->
+                    <div class="form-group">
+                        <label class="col-form-label" for="destination">Destination folder</label>
+                        <input id="destination" name="destination" type="text" placeholder="./app" class="form-control " value="<?php if(isset($destination)) echo $destination; ?>">
+                        <p><small class="form-text text-muted">This is were your autonomous CRUD app will be generated.</small></p>
                     </div>
 
                     <!-- Language -->
@@ -84,7 +92,7 @@ include("helpers.php");
                             ?>
                         </select>
                         <p>
-                            <small>
+                            <small class="form-text text-muted">
                                 You can add new locales in <code>core/locales</code> (use <code>en.php</code> as starting point).
                                 Please <a href="https://github.com/jan-vandenberg/cruddiy/fork" target="_blank">fork and share</a> your translations!
                             </small>
