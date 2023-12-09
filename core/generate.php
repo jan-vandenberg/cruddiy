@@ -1,4 +1,21 @@
 <?php
+session_start();
+include 'helpers.php';
+
+require 'templates.php';
+
+if (!isset($_SESSION["destination"]) || empty($_SESSION["destination"])) {
+    // Store POST data in session
+    $_SESSION['post_data'] = $_POST;
+    header('location:directory.php?from=generate');
+    exit();
+} else {
+    include $_SESSION['destination'] . '/config.php';
+}
+
+// Retrieve POST data from session if needed
+$_POST = $_SESSION['post_data'] ?? null;
+
 // Debug POST data
 // echo '<pre>';
 // print_r($_POST);
@@ -15,9 +32,8 @@ if ($total_postvars >= $max_postvars) {
     exit();
 }
 
-require "app/config.php";
-require "templates.php";
-require "helpers.php";
+
+
 $tablename = '';
 $tabledisplay = '';
 $columnname = '' ;

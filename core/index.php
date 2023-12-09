@@ -1,8 +1,20 @@
 <?php
-if (file_exists("app/config.php")) {
-    include("app/config.php");
+session_start();
+include 'helpers.php';
+
+if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
+    unset($_SESSION['destination']);
+} else {
+    if (isset($_SESSION["destination"]) && !empty($_SESSION["destination"])) {
+        if (file_exists($_SESSION['destination'] . '/config.php')) {
+            include $_SESSION['destination'] . '/config.php';
+        }
+    } else {
+        header('location:directory.php?from=index');
+        exit();
+    }
 }
-include("helpers.php");
+
 ?>
 <!doctype html>
 <html lang="en">

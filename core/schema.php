@@ -1,8 +1,8 @@
 <?php
 session_start();
+include 'helpers.php';
 
 include $_SESSION['destination'] . '/config.php';
-include "helpers.php";
 
 $errors = [];
 $schemaFiles = glob('../schema/*.sql');
