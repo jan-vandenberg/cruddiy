@@ -39,12 +39,13 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
         $configDirectories = getConfigDirectories(__DIR__);
         if (!empty($configDirectories)) :
             ?>
-            <div class="text-center pt-5">
+            <div class="text-center pt-5 pb-5">
                 <h4>My apps</h4>
                 <?php foreach($configDirectories as $dir) : ?>
                     <a href="<?php echo htmlspecialchars($dir); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-primary my-2 mx-2"><?php echo htmlspecialchars($dir); ?> &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a>
                 <?php endforeach ?>
             </div>
+            <hr>
         <?php endif ?>
 
             <!-- Form Name -->
