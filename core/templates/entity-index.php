@@ -89,7 +89,7 @@ $result = mysqli_query($link, $sql);
 // Stop further rendering for CSV export
 if ($isCsvExport) {
     $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    exportAsCSV($data);
+    exportAsCSV($data, $tables_and_columns_names, $table_name = '{TABLE_NAME}', $debug = true);
     exit;
 }
 

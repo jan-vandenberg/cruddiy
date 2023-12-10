@@ -335,22 +335,40 @@ function getConfigDirectories($baseDir, $excludedDirs = ['locales', 'templates']
 
 
 // Export data as CSV
-function exportAsCSV($data) {
-    header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename="export.csv"');
-
-    $output = fopen('php://output', 'w');
-
-    // Add CSV headers (column names)
-    if (!empty($data)) {
-        fputcsv($output, array_keys(reset($data)));
+function exportAsCSV($data, $tables_and_columns_names, $table_name = '', $debug = false) {
+    if (!$debug) {
+        // CSV headers
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="export-'.$table_name.'.csv"');
+    } else {
+        // Display in browser as plain text
+        header('Content-Type: text/plain');
     }
+
+    $output = fopen($debug ? 'php://output' : 'php://temp', 'w+');
+
+    // Extract headers from configuration
+    $headers = [];
+    foreach ($tables_and_columns_names['products']['columns'] as $key => $value) {
+        if (isset($value['columndisplay']) && $value['columnvisible']) {
+            $headers[$key] = $value['columndisplay'];
+        }
+    }
+
+    // Add CSV headers
+    fputcsv($output, $headers);
 
     // Output data
     foreach ($data as $row) {
         fputcsv($output, $row);
     }
 
-    fclose($output);
+    if ($debug) {
+        fclose($output);
+    } else {
+        rewind($output);
+        fpassthru($output);
+        fclose($output);
+    }
     exit;
 }
