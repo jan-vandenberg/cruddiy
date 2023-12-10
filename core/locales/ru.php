@@ -12,6 +12,7 @@ return array(
     '%s Details'                   => 'Детали %s',
     'Actions'                      => 'Действия',
     'No records were found.'       => 'Записи не найдены.',
+    'Export as CSV' => 'Экспортировать как CSV',
 
     // update records
     'Update Record'                => 'Обновить запись',

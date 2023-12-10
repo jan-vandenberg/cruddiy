@@ -12,6 +12,7 @@ return array(
     '%s Details' => '%s List',
     'Actions' => "Actions",
     'No records were found.' => "No records were found.",
+    'Export as CSV' => 'Export as CSV',
 
     // update records
     'Update Record' => 'Update Record',

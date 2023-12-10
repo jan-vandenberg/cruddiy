@@ -12,6 +12,7 @@ return array(
     '%s Details' => '%s का विवरण',
     'Actions' => 'कार्य',
     'No records were found.' => 'कोई रिकॉर्ड नहीं मिले।',
+    'Export as CSV' => 'CSV के रूप में निर्यात करें',
 
     // update records
     'Update Record' => 'रिकॉर्ड अपडेट करें',

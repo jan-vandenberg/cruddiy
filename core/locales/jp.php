@@ -12,6 +12,7 @@ return array(
     '%s Details' => '%sの詳細',
     'Actions' => 'アクション',
     'No records were found.' => '記録が見つかりませんでした。',
+    'Export as CSV' => 'CSVとしてエクスポート',
 
     // update records
     'Update Record' => '記録を更新',

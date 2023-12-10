@@ -112,6 +112,7 @@ $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
                         <h2 class="float-left"><?php translate('%s Details', true, $str) ?></h2>
                         <a href="{TABLE_NAME}-create.php" class="btn btn-success float-right"><?php translate('Add New Record') ?></a>
                         <a href="{TABLE_NAME}-index.php" class="btn btn-info float-right mr-2"><?php translate('Reset View') ?></a>
+                        <a href="{TABLE_NAME}-index.php?export=csv" class="btn btn-primary float-right mr-2"><?php translate('Export as CSV') ?></a>
                         <a href="javascript:history.back()" class="btn btn-secondary float-right mr-2"><?php translate('Back') ?></a>
                     </div>
 

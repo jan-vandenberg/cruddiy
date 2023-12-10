@@ -12,6 +12,7 @@ return array(
     '%s Details' => 'Detaily %s',
     'Actions' => 'Akce',
     'No records were found.' => 'Nebyly nalezeny žádné záznamy.',
+    'Export as CSV' => 'Exportovat jako CSV',
 
     // update records
     'Update Record' => 'Aktualizovat záznam',

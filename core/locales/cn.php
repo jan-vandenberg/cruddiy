@@ -12,6 +12,7 @@ return array(
     '%s Details' => '%s详情',
     'Actions' => '操作',
     'No records were found.' => '未找到记录。',
+    'Export as CSV' => '导出为CSV',
 
     // update records
     'Update Record' => '更新记录',
