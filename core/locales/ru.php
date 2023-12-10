@@ -12,14 +12,15 @@ return array(
     '%s Details'                   => 'Детали %s',
     'Actions'                      => 'Действия',
     'No records were found.'       => 'Записи не найдены.',
+    'Export as CSV'                => 'Экспортировать как CSV',
 
     // update records
     'Update Record'                => 'Обновить запись',
     'update_record_instructions'   => 'Измените значения и отправьте, чтобы обновить запись.',
 
     // delete records
-    'Delete' => 'Удалить',
-    'Delete File' => 'Удалить %s',
+    'Delete'                       => 'Удалить',
+    'Delete File'                  => 'Удалить %s',
     'Delete Record'                => 'Удалить запись',
     'delete_record_confirm'        => 'Вы уверены, что хотите удалить эту запись?',
 
@@ -33,9 +34,9 @@ return array(
     'Search this table'            => 'Поиск по таблице',
     'First'                        => 'Первая',
     'Last'                         => 'Последняя',
-    'total_results' => '%s результатов - Страница %s из %s',
-    'Prev' => 'Предыдущая',
-    'Next' => 'Следующая',
+    'total_results'                => '%s результатов - Страница %s из %s',
+    'Prev'                         => 'Предыдущая',
+    'Next'                         => 'Следующая',
 
     // buttons
     'Yes'                          => 'Да',
@@ -50,8 +51,8 @@ return array(
     'invalid_request_instructions' => 'Извините, вы сделали неверный запрос. Пожалуйста, <a href="index.php" class="alert-link">вернитесь назад</a> и попробуйте еще раз.',
 
     // foreign keys
-    "references_tables" => "Ссылки на этот %s:",
-    "references_view_btn" => "Посмотреть %s %s с %s = %s",
+    "references_tables"            => "Ссылки на этот %s:",
+    "references_view_btn"          => "Посмотреть %s %s с %s = %s",
 
 );
 ?>

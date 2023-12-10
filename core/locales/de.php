@@ -12,14 +12,15 @@ return array(
     '%s Details'                   => '%s Details',
     'Actions'                      => 'Aktionen',
     'No records were found.'       => 'Keine Datensätze gefunden.',
+    'Export as CSV'                => 'Als CSV exportieren',
 
     // update records
     'Update Record'                => 'Datensatz aktualisieren',
     'update_record_instructions'   => 'Bearbeiten Sie die Werte und senden Sie sie, um den Datensatz zu aktualisieren.',
 
     // delete records
-    'Delete' => 'Löschen',
-    'Delete File' => '%s löschen',
+    'Delete'                       => 'Löschen',
+    'Delete File'                  => '%s löschen',
     'Delete Record'                => 'Datensatz löschen',
     'delete_record_confirm'        => 'Sind Sie sicher, dass Sie diesen Datensatz löschen möchten?',
 
@@ -33,9 +34,9 @@ return array(
     'Search this table'            => 'Diese Tabelle durchsuchen',
     'First'                        => 'Erste',
     'Last'                         => 'Letzte',
-    'total_results' => '%s Ergebnisse - Seite %s von %s',
-    'Prev' => 'Vorherige',
-    'Next' => 'Nächste',
+    'total_results'                => '%s Ergebnisse - Seite %s von %s',
+    'Prev'                         => 'Vorherige',
+    'Next'                         => 'Nächste',
 
     // buttons
     'Yes'                          => 'Ja',
@@ -50,7 +51,7 @@ return array(
     'invalid_request_instructions' => 'Entschuldigung, Sie haben eine ungültige Anfrage gestellt. Bitte <a href="index.php" class="alert-link">gehen Sie zurück</a> und versuchen Sie es erneut.',
 
     // foreign keys
-    "references_tables" => "Verweise auf dieses %s:",
-    "references_view_btn" => "Zeige %s %s mit %s = %s",
+    "references_tables"            => "Verweise auf dieses %s:",
+    "references_view_btn"          => "Zeige %s %s mit %s = %s",
 
 );

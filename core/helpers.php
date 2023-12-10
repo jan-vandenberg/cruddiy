@@ -316,7 +316,7 @@ function findConfigFile() {
 
 
 
-// Function to scan directories and find config.php
+// Scan directories and find config.php
 function getConfigDirectories($baseDir, $excludedDirs = ['locales', 'templates']) {
     $dirs = array_filter(glob($baseDir . '/*', GLOB_ONLYDIR), function ($dir) use ($excludedDirs) {
         return !in_array(basename($dir), $excludedDirs);
@@ -330,4 +330,257 @@ function getConfigDirectories($baseDir, $excludedDirs = ['locales', 'templates']
     }
 
     return $configDirs;
+}
+
+
+
+function exportAsCSV($data, $db_name, $tables_and_columns_names, $table_name, $link, $debug = false) {
+
+    // Find relations in table
+    $relations = get_foreign_key_relations($link, $db_name);
+
+    // Generate headers
+    $headers = extract_csv_headers($relations, $tables_and_columns_names, $table_name, $debug);
+
+    // Generate rows
+    $lines = [];
+    foreach($data as $row) {
+        $lines[] = extract_csv_data($row, $relations, $db_name, $tables_and_columns_names, $table_name, $link, $debug);
+    }
+
+    if ($debug) {
+        echo "<pre>";
+        print_r($headers);
+        print_r($lines);
+        echo "</pre>";
+    }
+
+    // Assemble the CSV
+    create_csv($headers, $lines, $table_name, $debug);
+}
+
+
+
+function create_csv($headers, $lines, $table_name, $debug = false) {
+
+    // Set appropriate headers for output
+    if (!$debug) {
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $table_name . '_export.csv"');
+    }
+
+    // Open output stream for writing
+    $output = fopen($debug ? 'php://output' : 'php://temp', 'w+');
+
+    // Write CSV headers
+    fputcsv($output, array_values($headers));
+
+    // Iterate through the data and write to CSV
+    foreach($lines as $line) {
+        fputcsv($output, $line);
+    }
+
+    // Finalize CSV output for download
+    if (!$debug) {
+        rewind($output);
+        fpassthru($output);
+        fclose($output);
+    }
+}
+
+
+
+function extract_csv_data($row, $relations, $db_name, $tables_and_columns_names, $table_name, $link, $debug = false) {
+    // Init headers
+    $line = [];
+
+    // Parse config-tables-columns.php to get the table display settings
+    foreach ($tables_and_columns_names[$table_name]['columns'] as $column_name => $column_config) {
+        // Add column if it's visible
+        if ($column_config['columnvisible']) {
+
+            // The column value in this row
+            $value = $row[$column_name];
+
+            // Check if the column is a foreign key
+            $relation = find_relation_by_column($relations, $column_name);
+
+            // The column is a FK
+            if ($relation !== NULL) {
+                if ($debug) {
+                    // Name of the column that is a foreign key
+                    echo "<br>FK <strong>".$relation['table'].'.'.$relation['column']. '</strong> : '.$tables_and_columns_names[$relation['table']]['columns'][$relation['column']]['columndisplay'];
+                }
+
+                $primary = find_primary_key_from_config($table_name, $tables_and_columns_names);
+
+                if ($debug) {
+                    echo "<br>&nbsp;value: " . $value;
+                }
+
+                if ($value !== null) {
+                    // Get data from related table
+                    $related_value = get_related_table_data($link, $relation['table'], $primary, $value, $debug);
+                } else {
+                    // Keep the null value for the CSV row
+                    $related_value = null;
+                }
+
+                // Look for the columns in the foreign table that are displayed in the preview
+                foreach($tables_and_columns_names[$relation['table']]['columns'] as $related_column => $related_column_config) {
+                    if ($related_column_config['columninpreview']) {
+
+                        if ($related_column_config['columninpreview']) {
+
+                            if ($debug) {
+                                if ($value !== null) {
+                                    echo "<br>&nbsp;related value: " . $related_value[$related_column];
+                                } else {
+                                    echo "<br>&nbsp;related value: <code>null</code>";
+                                }
+                            }
+
+                            if ($value !== null) {
+                                $line[] = $related_value[$related_column];
+                            } else {
+                                $line[] = null;
+                            }
+                        }
+                    }
+                }
+
+            }
+            // The column is not a FK
+            else {
+                if ($debug) {
+                    echo "<br>column <code>$column_name</code> (".$value.')';
+                }
+                $line[] = $value;
+            }
+        }
+    }
+
+    if ($debug) {
+        echo "<hr>";
+    }
+
+    return $line;
+}
+
+
+
+function get_related_table_data($link, $referenced_table_name, $primary, $value, $debug = false) {
+
+    $sql = "
+        SELECT *
+        FROM   `$referenced_table_name`
+        WHERE  `$referenced_table_name`.`$primary` = $value
+    ";
+
+    if ($debug) {
+        echo '<pre>';
+        print_r($sql);
+        echo '</pre>';
+    }
+
+    $result = mysqli_query($link, $sql);
+    $row = mysqli_fetch_assoc($result);
+    return $row;
+}
+
+
+
+function extract_csv_headers($relations, $tables_and_columns_names, $table_name, $debug = false) {
+    // Init headers
+    $headers = [];
+
+    // Parse config-tables-columns.php to get the table display settings
+    foreach ($tables_and_columns_names[$table_name]['columns'] as $column => $column_config) {
+        // Add column if it's visible
+        if ($column_config['columnvisible']) {
+
+            // Check if the column is a foreign key
+            $relation = find_relation_by_column($relations, $column);
+
+            // The column is a FK
+            if ($relation !== NULL) {
+                if ($debug) {
+                    // Name of the column that is a foreign key
+                    echo "<br>FK <strong>".$relation['table'].'.'.$relation['column']. '</strong> : '.$tables_and_columns_names[$relation['table']]['columns'][$relation['column']]['columndisplay'];
+                }
+
+                // Look for the columns in the foreign table that are displayed in the preview
+                foreach($tables_and_columns_names[$relation['table']]['columns'] as $related_column => $related_column_config) {
+                    if ($related_column_config['columninpreview']) {
+
+                        if ($related_column_config['columninpreview']) {
+
+                            if ($column_config['columndisplay'] == $related_column_config['columndisplay']) {
+                                $title = $related_column_config['columndisplay'];
+                            } else {
+                                $title = $column_config['columndisplay'] . ' - ' . $related_column_config['columndisplay'];
+                            }
+
+                            if ($debug) {
+                                echo "<br>&nbsp;related <code>".$related_column. '</code> ('.$title.')';
+                            }
+                            $headers[] =  $title;
+                        }
+                    }
+                }
+            }
+            // The column is not a FK
+            else {
+                if ($debug) {
+                    echo "<br>column <code>$column</code> (".$column_config['columndisplay'].')';
+                }
+                $headers[] = $column_config['columndisplay'];
+            }
+        }
+    }
+    return $headers;
+}
+
+
+
+function get_foreign_key_relations($link, $db_name) {
+    $sql = "
+        SELECT
+            TABLE_NAME,
+            COLUMN_NAME,
+            CONSTRAINT_NAME,
+            REFERENCED_TABLE_NAME,
+            REFERENCED_COLUMN_NAME
+        FROM
+            INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+        WHERE
+            REFERENCED_TABLE_SCHEMA = '$db_name'
+    ";
+    $result = mysqli_query($link, $sql);
+    $rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    return $rows;
+}
+
+
+
+function find_relation_by_column($relations, $column_name) {
+    foreach ($relations as $relation) {
+        if ($relation['COLUMN_NAME'] === $column_name) {
+            return [
+                'table' => $relation['REFERENCED_TABLE_NAME'],
+                'column' => $relation['REFERENCED_COLUMN_NAME'],
+            ];
+        }
+    }
+    return NULL;
+}
+
+
+
+function find_primary_key_from_config($table_name, $tables_and_columns_names) {
+    foreach ($tables_and_columns_names[$table_name]['columns'] as $column_name => $column_config) {
+        if ($column_config['primary']) {
+            return $column_name;
+        }
+    }
 }

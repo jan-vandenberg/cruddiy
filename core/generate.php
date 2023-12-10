@@ -1006,7 +1006,7 @@ function generate($postdata) {
                     if (!$forced_deletion && (!isset($_POST['keep_startpage']) || (isset($_POST['keep_startpage']) && $_POST['keep_startpage'] != 'true'))) {
                         $forced_deletion = true;
                         echo '<h3>Deleting existing files in '. $_SESSION['destination'] .'/</h3>';
-                        $keep = array('config.php', 'helpers.php', 'config-tables-columns.php', 'locales');
+                        $keep = array('config.php', 'config-tables-columns.php', 'locales');
                         foreach (glob($_SESSION['destination'] . "/*") as $file) {
                             if (!in_array(basename($file), $keep)) {
                                 if (is_file($file)) {
@@ -1016,6 +1016,23 @@ function generate($postdata) {
                                 }
                             }
                         }
+
+                        echo '<br>';
+
+                        echo '<h3>Helpers file</h3>';
+
+                        // Regenerate helpers file
+                        $helpersfilename = 'helpers.php';
+                        $handle = fopen('helpers.php', "r") or die("Unable to open Helpers file! Please check your file permissions.");;
+                        $helpers = fread($handle, filesize($helpersfilename));
+                        fclose($handle);
+
+                        $helpersfile = fopen($_SESSION['destination'] . '/'. $helpersfilename, "w") or die("Unable to create Helpers file! Please check your file permissions");
+                        fwrite($helpersfile, $helpers);
+                        fclose($helpersfile);
+
+                        echo "Updated.<br>";
+
 
                         echo '<br>';
                         global $upload_target_dir;
@@ -1179,6 +1196,9 @@ function extractTableAndColumnsNames($postdata) {
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['is_file'] = isset($column['file']) && $column['file'] ? 1 : 0;
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columnvisible'] = isset($column['columnvisible']) && $column['columnvisible'] ? 1 : 0;
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columninpreview'] = isset($column['columninpreview']) && $column['columninpreview'] ? 1 : 0;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['fk'] = isset($column['fk']) && $column['fk'] ? 1 : 0;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['primary'] = isset($column['primary']) && $column['primary'] ? 1 : 0;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['auto'] = isset($column['auto']) && $column['auto'] ? 1 : 0;
             }
         }
     }

@@ -65,15 +65,6 @@ if(isset($_POST['index'])) {
     $_SESSION['gitignore'] = $gitignore;
 
 
-    $helpersfilename = 'helpers.php';
-    $handle = fopen('helpers.php', "r") or die("Unable to open Helpers file! Please check your file permissions.");;
-    $helpers = fread($handle, filesize($helpersfilename));
-    fclose($handle);
-
-    $helpersfile = fopen($destination . '/'. $helpersfilename, "w") or die("Unable to create Helpers file! Please check your file permissions");
-    fwrite($helpersfile, $helpers);
-	fclose($helpersfile);
-
     $configfile = fopen($configfilePath, "w") or die("Unable to open Config file!");
 
     $configfileTemplatePath = 'templates/config.php';
