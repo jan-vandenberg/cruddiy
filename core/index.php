@@ -44,6 +44,11 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
                 <?php foreach($configDirectories as $dir) : ?>
                     <a href="<?php echo htmlspecialchars($dir); ?>" target="_blank" rel="noopener noreferrer" class="btn btn-primary my-2 mx-2"><?php echo htmlspecialchars($dir); ?> &nbsp; <i class="fa fa-external-link" aria-hidden="true"></i></a>
                 <?php endforeach ?>
+
+                <p>
+                    <br>
+                    <a href="directory.php" class="btn btn-secondary btn-sm">Restart generating an app</a>
+                </p>
             </div>
             <hr>
         <?php endif ?>
