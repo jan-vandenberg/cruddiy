@@ -198,7 +198,7 @@ $count_pages = "SELECT COUNT(*) AS count
 
                                 <?php mysqli_free_result($result); ?>
                             <?php else: ?>
-                            <p class='lead'><em><?php echo translate('No records were found.') ?></em></p>
+                            <p class='lead'><em><?php translate('No records were found.') ?></em></p>
                         <?php endif ?>
 
                     <?php else: ?>
@@ -208,7 +208,6 @@ $count_pages = "SELECT COUNT(*) AS count
                     <?php endif ?>
 
                     <?php mysqli_close($link) ?>
-                    ?>
                 </div>
             </div>
         </div>

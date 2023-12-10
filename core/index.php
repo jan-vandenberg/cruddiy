@@ -55,6 +55,7 @@ if (isset($_GET['generator']) && $_GET['generator'] == 'new') {
 
             <!-- Form Name -->
             <div class="text-center pt-5">
+                <?php // TODO:change title to "Edit app" when re-using a configuration  ?>
                 <h4>Generate a new app</h4>
                 <h6>Enter database information:</h6>
             </div>
