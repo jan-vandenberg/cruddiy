@@ -12,15 +12,15 @@ return array(
     '%s Details'                   => 'Detalles de %s',
     'Actions'                      => 'Acciones',
     'No records were found.'       => 'No se encontraron registros.',
-    'Export as CSV' => 'Exportar como CSV',
+    'Export as CSV'                => 'Exportar como CSV',
 
     // update records
     'Update Record'                => 'Actualizar registro',
     'update_record_instructions'   => 'Edite los valores y envíe para actualizar el registro.',
 
     // delete records
-    'Delete' => 'Eliminar',
-    'Delete File' => 'Eliminar %s',
+    'Delete'                       => 'Eliminar',
+    'Delete File'                  => 'Eliminar %s',
     'Delete Record'                => 'Eliminar registro',
     'delete_record_confirm'        => '¿Está seguro de que desea eliminar este registro?',
 
@@ -34,9 +34,9 @@ return array(
     'Search this table'            => 'Buscar en esta tabla',
     'First'                        => 'Primero',
     'Last'                         => 'Último',
-    'total_results' => '%s resultados - Página %s de %s',
-    'Prev' => 'Anterior',
-    'Next' => 'Siguiente',
+    'total_results'                => '%s resultados - Página %s de %s',
+    'Prev'                         => 'Anterior',
+    'Next'                         => 'Siguiente',
 
     // buttons
     'Yes'                          => 'Sí',
@@ -51,8 +51,8 @@ return array(
     'invalid_request_instructions' => 'Lo siento, ha realizado una solicitud inválida. Por favor, <a href="index.php" class="alert-link">regrese</a> e intente nuevamente.',
 
     // foreign keys
-    "references_tables" => "Referencias a este %s:",
-    "references_view_btn" => "Ver %s %s con %s = %s",
+    "references_tables"            => "Referencias a este %s:",
+    "references_view_btn"          => "Ver %s %s con %s = %s",
 
 );
 ?>
