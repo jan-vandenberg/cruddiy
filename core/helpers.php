@@ -334,8 +334,8 @@ function getConfigDirectories($baseDir, $excludedDirs = ['locales', 'templates']
 
 
 
-// Export data as CSV
-function exportAsCSV($link, $tables_and_columns_names, $tableName, $debug = false) {
+// Export raw table as CSV
+function exportRawTableAsCSV($link, $tables_and_columns_names, $tableName, $debug = false) {
     $filename = $tableName . "_export_" . date('Ymd') . ".csv";
 
     if (!$debug) {
@@ -389,3 +389,56 @@ function exportAsCSV($link, $tables_and_columns_names, $tableName, $debug = fals
     }
     exit;
 }
+
+
+
+function exportAsCSV($data, $tables_and_columns_names, $tableName, $debug = false) {
+    // Define headers based on configuration
+    $headers = [];
+    foreach ($tables_and_columns_names[$tableName]['columns'] as $column => $config) {
+        if ($config['columnvisible']) {
+            $headers[] = $config['columndisplay'];
+        }
+    }
+
+    // Handle headers for related tables if necessary
+    // ...
+
+    // Set the appropriate headers for debug mode or CSV download
+    if ($debug) {
+        header('Content-Type: text/plain');  // Display in browser as plain text
+    } else {
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $tableName . '_export.csv"');
+    }
+
+    // Open output stream
+    $output = fopen($debug ? 'php://output' : 'php://temp', 'w+');
+
+    // Write the headers to CSV
+    fputcsv($output, $headers);
+
+    // Iterate through the data and write to CSV
+    foreach ($data as $row) {
+        $formattedRow = [];
+        foreach ($tables_and_columns_names[$tableName]['columns'] as $column => $config) {
+            if ($config['columnvisible']) {
+                $formattedRow[] = $row[$column] ?? '';
+            }
+        }
+        fputcsv($output, $formattedRow);
+    }
+
+    // Finalize the CSV output
+    if ($debug) {
+        fclose($output);
+    } else {
+        rewind($output);
+        fpassthru($output);
+        fclose($output);
+    }
+    exit;
+}
+
+// Usage example:
+// exportAsCSV($data, $tables_and_columns_names, 'products', true); // For debug mode

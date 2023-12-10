@@ -89,7 +89,8 @@ $result = mysqli_query($link, $sql);
 // Stop further rendering for CSV export
 if ($isCsvExport) {
     $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    exportAsCSV($link, $tables_and_columns_names, '{TABLE_NAME}', $debug = true);
+    // exportRawTableAsCSV($link, $tables_and_columns_names, '{TABLE_NAME}', $debug = true);
+    exportAsCSV($data, $tables_and_columns_names, '{TABLE_NAME}', $debug = false);
     exit;
 }
 
