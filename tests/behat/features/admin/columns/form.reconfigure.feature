@@ -99,5 +99,9 @@ Feature: Check field default values
     # submit form
     And I press "Generate Pages"
 
+    Then I should see "Select existing app"
+    And I select "app_cruddiy_tests" from "configDir"
+    And I press "Load Configuration"
+
     Then I should not see "Parse error"
     And I should not see "Fatal error"

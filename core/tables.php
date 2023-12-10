@@ -1,13 +1,20 @@
-    <?php
-    include "app/config.php";
-    include "helpers.php";
+<?php
+session_start();
+include 'helpers.php';
 
-    $tables_and_columns_names = [];
-    if (file_exists("app/config-tables-columns.php")) {
-        include("app/config-tables-columns.php");
-    }
-    ?>
-    <!doctype html>
+if (isset($_SESSION["destination"]) && !empty($_SESSION["destination"])) {
+    include $_SESSION['destination'] . '/config.php';
+} else {
+    header('location:directory.php?from=tables');
+    exit();
+}
+
+
+$tables_and_columns_names = [];
+if (isset($_SESSION['destination']) && file_exists($_SESSION['destination'] . '/config-tables-columns.php')) {
+    include($_SESSION['destination'] . '/config-tables-columns.php');
+}
+?><!doctype html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -46,7 +53,7 @@
                                 $tablelist[] = $cRow[0];
                             }
 
-                            $configTableNamesFilePath = 'app/config-tables-columns.php';
+                            $configTableNamesFilePath = $_SESSION["destination"] . '/config-tables-columns.php';
                             if (file_exists($configTableNamesFilePath)) {
                                 include($configTableNamesFilePath);
                             }

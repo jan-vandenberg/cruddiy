@@ -16,11 +16,11 @@ default:
         - features/admin/relations/form.fill.feature
         - features/admin/tables/page.feature
         - features/admin/tables/form.fill.feature
-        - features/admin/columns/page.feature
         - features/admin/columns/form.feature
         - features/admin/columns/form.fresh.feature
         - features/admin/columns/form.fill.feature
         - features/admin/generate/page.feature
+        - features/admin/generate/gitignore.added.feature
         - features/admin/generate/result.feature
 
 
@@ -38,22 +38,42 @@ default:
 
 
 
-    # Test an existing installation (the generator was run at least once)
+    # Test an existing installation (the generator was run at least once) but uncheck gitignore
+    regenerate_nogitignore:
+      contexts:
+        - AdminFeatureContext: []
+      paths:
+        - features/admin/index/page.regenerate.feature
+        - features/admin/index/form.submit.nogitignore.feature
+        - features/admin/relations/page.feature
+        - features/admin/relations/form.feature
+        - features/admin/tables/page.feature
+        - features/admin/tables/form.reconfigure.feature
+        - features/admin/tables/form.submit.feature
+        - features/admin/columns/form.feature
+        - features/admin/columns/form.reconfigure.feature
+        - features/admin/generate/page.feature
+        - features/admin/generate/gitignore.removed.feature
+        - features/admin/generate/result.feature
+
+
+
+  # Test an existing installation (same as above, but recheck gitignore)
     regenerate:
       contexts:
         - AdminFeatureContext: []
       paths:
-        - features/admin/index/page.feature
+        - features/admin/index/page.regenerate.feature
         - features/admin/index/form.submit.feature
         - features/admin/relations/page.feature
         - features/admin/relations/form.feature
         - features/admin/tables/page.feature
         - features/admin/tables/form.reconfigure.feature
         - features/admin/tables/form.submit.feature
-        - features/admin/columns/page.feature
         - features/admin/columns/form.feature
         - features/admin/columns/form.reconfigure.feature
         - features/admin/generate/page.feature
+        - features/admin/generate/gitignore.kept.feature
         - features/admin/generate/result.feature
 
 
@@ -68,6 +88,7 @@ default:
         - features/public/create.feature
         - features/public/update.feature
         - features/public/delete.feature
+
 
 
   extensions:

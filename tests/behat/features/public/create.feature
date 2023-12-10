@@ -1,7 +1,7 @@
 Feature: Check public create page content
 
   Scenario: Add supplier
-    Given I am on "/core/app/suppliers-index.php"
+    Given I am on "/core/app_cruddiy_tests/suppliers-index.php"
     Then I should see "The Suppliers List"
     And I should see "No records were found."
 
@@ -35,7 +35,7 @@ Feature: Check public create page content
 
 
   Scenario: Add product
-    Given I am on "/core/app/products-index.php"
+    Given I am on "/core/app_cruddiy_tests/products-index.php"
     Then I should see "The Products List"
 
     When I follow "Add New Record"
@@ -59,7 +59,7 @@ Feature: Check public create page content
 
 
   Scenario: Add product with upload file
-    Given I am on "/core/app/products-create.php"
+    Given I am on "/core/app_cruddiy_tests/products-create.php"
 
     When I fill in "ean" with "2345678901234"
     And I fill in "product_name" with "Test Product Name 2 with file"

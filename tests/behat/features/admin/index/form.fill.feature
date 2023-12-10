@@ -10,6 +10,8 @@ Feature: Fill the form
 
     And I fill in "numrecordsperpage" with "2"
     And I fill in "appname" with "Cruddiy Tests"
+    And I fill in "destination" with "app_cruddiy_tests"
+    And I check "gitignore"
     And I fill in "language" with "en"
 
     And I press "Submit"

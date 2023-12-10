@@ -10,3 +10,5 @@ Feature: Check the generator execution
     And I should not see "Fatal error"
 
     And I should see "Your app has been created!"
+
+    # Then I log the content of the page

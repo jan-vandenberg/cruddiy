@@ -3,7 +3,6 @@ Feature: Fill admin columns form
   Scenario: Set values
 
     And I fill in "text-brands-name" with "Brand name"
-
     And I fill in "text-products-ean" with "EAN-13"
     And I fill in "text-products-product_name" with "Product name"
     And I fill in "text-products-brand_id" with "Brand"
@@ -27,5 +26,8 @@ Feature: Fill admin columns form
 
     And I press "Generate Pages"
 
-    Then I should not see "Parse error"
-    And I should not see "Fatal error"
+    Then I should see "Select existing app"
+    And I select "app_cruddiy_tests" from "configDir"
+    And I press "Load Configuration"
+
+    Then I should see "Your app has been created!"

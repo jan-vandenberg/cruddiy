@@ -22,7 +22,7 @@ class PublicFeatureContext extends FeatureContext implements Context {
     public function importTablesColumnsConfig() {
         $root = __DIR__ . '/../../../..';
         $sourceFile = $root . '/tests/templates/config-tables-columns.php';
-        $destinationFile = $root . '/core/app/config-tables-columns.php';
+        $destinationFile = $root . '/core/app_cruddiy_tests/config-tables-columns.php';
 
         // Copy the file
         if (!copy($sourceFile, $destinationFile)) {
