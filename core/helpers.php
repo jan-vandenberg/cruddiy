@@ -335,32 +335,49 @@ function getConfigDirectories($baseDir, $excludedDirs = ['locales', 'templates']
 
 
 // Export data as CSV
-function exportAsCSV($data, $tables_and_columns_names, $table_name = '', $debug = false) {
+function exportAsCSV($link, $tables_and_columns_names, $tableName, $debug = false) {
+    $filename = $tableName . "_export_" . date('Ymd') . ".csv";
+
     if (!$debug) {
-        // CSV headers
         header('Content-Type: text/csv');
-        header('Content-Disposition: attachment; filename="export-'.$table_name.'.csv"');
+        header('Content-Disposition: attachment; filename="'.$filename.'"');
     } else {
-        // Display in browser as plain text
-        header('Content-Type: text/plain');
+        header('Content-Type: text/plain'); // Display in browser as plain text
     }
 
     $output = fopen($debug ? 'php://output' : 'php://temp', 'w+');
 
-    // Extract headers from configuration
+    // Check if the table configuration exists
+    if (!isset($tables_and_columns_names[$tableName])) {
+        die("Table configuration for '$tableName' not found.");
+    }
+
+    // Extract headers and column names
     $headers = [];
-    foreach ($tables_and_columns_names['products']['columns'] as $key => $value) {
+    $columnNames = [];
+    foreach ($tables_and_columns_names[$tableName]['columns'] as $key => $value) {
         if (isset($value['columndisplay']) && $value['columnvisible']) {
-            $headers[$key] = $value['columndisplay'];
+            $headers[] = $value['columndisplay'];
+            $columnNames[] = $key;
         }
     }
 
     // Add CSV headers
     fputcsv($output, $headers);
 
-    // Output data
-    foreach ($data as $row) {
-        fputcsv($output, $row);
+    // Build the query
+    $columnsString = implode(", ", $columnNames);
+    $query = "SELECT $columnsString FROM `$tableName`";
+    $result = mysqli_query($link, $query);
+
+    if (!$result) {
+        die("ERROR: Could not execute query: $query. " . mysqli_error($link));
+    }
+
+    // Output each row as a line in the CSV
+    while ($row = mysqli_fetch_assoc($result)) {
+        $formattedRow = array_intersect_key($row, array_flip($columnNames));
+        fputcsv($output, $formattedRow);
     }
 
     if ($debug) {
