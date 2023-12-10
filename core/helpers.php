@@ -316,7 +316,7 @@ function findConfigFile() {
 
 
 
-// Function to scan directories and find config.php
+// Scan directories and find config.php
 function getConfigDirectories($baseDir, $excludedDirs = ['locales', 'templates']) {
     $dirs = array_filter(glob($baseDir . '/*', GLOB_ONLYDIR), function ($dir) use ($excludedDirs) {
         return !in_array(basename($dir), $excludedDirs);
@@ -330,4 +330,27 @@ function getConfigDirectories($baseDir, $excludedDirs = ['locales', 'templates']
     }
 
     return $configDirs;
+}
+
+
+
+// Export data as CSV
+function exportAsCSV($data) {
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="export.csv"');
+
+    $output = fopen('php://output', 'w');
+
+    // Add CSV headers (column names)
+    if (!empty($data)) {
+        fputcsv($output, array_keys(reset($data)));
+    }
+
+    // Output data
+    foreach ($data as $row) {
+        fputcsv($output, $row);
+    }
+
+    fclose($output);
+    exit;
 }
