@@ -3,7 +3,10 @@
 require_once('config.php');
 require_once('config-tables-columns.php');
 require_once('helpers.php');
-require_once('navbar.php');
+
+// Check if it's an export request
+$isCsvExport = isset($_GET['export']) && $_GET['export'] == 'csv';
+
 
 //Get current URL and parameters for correct pagination
 $script   = $_SERVER['SCRIPT_NAME'];
@@ -73,10 +76,26 @@ $sql = "SELECT `{TABLE_NAME}`.* {JOIN_COLUMNS}
         FROM `{TABLE_NAME}` {JOIN_CLAUSES}
         $where_statement
         $group_clause
-        $order_clause
-        LIMIT $offset, $no_of_records_per_page;";
-$count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
-        $where_statement";
+        $order_clause";
+
+// Add pagination only if it's not a CSV export
+if (!$isCsvExport) {
+    $sql .= " LIMIT $offset, $no_of_records_per_page";
+}
+
+// Execute the main query
+$result = mysqli_query($link, $sql);
+
+// Stop further rendering for CSV export
+if ($isCsvExport) {
+    $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    exportAsCSV($data);
+    exit;
+}
+
+$count_pages = "SELECT COUNT(*) AS count
+                FROM `{TABLE_NAME}` {JOIN_CLAUSES}
+                $where_statement";
 
 ?><!DOCTYPE html>
 <html lang="en">
@@ -98,6 +117,7 @@ $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
     </style>
 </head>
 <body>
+    <?php require_once('navbar.php'); ?>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">
@@ -124,7 +144,7 @@ $count_pages = "SELECT COUNT(*) AS count FROM `{TABLE_NAME}` {JOIN_CLAUSES}
 
 
                         <?php
-                        if($result = mysqli_query($link, $sql)) :
+                        if($result) :
                             if(mysqli_num_rows($result) > 0) :
                                 $number_of_results = mysqli_fetch_assoc(mysqli_query($link, $count_pages))['count'];
                                 $total_pages = ceil($number_of_results / $no_of_records_per_page);
