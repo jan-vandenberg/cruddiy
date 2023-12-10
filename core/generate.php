@@ -1196,6 +1196,9 @@ function extractTableAndColumnsNames($postdata) {
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['is_file'] = isset($column['file']) && $column['file'] ? 1 : 0;
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columnvisible'] = isset($column['columnvisible']) && $column['columnvisible'] ? 1 : 0;
                 $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['columninpreview'] = isset($column['columninpreview']) && $column['columninpreview'] ? 1 : 0;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['fk'] = isset($column['fk']) && $column['fk'] ? 1 : 0;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['primary'] = isset($column['primary']) && $column['primary'] ? 1 : 0;
+                $tables_and_columns_names[extractTableName($table)]['columns'][$column['columnname']]['auto'] = isset($column['auto']) && $column['auto'] ? 1 : 0;
             }
         }
     }
