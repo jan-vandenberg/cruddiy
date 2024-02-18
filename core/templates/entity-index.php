@@ -117,7 +117,7 @@ $count_pages = "SELECT COUNT(*) AS count
     </style>
 </head>
 <body>
-    <?php require_once('navbar.php'); ?>
+<?php require_once('navbar.php'); ?>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">
@@ -191,7 +191,7 @@ $count_pages = "SELECT COUNT(*) AS count
                                         <a class="page-link" href="<?php if($pageno >= $total_pages){ echo '#'; } else { echo $new_url . "&pageno=".($pageno + 1); } ?>"><?php translate('Next') ?></a>
                                     </li>
                                     <li class="page-item <?php if($pageno >= $total_pages){ echo 'disabled'; } ?>">
-                                        <a class="page-item"><a class="page-link" href="<?php echo $new_url .'&pageno=' . $total_pages; ?>"><?php translate('Last') ?></a>
+                                        <a class="page-link" href="<?php echo $new_url .'&pageno=' . $total_pages; ?>"><?php translate('Last') ?></a>
                                     </li>
                                 </ul>
 
@@ -207,6 +207,7 @@ $count_pages = "SELECT COUNT(*) AS count
                     <?php endif ?>
 
                     <?php mysqli_close($link) ?>
+					</div>
                 </div>
             </div>
         </div>

@@ -58,8 +58,8 @@ if(isset($_GET["{TABLE_ID}"]) && !empty($_GET["{TABLE_ID}"])){
     <title><?php translate('View Record') ?></title>
     {CSS_REFS}
 </head>
-<?php require_once('navbar.php'); ?>
 <body>
+<?php require_once('navbar.php'); ?>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">
