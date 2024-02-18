@@ -45,7 +45,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         }
 
         if (!isset($error)){
-            $new_id = mysqli_insert_id($link);
+            $new_id = $link->insert_id;
             header("location: {TABLE_NAME}-read.php?{COLUMN_ID}=$new_id");
         } else {
             $uploaded_files = array();
