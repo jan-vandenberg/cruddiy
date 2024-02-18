@@ -543,7 +543,7 @@ function generate($postdata) {
                     $number_of_refs = mysqli_fetch_assoc(mysqli_query($link, $sql))["count"];
                     if ($number_of_refs > 0)
                     {
-                        $html .= \'<p><a href="' . $table . '-index.php?' . $column . '=\'. $row["' . $fk_column . '"]' . '.\'" class="btn btn-info">\' . translate("references_view_btn", false, $number_of_refs, "' . $table . '", "' . $column . '", $row["' . $fk_column . '"]) .\'</a></p></p>\';
+                        $html .= \'<p><a href="' . $table . '-index.php?' . $column . '=\'. $row["' . $fk_column . '"]' . '.\'" class="btn btn-info">\' . translate("references_view_btn", false, $number_of_refs, "' . $table . '", "' . $column . '", $row["' . $fk_column . '"]) .\'</a></p>\';
                     }';
                 }
             }
@@ -599,7 +599,7 @@ function generate($postdata) {
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$columnname = "' . $columnname . '";' . "\n";
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$sort_link = isset($_GET["order"]) && $_GET["order"] == $columnname && $_GET["sort"] == "asc" ? "desc" : "asc";' . "\n";
                         $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . '$sort_link = isset($_GET["order"]) && $_GET["order"] == $columnname && $_GET["sort"] == "desc" ? "asc" : $sort_link;' . "\n";
-                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . 'echo "<th><a href=?search=$search&order=' . $columnname . '&sort=".$sort_link.">';
+                        $index_table_headers .= "\t\t\t\t\t\t\t\t\t" . 'echo "<th><a href=\\"?search=$search&order=' . $columnname . '&sort=".$sort_link."\\">';
                         $index_table_headers .= $columndisplay_th;
                         $index_table_headers .= '</a></th>";' . "\n";
 
@@ -792,7 +792,7 @@ function generate($postdata) {
                                         $value = implode(" | ", $duprow);
                                         $' . $columnname_var . ' = isset($' . $columnname_var . ') ? $' . $columnname_var . ' : null;
                                         if ($row["' . $fk_column . '"] == $' . $columnname_var . '){
-                                            echo \'<option value="\' . $row["' . $fk_column . '"] . \'"selected="selected">\' . $value . \'</option>\';
+                                            echo \'<option value="\' . $row["' . $fk_column . '"] . \'" selected="selected">\' . $value . \'</option>\';
                                         } else {
                                             echo \'<option value="\' . $row["' . $fk_column . '"] . \'">\' . $value . \'</option>\';
                                         }

@@ -76,6 +76,7 @@ $navbarfile = <<<'EOT'
     </ul>
   </div>
 </nav>
+
 EOT;
 
 
