@@ -31,20 +31,33 @@ $upload_disallowed_exts = array(
 );
 
 
-$protocol               = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
-$domain                 = $protocol . '://' . $_SERVER['HTTP_HOST']; // Replace domain with your domain name. (Locally typically something like localhost)
+$protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https' : 'http';
+$domain = $protocol . '://' . $_SERVER['HTTP_HOST']; // Replace domain with your domain name. (Locally typically something like localhost)
 
-$link                   = mysqli_connect($db_server, $db_user, $db_password, $db_name);
+$link = mysqli_connect($db_server, $db_user, $db_password, $db_name);
+
+// Retrieve the database character set
 $query = "SHOW VARIABLES LIKE 'character_set_database'";
 if ($result = mysqli_query($link, $query)) {
     while ($row = mysqli_fetch_row($result)) {
-        if (!$link->set_charset($row[1])) {
-            printf("Error loading character set %s: %s\n", $row[1], $link->error);
-            exit();
-        } else {
-            // printf("Current character set: %s", $link->character_set_name());
-        }
+        $charset = $row[1];
     }
 }
+
+// Check if the character set is valid
+if (!in_array($charset, mb_list_encodings())) {
+    // If invalid, use utf8mb4 as a fallback
+    $charset = "utf8mb4";
+}
+
+// Set the character set
+if (!$link->set_charset($charset)) {
+    printf("Error loading character set %s: %s\n", $charset, $link->error);
+    exit();
+} else {
+    // printf("Current character set: %s", $link->character_set_name());
+    $current_charset = $link->character_set_name();
+}
+
 
 ?>
