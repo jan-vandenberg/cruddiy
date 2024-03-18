@@ -1286,12 +1286,13 @@ function recursiveCopy($src, $dst) {
                 <br>
                 <br>
                 You can close this tab or leave it open and use the back button to make changes and regenerate the app.
+				<a href="./" class="btn btn-secondary btn-sm">Restart with same settings</a>
                 <br>
                 Every run will overwrite the previous app unless you checked the "Keep previously generated startpage" box.
                 <br>
                 <br>
                 Would you like to try with new settings?
-                <a href="directory.php" class="btn btn-secondary btn-sm">Restart</a>
+                <a href="directory.php" class="btn btn-secondary btn-sm">Restart with new settings</a>
                 <br><br>
                 <hr>
                 If you need further instructions please visit <a href="http://cruddiy.com" target="_blank">cruddiy.com</a> or ask on our <a href="https://github.com/jan-vandenberg/cruddiy" target="_blank">GitHub</a> project.
