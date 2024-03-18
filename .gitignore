@@ -8,3 +8,4 @@ tests/behat/logs/*
 !tests/behat/logs/.gitkeep
 /vendor/
 **/.env
+core/app*
