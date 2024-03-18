@@ -202,7 +202,8 @@ if(isset($_POST['addkey'])){
         <div class="row">
             <div class="col-md-12 mx-auto">
                 <div class="text-center">
-                    <h4 class="mb-0">Existing Table Relations</h4><br>
+                    <h4 class="mb-0">Existing Table Relations</h4>
+                    <p><strong><?php printf("Charset: %s", $current_charset); ?></strong></p>
                     <fieldset>
                         <table class="table table-bordered">
                           <thead>
