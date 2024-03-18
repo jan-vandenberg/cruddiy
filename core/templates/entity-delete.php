@@ -114,8 +114,8 @@ if(isset($_POST["{TABLE_ID}"]) && !empty($_POST["{TABLE_ID}"])){
     <title><?php translate ('Delete Record') ?></title>
     {CSS_REFS}
 </head>
-<?php require_once('navbar.php'); ?>
 <body>
+<?php require_once('navbar.php'); ?>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">

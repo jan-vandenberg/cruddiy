@@ -150,8 +150,8 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
     <title><?php translate('Update Record') ?></title>
     {CSS_REFS}
 </head>
-<?php require_once('navbar.php'); ?>
 <body>
+<?php require_once('navbar.php'); ?>
     <section class="pt-5">
         <div class="container-fluid">
             <div class="row">
@@ -183,7 +183,6 @@ if(isset($_GET["{COLUMN_ID}"]) && !empty($_GET["{COLUMN_ID}"])){
             </div>
         </div>
     </section>
-</body>
 {JS_REFS}
     <script type="text/javascript">
         $(document).ready(function(){
